@@ -1,0 +1,96 @@
+<article class="prose flex flex-row m-3 w-full max-w-96">
+  <div class="flex flex-col m-3">
+    <div class="flex">
+      <h3 class="m-1">
+        <fa-icon class="cursor-pointer" [icon]="faChevronLeft" [routerLink]="['/planes']"></fa-icon>
+      </h3>
+      <h2 class="m-1">
+        {{ plane.immat }}
+      </h2>
+      <h3 class="m-1">
+        {{ plane.name }}
+      </h3>
+      <h3 class="m-1">
+        <fa-icon class="cursor-pointer" [icon]="faCircleInfo" (click)="toggleInformationPanel()"></fa-icon>
+      </h3>
+    </div>
+    <div class="m-1">
+      <label for="mass" class="input input-sm flex items-center gap-2"><span class="min-w-44">Mass</span><input
+        class="w-16" type="number"
+        id="mass"
+        [(ngModel)]="massInKg">kg</label>
+    </div>
+
+    <div class="m-1">
+      <label for="temperature" class="input input-sm flex items-center gap-2"><span
+        class="min-w-44">Temperature</span><input class="w-16"
+                                                  type="number"
+                                                  id="temperature"
+                                                  [(ngModel)]="temperatureInCelsius">°C</label>
+    </div>
+
+    <div class="m-1">
+      <label for="qnh" class="input input-sm flex items-center gap-2"><span class="min-w-44">QNH</span><input
+        class="w-16" type="number" id="qnh"
+        [(ngModel)]="qnhInHpa">hPa</label>
+    </div>
+
+    <div class="m-1">
+      <label for="altitude" class="input input-sm flex items-center gap-2"><span
+        class="min-w-44">Terrain altitude</span><input class="w-16"
+                                                       type="number"
+                                                       id="altitude"
+                                                       [(ngModel)]="altitude">ft</label>
+    </div>
+
+    <button (click)="compute()" class="btn">Calculate</button>
+    @if (outOfBoundComputationError) {
+      <div role="alert" class="alert alert-error mt-2">
+        <fa-icon [icon]="faCircleExclamation"></fa-icon>
+        <span>Out of bounds</span>
+      </div>
+    }
+    @if (performanceComputeResponse) {
+      <div class="stats shadow" *ngIf="performanceComputeResponse">
+        <div class="stat">
+          <div class="stat-title flex">
+            <div>Take off</div>
+            <div class="ml-2">
+              <fa-icon [icon]="faPlaneDeparture"></fa-icon>
+            </div>
+          </div>
+          <div class="stat-value">{{ performanceComputeResponse.securedTakeOfPerformanceInMeters | number: '1.0-0' }}m
+          </div>
+          <div class="stat-desc">{{ performanceComputeResponse.rawTakeOfPerformanceInMeters | number: '1.0-0' }}m
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-title flex">
+            <div>Landing</div>
+            <div class="ml-2">
+              <fa-icon [icon]="faPlaneArrival"></fa-icon>
+            </div>
+          </div>
+          <div class="stat-value">{{ performanceComputeResponse.securedLandingPerformanceInMeters | number: '1.0-0' }}
+            m
+          </div>
+          <div class="stat-desc">{{ performanceComputeResponse.rawLandingPerformanceInMeters | number: '1.0-0' }}m
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  @if (informationPanelOpen) {
+    <div class="flex flex-col">
+      <h4>Take off performances</h4>
+      <performance-table
+        [dataPoints]="plane.takeOfDataPoints"
+      />
+      <h4>Landing performances</h4>
+      <performance-table
+        [dataPoints]="plane.landingDataPoints"
+      />
+    </div>
+  }
+
+</article>
