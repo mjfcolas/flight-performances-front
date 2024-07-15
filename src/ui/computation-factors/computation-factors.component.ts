@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
-import {TrackFactors} from "../../domain/plane";
+import {RunwayFactors} from "../../domain/plane";
 
 
 @Component({
@@ -18,8 +18,8 @@ export class ComputationFactorsComponent {
   securityFactor: number | null = null;
 
   @Input()
-  takeOffTrackFactors: TrackFactors | null = null;
+  takeOffRunwayFactors: RunwayFactors | null = null;
 
   @Input()
-  landingTrackFactors: TrackFactors | null = null;
+  landingRunwayFactors: RunwayFactors | null = null;
 }

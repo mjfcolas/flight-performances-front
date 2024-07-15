@@ -1,5 +1,5 @@
 export interface PerformanceDataPoint {
-  readonly altitudePressureInFeet: number;
+  readonly pressureAltitudeInFeet: number;
   readonly temperatureInCelsius: number;
   readonly massInKg: number;
   readonly distanceInMeters: number;

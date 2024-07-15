@@ -1,5 +1,5 @@
 <div class="overflow-x-auto">
-  <table class="table table-zebra table-xs">
+  <table class="table table-zebra table-xs mt-1 mb-1">
     <thead>
     <tr>
       <th>Altitude (ft)</th>
@@ -17,9 +17,9 @@
               <td rowspan="3">{{ altitude }}</td>
             }
             @if (temperature === 0) {
-              <td>Std = {{ (standardTemperatureAt(altitude)) | number: '1.0-0'  }}</td>
+              <td>Std = {{ (ISATemperatureAt(altitude)) | number: '1.0-0'  }}</td>
             } @else {
-              <td>{{ (standardTemperatureAt(altitude) + temperature)  | number: '1.0-0' }}</td>
+              <td>{{ (ISATemperatureAt(altitude) + temperature)  | number: '1.0-0' }}</td>
             }
 
             @for (masse of masses; track masse) {
