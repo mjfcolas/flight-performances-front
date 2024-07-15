@@ -1,7 +1,7 @@
 <div class="prose flex flex-wrap w-full max-w-full">
   <div class="flex flex-col m-3 w-full max-w-96">
     <div class="flex">
-      <h3 class="m-1 text-primary">
+      <h3 class="m-1">
         <fa-icon class="cursor-pointer" [icon]="faChevronLeft" [routerLink]="['/planes']"></fa-icon>
       </h3>
       <h2 class="m-1">
@@ -11,7 +11,7 @@
         {{ plane.name }}
       </h3>
       <h3 class="m-1">
-        <button class="btn btn-active btn-primary btn-sm" (click)="toggleInformationPanel()">{{ detailedMode ? "Simple" : "Detailed" }}</button>
+        <button class="btn btn-active btn-sm" (click)="toggleInformationPanel()">{{ detailedMode ? "Simple" : "Detailed" }}</button>
       </h3>
     </div>
     <div class="m-1">
@@ -59,7 +59,7 @@
              [(ngModel)]="isWetRunway"/>
     </div>
 
-    <button (click)="compute()" class="btn text-primary">Calculate</button>
+    <button (click)="compute()" class="btn">Calculate</button>
     @if (completePerformanceComputeResponse) {
       <div class="flex flex-col">
         <div class="flex">
