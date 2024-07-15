@@ -3,10 +3,10 @@ export class Temperature {
   }
 
   public differenceWithStandardTemperatureAt(altitudeInFeet: number): number {
-    return this.valueInCelsius - Temperature.standardTemperatureAt(altitudeInFeet);
+    return this.valueInCelsius - Temperature.standardTemperatureAt(altitudeInFeet).valueInCelsius;
   }
 
-  private static standardTemperatureAt(altitudeInFeet: number): number {
-    return 15 - 1.98 * altitudeInFeet / 1000;
+  public static standardTemperatureAt(altitudeInFeet: number): Temperature {
+    return new Temperature(15 - 1.98 * altitudeInFeet / 1000);
   }
 }

@@ -1,12 +1,16 @@
 import {Component, Input} from '@angular/core';
 import {PerformanceDataPoint} from "../../domain/performance-data-point";
+import {Temperature} from "../../domain/temperature";
+import {DecimalPipe} from "@angular/common";
 
 
 @Component({
   selector: 'performance-table',
   standalone: true,
   templateUrl: './performance-table.component.html',
-  imports: [],
+  imports: [
+    DecimalPipe
+  ],
   providers: [],
   styleUrl: './performance-table.component.css'
 })
@@ -52,5 +56,10 @@ export class PerformanceTableComponent {
 
   valueAt(mass: number, temperature: number, altitude: number): number {
     return this._dataMap.get(mass)?.get(temperature)?.get(altitude) || 0;
+  }
+
+
+  standardTemperatureAt(altitudeInFeet: number): number {
+    return Temperature.standardTemperatureAt(altitudeInFeet).valueInCelsius;
   }
 }

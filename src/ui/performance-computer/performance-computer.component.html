@@ -1,4 +1,4 @@
-<article class="prose flex flex-row m-3 w-full max-w-96">
+<div class="prose flex flex-wrap w-full max-w-full">
   <div class="flex flex-col m-3">
     <div class="flex">
       <h3 class="m-1">
@@ -43,13 +43,23 @@
                                                        [(ngModel)]="altitude">ft</label>
     </div>
 
+    <div class="m-1 flex">
+      <label for="grass-track" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Grass Track ?</span>
+      </label>
+      <input id="grass-track" type="checkbox" class="toggle toggle-success toggle-md" checked="checked"
+             [(ngModel)]="isGrassTrack"/>
+    </div>
+
+    <div class="m-1 flex">
+      <label for="wet-track" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Wet Track ?</span>
+      </label>
+      <input id="wet-track" type="checkbox" class="toggle toggle-info toggle-md" checked="checked"
+             [(ngModel)]="isWetTrack"/>
+    </div>
+
     <button (click)="compute()" class="btn">Calculate</button>
-    @if (outOfBoundComputationError) {
-      <div role="alert" class="alert alert-error mt-2">
-        <fa-icon [icon]="faCircleExclamation"></fa-icon>
-        <span>Out of bounds</span>
-      </div>
-    }
     @if (performanceComputeResponse) {
       <div class="stats shadow" *ngIf="performanceComputeResponse">
         <div class="stat">
@@ -59,10 +69,18 @@
               <fa-icon [icon]="faPlaneDeparture"></fa-icon>
             </div>
           </div>
-          <div class="stat-value">{{ performanceComputeResponse.securedTakeOfPerformanceInMeters | number: '1.0-0' }}m
-          </div>
-          <div class="stat-desc">{{ performanceComputeResponse.rawTakeOfPerformanceInMeters | number: '1.0-0' }}m
-          </div>
+          @if (!performanceComputeResponse.outOfBoundTakeOffComputationError) {
+            <div class="stat-value">{{ performanceComputeResponse.securedTakeOfPerformanceInMeters | number: '1.0-0' }}m
+            </div>
+            <div class="stat-desc">{{ performanceComputeResponse.rawTakeOfPerformanceInMeters | number: '1.0-0' }}m
+            </div>
+          } @else {
+            <div class="stat-desc">
+              <fa-icon [icon]="faCircleExclamation"></fa-icon>
+              Out of bound
+            </div>
+          }
+
         </div>
         <div class="stat">
           <div class="stat-title flex">
@@ -71,26 +89,45 @@
               <fa-icon [icon]="faPlaneArrival"></fa-icon>
             </div>
           </div>
-          <div class="stat-value">{{ performanceComputeResponse.securedLandingPerformanceInMeters | number: '1.0-0' }}
-            m
-          </div>
-          <div class="stat-desc">{{ performanceComputeResponse.rawLandingPerformanceInMeters | number: '1.0-0' }}m
-          </div>
+          @if (!performanceComputeResponse.outOfBoundLandingComputationError) {
+            <div class="stat-value">{{ performanceComputeResponse.securedLandingPerformanceInMeters | number: '1.0-0' }}
+              m
+            </div>
+            <div class="stat-desc">{{ performanceComputeResponse.rawLandingPerformanceInMeters | number: '1.0-0' }}m
+            </div>
+          } @else {
+            <div class="stat-desc">
+              <fa-icon [icon]="faCircleExclamation"></fa-icon>
+              Out of bound
+            </div>
+          }
         </div>
       </div>
     }
   </div>
   @if (informationPanelOpen) {
-    <div class="flex flex-col">
-      <h4>Take off performances</h4>
-      <performance-table
-        [dataPoints]="plane.takeOfDataPoints"
-      />
-      <h4>Landing performances</h4>
-      <performance-table
-        [dataPoints]="plane.landingDataPoints"
-      />
+    <div class="flex flex-wrap">
+      <div class="m-3">
+        <h4>Factors</h4>
+        <computation-factors
+          [securityFactor]="securityFactor"
+          [landingTrackFactors]="plane.landingTrackFactors"
+          [takeOffTrackFactors]="plane.takeOffTrackFactors"
+        />
+      </div>
+      <div class="m-3">
+        <h4>Take off performances</h4>
+        <performance-table
+          [dataPoints]="plane.takeOfDataPoints"
+        />
+      </div>
+      <div class="m-3">
+        <h4>Landing performances</h4>
+        <performance-table
+          [dataPoints]="plane.landingDataPoints"
+        />
+      </div>
     </div>
   }
 
-</article>
+</div>
