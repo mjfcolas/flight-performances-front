@@ -7,10 +7,10 @@ export class TrilinearInterpolationProvider implements InterpolationProvider {
   interpolate(grid: PerformanceDataPoint[], toInterpolate: PerformanceDataPoint): number {
 
     const raw = grid
-      .map(({altitudePressureInFeet, temperatureInCelsius, massInKg, distanceInMeters})
-        => [altitudePressureInFeet, temperatureInCelsius, massInKg, distanceInMeters]);
+      .map(({pressureAltitudeInFeet, temperatureInCelsius, massInKg, distanceInMeters})
+        => [pressureAltitudeInFeet, temperatureInCelsius, massInKg, distanceInMeters]);
 
-    return interpolate(raw, [toInterpolate.altitudePressureInFeet, toInterpolate.temperatureInCelsius, toInterpolate.massInKg])[3]
+    return interpolate(raw, [toInterpolate.pressureAltitudeInFeet, toInterpolate.temperatureInCelsius, toInterpolate.massInKg])[3]
   }
 }
 

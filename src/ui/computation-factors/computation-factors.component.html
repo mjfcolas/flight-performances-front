@@ -1,8 +1,15 @@
 <div class="overflow-x-auto">
-  <ul>
-    <li><span class="font-bold">Security:</span> {{securityFactor}}</li>
-  </ul>
-  <table class="table table-zebra table-xs">
+  <div class="overflow-x-auto table-xs">
+    <table class="table mt-1 mb-1">
+      <tbody>
+      <tr>
+        <th>Security coefficient</th>
+        <td>{{securityFactor}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <table class="table table-zebra table-xs mt-1">
     <thead>
     <tr>
       <th></th>
@@ -15,24 +22,24 @@
     <tr>
       <th rowspan="2">Landing</th>
       <th>Wet</th>
-      <td>{{landingTrackFactors?.hardWet}}</td>
-      <td>{{landingTrackFactors?.grassWet}}</td>
+      <td>{{landingRunwayFactors?.hardWet}}</td>
+      <td>{{landingRunwayFactors?.grassWet}}</td>
     </tr>
     <tr>
       <th>Dry</th>
-      <td>{{landingTrackFactors?.hard}}</td>
-      <td>{{landingTrackFactors?.grass}}</td>
+      <td>{{landingRunwayFactors?.hard}}</td>
+      <td>{{landingRunwayFactors?.grass}}</td>
     </tr>
     <tr>
       <th rowspan="2">Take off</th>
       <th>Wet</th>
-      <td>{{takeOffTrackFactors?.hardWet}}</td>
-      <td>{{takeOffTrackFactors?.grassWet}}</td>
+      <td>{{takeOffRunwayFactors?.hardWet}}</td>
+      <td>{{takeOffRunwayFactors?.grassWet}}</td>
     </tr>
     <tr>
       <th>Dry</th>
-      <td>{{takeOffTrackFactors?.hard}}</td>
-      <td>{{takeOffTrackFactors?.grass}}</td>
+      <td>{{takeOffRunwayFactors?.hard}}</td>
+      <td>{{takeOffRunwayFactors?.grass}}</td>
     </tr>
     </tbody>
   </table>

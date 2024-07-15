@@ -11,8 +11,7 @@ import {DecimalPipe} from "@angular/common";
   imports: [
     DecimalPipe
   ],
-  providers: [],
-  styleUrl: './performance-table.component.css'
+  providers: []
 })
 export class PerformanceTableComponent {
 
@@ -27,7 +26,7 @@ export class PerformanceTableComponent {
   set dataPoints(dataPoints: PerformanceDataPoint[]) {
     this._masses = [...new Set(dataPoints.map(dataPoint => dataPoint.massInKg))];
     this._temperatures = [...new Set(dataPoints.map(dataPoint => dataPoint.temperatureInCelsius))];
-    this._altitudes = [...new Set(dataPoints.map(dataPoint => dataPoint.altitudePressureInFeet))];
+    this._altitudes = [...new Set(dataPoints.map(dataPoint => dataPoint.pressureAltitudeInFeet))];
 
     dataPoints.forEach(dataPoint => {
       if(!this._dataMap.has(dataPoint.massInKg)){
@@ -38,7 +37,7 @@ export class PerformanceTableComponent {
       }
       this._dataMap.get(dataPoint.massInKg)
         ?.get(dataPoint.temperatureInCelsius)
-        ?.set(dataPoint.altitudePressureInFeet, dataPoint.distanceInMeters);
+        ?.set(dataPoint.pressureAltitudeInFeet, dataPoint.distanceInMeters);
     })
   }
 
@@ -59,7 +58,7 @@ export class PerformanceTableComponent {
   }
 
 
-  standardTemperatureAt(altitudeInFeet: number): number {
-    return Temperature.standardTemperatureAt(altitudeInFeet).valueInCelsius;
+  ISATemperatureAt(altitudeInFeet: number): number {
+    return Temperature.ISATemperatureAt(altitudeInFeet).valueInCelsius;
   }
 }

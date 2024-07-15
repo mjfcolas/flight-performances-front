@@ -1,11 +1,21 @@
+export type FactorType = "DRY_GRASS" | "WET_GRASS" | "DRY_HARD" | "WET_HARD" | "SECURITY"
+
 export class PerformanceComputeResponse {
   constructor(
-    public readonly rawTakeOfPerformanceInMeters: number | undefined,
-    public  readonly rawLandingPerformanceInMeters: number | undefined,
-    public  readonly securedTakeOfPerformanceInMeters: number | undefined,
-    public  readonly securedLandingPerformanceInMeters: number | undefined,
-    public readonly outOfBoundTakeOffComputationError: boolean,
-    public readonly outOfBoundLandingComputationError: boolean
+    public readonly rawPerformanceInMeters: number | undefined,
+    public readonly securedPerformanceInMeters: number | undefined,
+    public readonly outOfBoundComputationError: boolean,
+    public readonly computationData: ComputationData
+  ) {
+  }
+}
+
+export class ComputationData {
+  constructor(
+    public readonly factorMap: Map<FactorType, number>,
+    public readonly pressureAltitudeInFeet: number,
+    public readonly differenceWithISATemperature: number,
+    public readonly massInKg: number,
   ) {
   }
 }

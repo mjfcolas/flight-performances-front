@@ -1,0 +1,23 @@
+@if (performanceComputeResponse && _icon && _title) {
+  <div class="stats shadow w-full">
+    <div class="stat">
+      <div class="stat-title flex">
+        <div>{{ _title }}</div>
+        <div class="ml-2 text-primary">
+          <fa-icon [icon]="_icon"></fa-icon>
+        </div>
+      </div>
+      @if (!performanceComputeResponse.outOfBoundComputationError) {
+        <div class="stat-value text-primary">{{ performanceComputeResponse.securedPerformanceInMeters | number: '1.0-0' }}m
+        </div>
+        <div class="stat-desc">{{ performanceComputeResponse.rawPerformanceInMeters | number: '1.0-0' }}m
+        </div>
+      } @else {
+        <div class="stat-desc">
+          <fa-icon [icon]="faCircleExclamation"></fa-icon>
+          Out of bound
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -7,13 +7,13 @@ export class Plane {
     public readonly immat: string,
     public readonly takeOfDataPoints: PerformanceDataPoint[],
     public readonly landingDataPoints: PerformanceDataPoint[],
-    public readonly takeOffTrackFactors: TrackFactors,
-    public readonly landingTrackFactors: TrackFactors
+    public readonly takeOffRunwayFactors: RunwayFactors,
+    public readonly landingRunwayFactors: RunwayFactors
   ) {
   }
 }
 
-export class TrackFactors {
+export class RunwayFactors {
   constructor(
     public readonly grass: number,
     public readonly grassWet: number,

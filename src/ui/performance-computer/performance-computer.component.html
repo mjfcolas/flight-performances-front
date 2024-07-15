@@ -1,7 +1,7 @@
 <div class="prose flex flex-wrap w-full max-w-full">
-  <div class="flex flex-col m-3">
+  <div class="flex flex-col m-3 w-full max-w-96">
     <div class="flex">
-      <h3 class="m-1">
+      <h3 class="m-1 text-primary">
         <fa-icon class="cursor-pointer" [icon]="faChevronLeft" [routerLink]="['/planes']"></fa-icon>
       </h3>
       <h2 class="m-1">
@@ -11,7 +11,7 @@
         {{ plane.name }}
       </h3>
       <h3 class="m-1">
-        <fa-icon class="cursor-pointer" [icon]="faCircleInfo" (click)="toggleInformationPanel()"></fa-icon>
+        <button class="btn btn-active btn-primary btn-sm" (click)="toggleInformationPanel()">{{ detailedMode ? "Simple" : "Detailed" }}</button>
       </h3>
     </div>
     <div class="m-1">
@@ -44,90 +44,65 @@
     </div>
 
     <div class="m-1 flex">
-      <label for="grass-track" class="input input-sm flex items-center gap-2">
-        <span class="min-w-44">Grass Track ?</span>
+      <label for="grass-runway" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Grass Runway ?</span>
       </label>
-      <input id="grass-track" type="checkbox" class="toggle toggle-success toggle-md" checked="checked"
-             [(ngModel)]="isGrassTrack"/>
+      <input id="grass-runway" type="checkbox" class="toggle toggle-success toggle-md" checked="checked"
+             [(ngModel)]="isGrassRunway"/>
     </div>
 
     <div class="m-1 flex">
-      <label for="wet-track" class="input input-sm flex items-center gap-2">
-        <span class="min-w-44">Wet Track ?</span>
+      <label for="wet-runway" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Wet Runway ?</span>
       </label>
-      <input id="wet-track" type="checkbox" class="toggle toggle-info toggle-md" checked="checked"
-             [(ngModel)]="isWetTrack"/>
+      <input id="wet-runway" type="checkbox" class="toggle toggle-info toggle-md" checked="checked"
+             [(ngModel)]="isWetRunway"/>
     </div>
 
-    <button (click)="compute()" class="btn">Calculate</button>
-    @if (performanceComputeResponse) {
-      <div class="stats shadow" *ngIf="performanceComputeResponse">
-        <div class="stat">
-          <div class="stat-title flex">
-            <div>Take off</div>
-            <div class="ml-2">
-              <fa-icon [icon]="faPlaneDeparture"></fa-icon>
-            </div>
-          </div>
-          @if (!performanceComputeResponse.outOfBoundTakeOffComputationError) {
-            <div class="stat-value">{{ performanceComputeResponse.securedTakeOfPerformanceInMeters | number: '1.0-0' }}m
-            </div>
-            <div class="stat-desc">{{ performanceComputeResponse.rawTakeOfPerformanceInMeters | number: '1.0-0' }}m
-            </div>
-          } @else {
-            <div class="stat-desc">
-              <fa-icon [icon]="faCircleExclamation"></fa-icon>
-              Out of bound
-            </div>
-          }
-
+    <button (click)="compute()" class="btn text-primary">Calculate</button>
+    @if (completePerformanceComputeResponse) {
+      <div class="flex flex-col">
+        <div class="flex">
+          <computation-results class="w-1/2"
+                               [performanceComputeResponse]="completePerformanceComputeResponse.takeOffPerformanceComputeResponse"
+                               [type]="'TAKE_OFF'"/>
+          <computation-results class="w-1/2"
+                               [performanceComputeResponse]="completePerformanceComputeResponse.landingPerformanceComputeResponse"
+                               [type]="'LANDING'"/>
         </div>
-        <div class="stat">
-          <div class="stat-title flex">
-            <div>Landing</div>
-            <div class="ml-2">
-              <fa-icon [icon]="faPlaneArrival"></fa-icon>
-            </div>
-          </div>
-          @if (!performanceComputeResponse.outOfBoundLandingComputationError) {
-            <div class="stat-value">{{ performanceComputeResponse.securedLandingPerformanceInMeters | number: '1.0-0' }}
-              m
-            </div>
-            <div class="stat-desc">{{ performanceComputeResponse.rawLandingPerformanceInMeters | number: '1.0-0' }}m
-            </div>
-          } @else {
-            <div class="stat-desc">
-              <fa-icon [icon]="faCircleExclamation"></fa-icon>
-              Out of bound
-            </div>
-          }
-        </div>
+        @if (detailedMode) {
+          <h4 class="m-1">Take-off computation details</h4>
+          <computation-details
+            [performanceComputeResponse]="completePerformanceComputeResponse.takeOffPerformanceComputeResponse"
+          />
+          <h4 class="m-1">Landing computation details</h4>
+          <computation-details
+            [performanceComputeResponse]="completePerformanceComputeResponse.landingPerformanceComputeResponse"
+          />
+        }
       </div>
     }
   </div>
-  @if (informationPanelOpen) {
-    <div class="flex flex-wrap">
-      <div class="m-3">
-        <h4>Factors</h4>
-        <computation-factors
-          [securityFactor]="securityFactor"
-          [landingTrackFactors]="plane.landingTrackFactors"
-          [takeOffTrackFactors]="plane.takeOffTrackFactors"
-        />
-      </div>
-      <div class="m-3">
-        <h4>Take off performances</h4>
-        <performance-table
-          [dataPoints]="plane.takeOfDataPoints"
-        />
-      </div>
-      <div class="m-3">
-        <h4>Landing performances</h4>
-        <performance-table
-          [dataPoints]="plane.landingDataPoints"
-        />
-      </div>
+  @if (detailedMode) {
+    <div class="ml-3">
+      <h4>Factors</h4>
+      <computation-factors
+        [securityFactor]="securityFactor"
+        [landingRunwayFactors]="plane.landingRunwayFactors"
+        [takeOffRunwayFactors]="plane.takeOffRunwayFactors"
+      />
+    </div>
+    <div class="ml-3">
+      <h4>Take off performances</h4>
+      <performance-table
+        [dataPoints]="plane.takeOfDataPoints"
+      />
+    </div>
+    <div class="ml-3">
+      <h4>Landing performances</h4>
+      <performance-table
+        [dataPoints]="plane.landingDataPoints"
+      />
     </div>
   }
-
 </div>
