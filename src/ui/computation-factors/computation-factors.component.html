@@ -1,0 +1,39 @@
+<div class="overflow-x-auto">
+  <ul>
+    <li><span class="font-bold">Security:</span> {{securityFactor}}</li>
+  </ul>
+  <table class="table table-zebra table-xs">
+    <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>Hard</th>
+      <th>Grass</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <th rowspan="2">Landing</th>
+      <th>Wet</th>
+      <td>{{landingTrackFactors?.hardWet}}</td>
+      <td>{{landingTrackFactors?.grassWet}}</td>
+    </tr>
+    <tr>
+      <th>Dry</th>
+      <td>{{landingTrackFactors?.hard}}</td>
+      <td>{{landingTrackFactors?.grass}}</td>
+    </tr>
+    <tr>
+      <th rowspan="2">Take off</th>
+      <th>Wet</th>
+      <td>{{takeOffTrackFactors?.hardWet}}</td>
+      <td>{{takeOffTrackFactors?.grassWet}}</td>
+    </tr>
+    <tr>
+      <th>Dry</th>
+      <td>{{takeOffTrackFactors?.hard}}</td>
+      <td>{{takeOffTrackFactors?.grass}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

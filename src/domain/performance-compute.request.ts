@@ -7,7 +7,9 @@ export class PerformanceComputeRequest {
     public readonly plane: Plane,
     public readonly altitudePressure: AltitudePressure,
     public readonly temperatureInCelsius: Temperature,
-    public readonly massInKg: number
+    public readonly massInKg: number,
+    public readonly trackStatus: "DRY" | "WET",
+    public readonly trackType: "HARD" | "GRASS"
   ) {
   }
 }

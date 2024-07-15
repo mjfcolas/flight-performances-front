@@ -2,10 +2,10 @@
   <table class="table table-zebra table-xs">
     <thead>
     <tr>
-      <th>Altitude</th>
-      <th>Température</th>
+      <th>Altitude (ft)</th>
+      <th>Temperature (°C)</th>
       @for (masse of masses; track masse) {
-        <th>Masse {{ masse }} Kg</th>
+        <th>{{ masse }} Kg (m)</th>
       }
     </tr>
     </thead>
@@ -16,9 +16,14 @@
             @if ($index === 0) {
               <td rowspan="3">{{ altitude }}</td>
             }
-            <td>Std {{ temperature }}</td>
+            @if (temperature === 0) {
+              <td>Std = {{ (standardTemperatureAt(altitude)) | number: '1.0-0'  }}</td>
+            } @else {
+              <td>{{ (standardTemperatureAt(altitude) + temperature)  | number: '1.0-0' }}</td>
+            }
+
             @for (masse of masses; track masse) {
-              <td>{{ valueAt(masse, temperature, altitude)}}</td>
+              <td>{{ valueAt(masse, temperature, altitude) }}</td>
             }
           </tr>
         }

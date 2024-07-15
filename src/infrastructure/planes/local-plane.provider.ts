@@ -1,5 +1,5 @@
 import {Observable, of} from "rxjs";
-import {Plane} from "../../domain/plane";
+import {Plane, TrackFactors} from "../../domain/plane";
 import {PlaneProvider} from "../../domain/plane.provider";
 
 const dr400120TakeOfPerformance = [
@@ -32,13 +32,18 @@ const dr400120LandingPerformance = [
   {altitudePressureInFeet: 4000, temperatureInCelsius: 20, massInKg: 900, distanceInMeters: 535}
 ]
 
+const dr400TakeOffTrackFactors: TrackFactors = new TrackFactors(1.15, 1.15, 1, 1);
+const dr400LandingTrackFactors: TrackFactors = new TrackFactors(1.15, 1.35, 1, 1.15);
+
 
 const fgkrd = new Plane(
   "1",
   "DR400-120",
   "F-GKRD",
   dr400120TakeOfPerformance,
-  dr400120LandingPerformance
+  dr400120LandingPerformance,
+  dr400TakeOffTrackFactors,
+  dr400LandingTrackFactors
 );
 
 const fgnna = new Plane(
@@ -46,7 +51,9 @@ const fgnna = new Plane(
   "DR401-120",
   "F-GNNA",
   dr400120TakeOfPerformance,
-  dr400120LandingPerformance
+  dr400120LandingPerformance,
+  dr400TakeOffTrackFactors,
+  dr400LandingTrackFactors
 );
 
 const fhato = new Plane(
@@ -54,7 +61,9 @@ const fhato = new Plane(
   "DR400-120",
   "F-HATO",
   dr400120TakeOfPerformance,
-  dr400120LandingPerformance
+  dr400120LandingPerformance,
+  dr400TakeOffTrackFactors,
+  dr400LandingTrackFactors
 );
 
 const fgnnl = new Plane(
@@ -88,7 +97,9 @@ const fgnnl = new Plane(
     {altitudePressureInFeet: 4000, temperatureInCelsius: 0, massInKg: 1000, distanceInMeters: 587},
     {altitudePressureInFeet: 4000, temperatureInCelsius: 20, massInKg: 800, distanceInMeters: 523},
     {altitudePressureInFeet: 4000, temperatureInCelsius: 20, massInKg: 1000, distanceInMeters: 630}
-  ]
+  ],
+  dr400TakeOffTrackFactors,
+  dr400LandingTrackFactors
 );
 
 const fgmxo = new Plane(
@@ -128,7 +139,9 @@ const fgmxo = new Plane(
     {altitudePressureInFeet: 4000, temperatureInCelsius: 0, massInKg: 1045, distanceInMeters: 585},
     {altitudePressureInFeet: 4000, temperatureInCelsius: 20, massInKg: 845, distanceInMeters: 520},
     {altitudePressureInFeet: 4000, temperatureInCelsius: 20, massInKg: 1045, distanceInMeters: 620}
-  ]
+  ],
+  dr400TakeOffTrackFactors,
+  dr400LandingTrackFactors
 );
 
 const planes: Map<string, Plane> = new Map([
