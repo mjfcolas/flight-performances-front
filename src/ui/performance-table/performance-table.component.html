@@ -1,0 +1,33 @@
+<div class="overflow-x-auto">
+  <table class="table table-zebra table-xs mt-1 mb-1">
+    <thead>
+    <tr>
+      <th>Altitude (ft)</th>
+      <th>Temperature (°C)</th>
+      @for (masse of masses; track masse) {
+        <th>{{ masse }} Kg (m)</th>
+      }
+    </tr>
+    </thead>
+    <tbody>
+      @for (altitude of altitudes; track altitude) {
+        @for (temperature of temperatures; track temperature) {
+          <tr>
+            @if ($index === 0) {
+              <td rowspan="3">{{ altitude }}</td>
+            }
+            @if (temperature === 0) {
+              <td>Std = {{ (ISATemperatureAt(altitude)) | number: '1.0-0'  }}</td>
+            } @else {
+              <td>{{ (ISATemperatureAt(altitude) + temperature)  | number: '1.0-0' }}</td>
+            }
+
+            @for (masse of masses; track masse) {
+              <td>{{ valueAt(masse, temperature, altitude) }}</td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
