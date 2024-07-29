@@ -25,7 +25,7 @@ export class PerformanceComputer {
     let rawTakeOffPerformance = 0;
     let outOfBoundTakeOffComputationError = false;
     try {
-      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.plane.takeOfDataPoints, toInterpolate);
+      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.performances.takeOffDataPoints, toInterpolate);
     } catch (e) {
       outOfBoundTakeOffComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
@@ -33,7 +33,7 @@ export class PerformanceComputer {
     let rawLandingPerformance = 0;
     let outOfBoundLandingComputationError = false;
     try {
-      rawLandingPerformance = this.interpolationProvider.interpolate(request.plane.landingDataPoints, toInterpolate);
+      rawLandingPerformance = this.interpolationProvider.interpolate(request.performances.landingDataPoints, toInterpolate);
     } catch (e) {
       outOfBoundLandingComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
@@ -45,33 +45,33 @@ export class PerformanceComputer {
     const landingComputationFactor = new Map<FactorType, number>();
 
     if (request.runwayStatus === "WET" && request.runwayType === "GRASS") {
-      takeOffFactor *= request.plane.takeOffRunwayFactors.grassWet;
-      landingFactor *= request.plane.landingRunwayFactors.grassWet;
-      takeOffComputationFactor.set("WET_GRASS", request.plane.takeOffRunwayFactors.grassWet);
-      landingComputationFactor.set("WET_GRASS", request.plane.landingRunwayFactors.grassWet);
+      takeOffFactor *= request.performances.takeOffRunwayFactors.grassWet;
+      landingFactor *= request.performances.landingRunwayFactors.grassWet;
+      takeOffComputationFactor.set("WET_GRASS", request.performances.takeOffRunwayFactors.grassWet);
+      landingComputationFactor.set("WET_GRASS", request.performances.landingRunwayFactors.grassWet);
     }
     if (request.runwayStatus === "WET" && request.runwayType === "HARD") {
-      takeOffFactor *= request.plane.takeOffRunwayFactors.hardWet;
-      landingFactor *= request.plane.landingRunwayFactors.hardWet;
-      takeOffComputationFactor.set("WET_HARD", request.plane.takeOffRunwayFactors.hardWet);
-      landingComputationFactor.set("WET_HARD", request.plane.landingRunwayFactors.hardWet);
+      takeOffFactor *= request.performances.takeOffRunwayFactors.hardWet;
+      landingFactor *= request.performances.landingRunwayFactors.hardWet;
+      takeOffComputationFactor.set("WET_HARD", request.performances.takeOffRunwayFactors.hardWet);
+      landingComputationFactor.set("WET_HARD", request.performances.landingRunwayFactors.hardWet);
     }
     if (request.runwayStatus === "DRY" && request.runwayType === "GRASS") {
-      takeOffFactor *= request.plane.takeOffRunwayFactors.grass;
-      landingFactor *= request.plane.landingRunwayFactors.grass;
-      takeOffComputationFactor.set("DRY_GRASS", request.plane.takeOffRunwayFactors.grass);
-      landingComputationFactor.set("DRY_GRASS", request.plane.landingRunwayFactors.grass);
+      takeOffFactor *= request.performances.takeOffRunwayFactors.grass;
+      landingFactor *= request.performances.landingRunwayFactors.grass;
+      takeOffComputationFactor.set("DRY_GRASS", request.performances.takeOffRunwayFactors.grass);
+      landingComputationFactor.set("DRY_GRASS", request.performances.landingRunwayFactors.grass);
     }
     if (request.runwayStatus === "DRY" && request.runwayType === "HARD") {
-      takeOffFactor *= request.plane.takeOffRunwayFactors.hard;
-      landingFactor *= request.plane.landingRunwayFactors.hard
-      takeOffComputationFactor.set("DRY_HARD", request.plane.takeOffRunwayFactors.hard);
-      landingComputationFactor.set("DRY_HARD", request.plane.landingRunwayFactors.hard);
+      takeOffFactor *= request.performances.takeOffRunwayFactors.hard;
+      landingFactor *= request.performances.landingRunwayFactors.hard
+      takeOffComputationFactor.set("DRY_HARD", request.performances.takeOffRunwayFactors.hard);
+      landingComputationFactor.set("DRY_HARD", request.performances.landingRunwayFactors.hard);
     }
 
     let takeOffWindFactor;
     try {
-      takeOffWindFactor = request.plane.takeOffCoefficientsComputationData.coefficientFor(request.headwindInKnots);
+      takeOffWindFactor = request.performances.takeOffCoefficientsComputationData.coefficientFor(request.headwindInKnots);
       takeOffComputationFactor.set("WIND", takeOffWindFactor);
       takeOffFactor *= takeOffWindFactor;
     } catch (e) {
@@ -80,7 +80,7 @@ export class PerformanceComputer {
 
     let landingWindFactor;
     try {
-      landingWindFactor = request.plane.landingCoefficientsComputationData.coefficientFor(request.headwindInKnots);
+      landingWindFactor = request.performances.landingCoefficientsComputationData.coefficientFor(request.headwindInKnots);
       landingComputationFactor.set("WIND", landingWindFactor);
       landingFactor *= landingWindFactor;
     } catch (e) {

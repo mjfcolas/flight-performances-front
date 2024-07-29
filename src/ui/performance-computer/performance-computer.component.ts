@@ -8,8 +8,6 @@ import {PressureAltitude} from "../../domain/pressure-altitude";
 import {Temperature} from "../../domain/temperature";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons';
-import {PerformanceTableComponent} from "../performance-table/performance-table.component";
-import {ComputationFactorsComponent} from "../computation-factors/computation-factors.component";
 import {ComputationResultsComponent} from "../computation-results/computation-results.component";
 import {
   TakeOffAndLandingPerformanceComputeResponse
@@ -17,6 +15,10 @@ import {
 import {ComputationDetailsComponent} from "../computation-details/computation-details.component";
 import {ComputationFormComponent} from "../computation-form/computation-form.component";
 import {ComputationFormOutput} from "../computation-form/output/computation-form.output";
+import {PlanePerformanceComponent} from "../plane-performance/plane-performance.component";
+import {PerformanceTableComponent} from "../plane-performance/performance-table/performance-table.component";
+import {ComputationFactorsComponent} from "../plane-performance/computation-factors/computation-factors.component";
+import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
 
 
 @Component({
@@ -31,7 +33,8 @@ import {ComputationFormOutput} from "../computation-form/output/computation-form
     ComputationFactorsComponent,
     ComputationResultsComponent,
     ComputationDetailsComponent,
-    ComputationFormComponent
+    ComputationFormComponent,
+    PlanePerformanceComponent
   ],
   providers: [
     interpolationProviderProvider,
@@ -40,6 +43,7 @@ import {ComputationFormOutput} from "../computation-form/output/computation-form
 })
 export class PerformanceComputerComponent {
   public readonly plane: Plane = inject(ActivatedRoute).snapshot.data["plane"] as Plane;
+  public readonly performanceViewModel: PlanePerformancesViewModel = PlanePerformancesViewModel.fromPlanePerformances(this.plane.performances);
 
   public readonly securityFactor: number;
 
@@ -56,7 +60,7 @@ export class PerformanceComputerComponent {
 
   public compute(computationFormOutput: ComputationFormOutput): void {
     this.completePerformanceComputeResponse = this.performanceComputer.compute({
-      plane: this.plane,
+      performances: this.plane.performances,
       pressureAltitude: PressureAltitude.fromAltitudeInFeetAndQnhInHpa(
         computationFormOutput.altitude,
         computationFormOutput.qnhInHpa),
@@ -71,4 +75,6 @@ export class PerformanceComputerComponent {
   public toggleInformationPanel(): void {
     this.detailedMode = !this.detailedMode;
   }
+
+
 }

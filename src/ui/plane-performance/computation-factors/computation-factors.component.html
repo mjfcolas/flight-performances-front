@@ -1,0 +1,207 @@
+<div class="overflow-x-auto">
+  @if (mode === 'READ_ONLY') {
+    <div class="overflow-x-auto table-xs">
+      <table class="table mt-1 mb-1">
+        <tbody>
+        <tr>
+          <th>Security coefficient</th>
+          <td>{{ securityFactor }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+  <h4>Runway</h4>
+  <table class="table table-zebra table-xs mt-1">
+    <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>Hard</th>
+      <th>Grass</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <th rowspan="2">Landing</th>
+      <th>Wet</th>
+      @if (mode === 'EDIT') {
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [(ngModel)]="landingRunwayFactors.hardWet"
+                 (ngModelChange)="updateLandingRunwayFactorHardWet($event)"
+                 aria-label="Hard wet landing coefficient input"/>
+        </td>
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [(ngModel)]="landingRunwayFactors.grassWet"
+                 (ngModelChange)="updateLandingRunwayFactorGrassWet($event)"
+                 aria-label="Grass wet landing coefficient input"/>
+        </td>
+      } @else {
+        <td>{{ landingRunwayFactors.hardWet }}</td>
+        <td>{{ landingRunwayFactors.grassWet }}</td>
+      }
+    </tr>
+    <tr>
+      <th>Dry</th>
+      @if (mode === 'EDIT') {
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="landingRunwayFactors.hard"
+                  (ngModelChange)="updateLandingRunwayFactorHard($event)"
+                 aria-label="Hard dry landing coefficient input"/>
+        </td>
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="landingRunwayFactors.grass"
+                 (ngModelChange)="updateLandingRunwayFactorGrass($event)"
+                 aria-label="Grass dry landing coefficient input"/>
+        </td>
+      } @else {
+        <td>{{ landingRunwayFactors.hard }}</td>
+        <td>{{ landingRunwayFactors.grass }}</td>
+      }
+    </tr>
+    <tr>
+      <th rowspan="2">Take off</th>
+      <th>Wet</th>
+      @if (mode === 'EDIT') {
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="takeOffRunwayFactors.hardWet"
+                 (ngModelChange)="updateTakeOffRunwayFactorHardWet($event)"
+                 aria-label="Hard wet take off coefficient input"/>
+        </td>
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="takeOffRunwayFactors.grassWet"
+                  (ngModelChange)="updateTakeOffRunwayFactorGrassWet($event)"
+                 aria-label="Grass wet take off coefficient input"/>
+        </td>
+      } @else {
+        <td>{{ takeOffRunwayFactors.hardWet }}</td>
+        <td>{{ takeOffRunwayFactors.grassWet }}</td>
+      }
+    </tr>
+    <tr>
+      <th>Dry</th>
+      @if (mode === 'EDIT') {
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="takeOffRunwayFactors.hard"
+                 (ngModelChange)="updateTakeOffRunwayFactorHard($event)"
+                 aria-label="Hard dry take off coefficient input"/>
+        </td>
+        <td>
+          <input type="number" class="input input-bordered w-16 btn-xs" [ngModel]="takeOffRunwayFactors.grass"
+                  (ngModelChange)="updateTakeOffRunwayFactorGrass($event)"
+                 aria-label="Grass dry take off coefficient input"/>
+        </td>
+      } @else {
+        <td>{{ takeOffRunwayFactors.hard }}</td>
+        <td>{{ takeOffRunwayFactors.grass }}</td>
+      }
+    </tr>
+    </tbody>
+  </table>
+  <h4>Take off Wind</h4>
+  <table class="table table-zebra table-xs mt-1">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Wind speed (kt)</th>
+      <th>Coef</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (coefficient of tailWindTakeOffCoefficients; track coefficient) {
+        <tr>
+          @if ($index === 0) {
+            <th [attr.rowspan]="tailWindTakeOffCoefficients.length">Tail wind</th>
+          }
+          <td>{{ tailwindLabelForIndex($index, tailWindTakeOffCoefficients) }}</td>
+          <td>{{ coefficient.coefficient }}</td>
+          @if (mode === 'EDIT') {
+            <td>
+              <button class="btn btn-xs" (click)="removeTakeOffWindAtIndex($index)">Remove</button>
+            </td>
+          }
+        </tr>
+      }
+      @for (coefficient of headWindTakeOffCoefficients; track coefficient) {
+        <tr>
+          @if ($index === 0) {
+            <th [attr.rowspan]="headWindTakeOffCoefficients.length">Headwind</th>
+          }
+          <td>{{ headwindLabelForIndex($index, headWindTakeOffCoefficients) }}</td>
+          <td>{{ coefficient.coefficient }}</td>
+          @if (mode === 'EDIT') {
+            <td>
+              <button class="btn btn-xs"
+                      (click)="removeTakeOffWindAtIndex(tailWindTakeOffCoefficients.length + $index)">Remove
+              </button>
+            </td>
+          }
+        </tr>
+      }
+  </table>
+  @if (mode === 'EDIT') {
+    <div class="flex flex-row">
+      <input type="number" placeholder="Speed (kt)"
+             class="input input-bordered w-full max-w-xs btn-sm m-1"
+             [(ngModel)]="currentTakeOffWindSpeed"/>
+      <input type="number" placeholder="Coef"
+             class="input input-bordered w-full max-w-xs btn-sm m-1"
+             [(ngModel)]="currentTakeOffWindCoef"/>
+      <button class="btn btn-sm m-1" (click)="addTakeOffWind()" [disabled]="addTakeOffWindButtonDisabled()">Add</button>
+    </div>
+    <p><em>Enter a negative speed for tail wind</em></p>
+  }
+  <h4>Landing Wind</h4>
+  <table class="table table-zebra table-xs mt-1">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Wind speed (kt)</th>
+      <th>Coef</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (coefficient of tailWindLandingCoefficients; track coefficient) {
+        <tr>
+          @if ($index === 0) {
+            <th [attr.rowspan]="tailWindLandingCoefficients.length">Tail wind</th>
+          }
+          <td>{{ tailwindLabelForIndex($index, tailWindLandingCoefficients) }}</td>
+          <td>{{ coefficient.coefficient }}</td>
+          @if (mode === 'EDIT') {
+            <td>
+              <button class="btn btn-xs" (click)="removeLandingWindAtIndex($index)">Remove</button>
+            </td>
+          }
+        </tr>
+      }
+      @for (coefficient of headWindLandingCoefficients; track coefficient) {
+        <tr>
+          @if ($index === 0) {
+            <th [attr.rowspan]="headWindLandingCoefficients.length">Headwind</th>
+          }
+          <td>{{ headwindLabelForIndex($index, headWindLandingCoefficients) }}</td>
+          <td>{{ coefficient.coefficient }}</td>
+          @if (mode === 'EDIT') {
+            <td>
+              <button class="btn btn-xs"
+                      (click)="removeLandingWindAtIndex(tailWindLandingCoefficients.length + $index)">Remove
+              </button>
+            </td>
+          }
+        </tr>
+      }
+  </table>
+  @if (mode === 'EDIT') {
+    <div class="flex flex-row">
+      <input type="number" placeholder="Speed (kt)"
+             class="input input-bordered w-full max-w-xs btn-sm m-1"
+             [(ngModel)]="currentLandingWindSpeed"/>
+      <input type="number" placeholder="Coef"
+             class="input input-bordered w-full max-w-xs btn-sm m-1"
+             [(ngModel)]="currentLandingWindCoef"/>
+      <button class="btn btn-sm m-1" (click)="addLandingWind()" [disabled]="addLandingWindButtonDisabled()">Add</button>
+    </div>
+    <p><em>Enter a negative speed for tail wind</em></p>
+  }
+</div>

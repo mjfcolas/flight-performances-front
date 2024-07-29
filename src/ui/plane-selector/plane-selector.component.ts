@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Plane} from "../../domain/plane";
-import {PlaneProvider} from "../../domain/plane.provider";
+import {PlaneRepository} from "../../domain/plane.repository";
 import {planeProviderProvider} from "../../app/providers";
 import {Observable} from "rxjs";
 import {RouterLink} from "@angular/router";
@@ -23,7 +23,7 @@ import {RouterLink} from "@angular/router";
 export class PlaneSelectorComponent {
   readonly planes: Observable<Plane[]>;
 
-  constructor(planeProvider: PlaneProvider) {
+  constructor(planeProvider: PlaneRepository) {
     this.planes = planeProvider.list();
   }
 }

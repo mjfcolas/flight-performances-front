@@ -11,11 +11,13 @@ build:
   stage: build
   script:
     - npm ci
+    - npm run test
     - npm run build
   artifacts:
     paths:
       - node_modules
       - dist
+      - coverage
 
 sonar:
   image:
@@ -30,7 +32,7 @@ sonar:
     paths:
       - .sonar/cache
   script:
-    - sonar-scanner -Dsonar.host.url=$SONAR_HOST -Dsonar.token=$SONAR_TOKEN -Dsonar.projectKey=$PROJECT_NAME -Dsonar.sources=src
+    - sonar-scanner -Dsonar.host.url=$SONAR_HOST -Dsonar.token=$SONAR_TOKEN -Dsonar.projectKey=$PROJECT_NAME -Dsonar.sources=src -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info -Dsonar.test.inclusions=**/*.test.ts
 
 package:
   stage: package

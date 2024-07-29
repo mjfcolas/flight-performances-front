@@ -1,0 +1,16 @@
+<div class="btm-nav">
+  <button
+    [routerLink]="['/']"
+    [class.active]="isActivated('HOME')">
+    <fa-icon [icon]="faHouse"></fa-icon>
+  </button>
+  <button
+    [routerLink]="['/create']"
+    [class.active]="isActivated('ADD')">
+    <fa-icon [icon]="faPlus"></fa-icon>
+  </button>
+  <button [class.active]="isActivated('PROFILE')">
+    <fa-icon [icon]="faUser"></fa-icon>
+
+  </button>
+</div>
