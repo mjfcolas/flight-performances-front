@@ -5,7 +5,14 @@ export class Plane {
     public readonly id: string,
     public readonly name: string,
     public readonly immat: string,
-    public readonly takeOfDataPoints: PerformanceDataPoint[],
+    public readonly performances: PlanePerformances
+  ) {
+  }
+}
+
+export class PlanePerformances {
+  constructor(
+    public readonly takeOffDataPoints: PerformanceDataPoint[],
     public readonly landingDataPoints: PerformanceDataPoint[],
     public readonly takeOffRunwayFactors: RunwayFactors,
     public readonly landingRunwayFactors: RunwayFactors,
@@ -13,6 +20,7 @@ export class Plane {
     public readonly landingCoefficientsComputationData: WindCoefficientComputationData
   ) {
   }
+
 }
 
 export class RunwayFactors {
