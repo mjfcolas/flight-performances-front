@@ -8,42 +8,42 @@ import {PerformanceDataPointViewModel} from "../view-models/plane-performances-v
 
 
 const exampleDataPoints: PerformanceDataPointViewModel[] = [
-  // {
+  // new PerformanceDataPointViewModel({
   //   "massInKg": 800,
   //   "temperatureInCelsius": 0,
   //   "pressureAltitudeInFeet": 4000,
   //   "distanceInMeters": 800
-  // },
-  // {
+  // }),
+  // new PerformanceDataPointViewModel({
   //   "massInKg": 800,
   //   "temperatureInCelsius": -15,
   //   "pressureAltitudeInFeet": 4000,
   //   "distanceInMeters": 700
-  // },
-  // {
+  // }),
+  // new PerformanceDataPointViewModel({
   //   "massInKg": 800,
   //   "temperatureInCelsius": 15,
   //   "pressureAltitudeInFeet": 4000,
   //   "distanceInMeters": 900
-  // },
-  // {
+  // }),
+  // new PerformanceDataPointViewModel({
   //   "massInKg": 900,
   //   "temperatureInCelsius": 15,
   //   "pressureAltitudeInFeet": 4000,
   //   "distanceInMeters": 800
-  // },
-  // {
+  // }),
+  // new PerformanceDataPointViewModel({
   //   "massInKg": 1000,
   //   "temperatureInCelsius": 15,
   //   "pressureAltitudeInFeet": 4000,
   //   "distanceInMeters": 800
-  // },
-  // {
+  // }),
+  // new PerformanceDataPointViewModel({
   //   "pressureAltitudeInFeet": 4000,
   //   "temperatureInCelsius": 15,
   //   "massInKg": 1000,
   //   "distanceInMeters": 800
-  // }
+  // })
 ]
 
 @Component({

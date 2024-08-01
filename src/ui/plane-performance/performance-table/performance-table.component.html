@@ -1,4 +1,34 @@
 <div class="overflow-x-auto">
+  @if (mode === 'EDIT') {
+    <div class="flex flex-row">
+      <label for="altitude" class="input input-bordered input-sm flex items-center gap-2 min-w-64"><span
+        class="min-w-32">Altitude</span>
+        <input
+          class="w-16" type="number" id="altitude"
+          [(ngModel)]="currentAltitude">ft</label>
+      <button class="btn btn-sm m-1" aria-label="Add altitude" (click)="addAltitude()"
+              [disabled]="currentAltitude == undefined">
+        Add
+      </button>
+    </div>
+    <div class="flex flex-row">
+      <label for="temperature" class="input input-bordered input-sm flex items-center gap-2 min-w-64"><span class="min-w-32">Diff with ISA Temp</span><input
+        class="w-16" type="number" id="temperature"
+        [(ngModel)]="currentTemperature">°C</label>
+      <button class="btn btn-sm m-1" aria-label="Add temperature" (click)="addTemp()"
+              [disabled]="currentTemperature == undefined">
+        Add
+      </button>
+    </div>
+    <div class="flex flex-row">
+      <label for="mass" class="input input-bordered input-sm flex items-center gap-2 min-w-64"><span class="min-w-32">Mass</span><input
+        class="w-16" type="number" id="mass"
+        [(ngModel)]="currentMass">kg</label>
+      <button class="btn btn-sm m-1" aria-label="Add mass" (click)="addMass()" [disabled]="currentMass == undefined">
+        Add
+      </button>
+    </div>
+  }
   <table class="table table-zebra table-xs mt-1 mb-1">
     <thead>
     <tr>
@@ -38,33 +68,4 @@
       }
     </tbody>
   </table>
-  @if (mode === 'EDIT') {
-    <div class="flex flex-row">
-      <label for="altitude" class="input input-sm flex items-center gap-2 min-w-64"><span
-        class="min-w-32">Altitude</span><input
-        class="w-16" type="number" id="altitude"
-        [(ngModel)]="currentAltitude">ft</label>
-      <button class="btn btn-sm m-1" aria-label="Add altitude" (click)="addAltitude()"
-              [disabled]="currentAltitude == undefined">
-        Add
-      </button>
-    </div>
-    <div class="flex flex-row">
-      <label for="temperature" class="input input-sm flex items-center gap-2 min-w-64"><span class="min-w-32">Diff with ISA Temp</span><input
-        class="w-16" type="number" id="temperature"
-        [(ngModel)]="currentTemperature">°C</label>
-      <button class="btn btn-sm m-1" aria-label="Add temperature" (click)="addTemp()"
-              [disabled]="currentTemperature == undefined">
-        Add
-      </button>
-    </div>
-    <div class="flex flex-row">
-      <label for="mass" class="input input-sm flex items-center gap-2 min-w-64"><span class="min-w-32">Mass</span><input
-        class="w-16" type="number" id="mass"
-        [(ngModel)]="currentMass">kg</label>
-      <button class="btn btn-sm m-1" aria-label="Add mass" (click)="addMass()" [disabled]="currentMass == undefined">
-        Add
-      </button>
-    </div>
-  }
 </div>
