@@ -1,32 +1,36 @@
-<div class="flex flex-col w-96 m-3">
+<div class="flex flex-col m-3">
   <h2 class="mt-3">Performances</h2>
-  <div>
-    <h4 class="m-1">Take off</h4>
-    <performance-table
+  <div class="flex flex-wrap gap-2">
+    <div class="w-96">
+      <h4 class="m-1">Take off</h4>
+      <performance-table
+        [mode]="mode"
+        [dataPoints]="performances.takeOffDataPoints"
+        (emittedDataPoints)="newTakeOffDataPoints($event)"
+      />
+    </div>
+    <div class="w-96">
+      <h4 class="m-1">Landing</h4>
+      <performance-table
+        [mode]="mode"
+        [dataPoints]="performances.landingDataPoints"
+        (emittedDataPoints)="newLandingDataPoints($event)"
+      />
+    </div>
+  </div>
+  <h2 class="mt-3">Coefficients</h2>
+  <div class="flex flex-wrap gap-2">
+    <computation-factors
       [mode]="mode"
-      [dataPoints]="performances.takeOffDataPoints"
-      (emittedDataPoints)="newTakeOffDataPoints($event)"
-    />
-    <h4 class="m-1">Landing</h4>
-    <performance-table
-      [mode]="mode"
-      [dataPoints]="performances.landingDataPoints"
-      (emittedDataPoints)="newLandingDataPoints($event)"
+      [securityFactor]="securityFactor"
+      [landingRunwayFactors]="performances.landingRunwayFactors"
+      [takeOffRunwayFactors]="performances.takeOffRunwayFactors"
+      [takeOffWindCoefficients]="performances.takeOffCoefficientsComputationData"
+      [landingWindCoefficients]="performances.landingCoefficientsComputationData"
+      (emittedLandingRunwayFactors)="newLandingRunwayFactors($event)"
+      (emittedTakeOffRunwayFactors)="newTakeOffRunwayFactors($event)"
+      (emittedTakeOffWindCoefficients)="newTakeOffWindCoefficients($event)"
+      (emittedLandingWindCoefficients)="newLandingWindCoefficients($event)"
     />
   </div>
-</div>
-<div class="w-96 m-3">
-  <h2 class="mt-3">Coefficients</h2>
-  <computation-factors
-    [mode]="mode"
-    [securityFactor]="securityFactor"
-    [landingRunwayFactors]="performances.landingRunwayFactors"
-    [takeOffRunwayFactors]="performances.takeOffRunwayFactors"
-    [takeOffWindCoefficients]="performances.takeOffCoefficientsComputationData"
-    [landingWindCoefficients]="performances.landingCoefficientsComputationData"
-    (emittedLandingRunwayFactors)="newLandingRunwayFactors($event)"
-    (emittedTakeOffRunwayFactors)="newTakeOffRunwayFactors($event)"
-    (emittedTakeOffWindCoefficients)="newTakeOffWindCoefficients($event)"
-    (emittedLandingWindCoefficients)="newLandingWindCoefficients($event)"
-  />
 </div>
