@@ -16,24 +16,38 @@ export class PerformanceComputer {
     const pressureAltitudeInFeet: number = request.pressureAltitude.pressureAltitudeInFeet;
     const differenceWithISATemperatureInCelsius: number = request.temperatureInCelsius.differenceWithISATemperatureAt(pressureAltitudeInFeet);
 
-    const toInterpolate: PerformanceDataPoint = {
-      pressureAltitudeInFeet: pressureAltitudeInFeet,
-      temperatureInCelsius: differenceWithISATemperatureInCelsius,
-      massInKg: request.massInKg,
+    const takeOffDataPointMinimumPressureAltitudeInFeet = request.plane.takeOfDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
+    const takeOffDataPointMinimumMassInKg = request.plane.takeOfDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
+    const takeOffDataPointMinimumTemperatureInCelsius = request.plane.takeOfDataPoints.reduce((min, p) => p.temperatureInCelsius < min ? p.temperatureInCelsius : min, Number.MAX_VALUE);
+
+    const toInterpolateForTakeOff: PerformanceDataPoint = {
+      pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, takeOffDataPointMinimumPressureAltitudeInFeet),
+      temperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, takeOffDataPointMinimumTemperatureInCelsius),
+      massInKg: Math.max(request.massInKg, takeOffDataPointMinimumMassInKg),
       distanceInMeters: 0
     }
     let rawTakeOffPerformance = 0;
     let outOfBoundTakeOffComputationError = false;
     try {
-      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.plane.takeOfDataPoints, toInterpolate);
+      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.plane.takeOfDataPoints, toInterpolateForTakeOff);
     } catch (e) {
       outOfBoundTakeOffComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
 
+    const landingDataPointMinimumPressureAltitudeInFeet = request.plane.landingDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
+    const landingDataPointMinimumMassInKg = request.plane.landingDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
+    const landingDataPointMinimumTemperatureInCelsius = request.plane.landingDataPoints.reduce((min, p) => p.temperatureInCelsius < min ? p.temperatureInCelsius : min, Number.MAX_VALUE);
+
+    const toInterpolateForLanding: PerformanceDataPoint = {
+      pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, landingDataPointMinimumPressureAltitudeInFeet),
+      temperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, landingDataPointMinimumTemperatureInCelsius),
+      massInKg: Math.max(request.massInKg, landingDataPointMinimumMassInKg),
+      distanceInMeters: 0
+    }
     let rawLandingPerformance = 0;
     let outOfBoundLandingComputationError = false;
     try {
-      rawLandingPerformance = this.interpolationProvider.interpolate(request.plane.landingDataPoints, toInterpolate);
+      rawLandingPerformance = this.interpolationProvider.interpolate(request.plane.landingDataPoints, toInterpolateForLanding);
     } catch (e) {
       outOfBoundLandingComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
@@ -96,21 +110,21 @@ export class PerformanceComputer {
       outOfBoundTakeOffComputationError,
       new ComputationData(
         takeOffComputationFactor,
-        pressureAltitudeInFeet,
-        differenceWithISATemperatureInCelsius,
-        request.massInKg
+        toInterpolateForTakeOff.pressureAltitudeInFeet,
+        toInterpolateForTakeOff.temperatureInCelsius,
+        toInterpolateForTakeOff.massInKg
       )
     )
 
     const landingPerformanceComputeResponse = new PerformanceComputeResponse(
-      !outOfBoundLandingComputationError ? rawLandingPerformance: undefined,
+      !outOfBoundLandingComputationError ? rawLandingPerformance : undefined,
       !outOfBoundLandingComputationError ? rawLandingPerformance * landingFactor : undefined,
       outOfBoundLandingComputationError,
       new ComputationData(
         landingComputationFactor,
-        pressureAltitudeInFeet,
-        differenceWithISATemperatureInCelsius,
-        request.massInKg
+        toInterpolateForLanding.pressureAltitudeInFeet,
+        toInterpolateForLanding.temperatureInCelsius,
+        toInterpolateForLanding.massInKg
       )
     )
 

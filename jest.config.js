@@ -6,7 +6,7 @@ globalThis.ngJest = {
 };
 
 module.exports = {
-  testMatch: ["**/*.spec.ts"],
+  testMatch: ["**/*.test.ts"],
   testResultsProcessor: "jest-sonar-reporter",
   preset: "jest-preset-angular",
   verbose: false,
