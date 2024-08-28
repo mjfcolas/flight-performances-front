@@ -2,28 +2,36 @@ import {Component} from '@angular/core';
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Plane} from "../../domain/plane";
 import {PlaneRepository} from "../../domain/plane.repository";
-import {planeProviderProvider} from "../../app/providers";
+import {planeRepositoryProvider} from "../../app/providers";
 import {Observable} from "rxjs";
 import {RouterLink} from "@angular/router";
+import {PlaneCardComponent} from "../plane-card/plane-card.component";
 
 @Component({
   selector: 'plane-selector',
   standalone: true,
   providers: [
-    planeProviderProvider
+    planeRepositoryProvider
   ],
   templateUrl: './plane-selector.component.html',
   imports: [
     NgForOf,
     AsyncPipe,
-    RouterLink
+    RouterLink,
+    PlaneCardComponent
   ],
   styleUrl: './plane-selector.component.css'
 })
 export class PlaneSelectorComponent {
-  readonly planes: Observable<Plane[]>;
+  readonly myPlanes: Observable<Plane[]>;
+  favoritePlanes: Observable<Plane[]>;
 
-  constructor(planeProvider: PlaneRepository) {
-    this.planes = planeProvider.list();
+  constructor(private readonly planeProvider: PlaneRepository) {
+    this.myPlanes = planeProvider.mine();
+    this.favoritePlanes = planeProvider.favorites();
+  }
+
+  updateFavorites() {
+    this.favoritePlanes = this.planeProvider.favorites();
   }
 }

@@ -6,7 +6,7 @@ import {RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {PlaneCreationCommand} from "../../domain/create-plane/plane-creation-command";
 import {CreatePlane} from "../../domain/create-plane/create-plane";
-import {createPlaneProvider, planeProviderProvider} from "../../app/providers";
+import {createPlaneProvider, planeRepositoryProvider} from "../../app/providers";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
 
 @Component({
@@ -20,7 +20,7 @@ import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane
     FormsModule
   ],
   providers: [
-    planeProviderProvider,
+    planeRepositoryProvider,
     createPlaneProvider,
   ]
 })

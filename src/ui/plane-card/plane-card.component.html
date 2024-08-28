@@ -1,0 +1,15 @@
+@if (plane) {
+  <div class="card-body">
+    <h2 class="card-title">
+      <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
+      {{ plane.registration }}
+    </h2>
+    <p>{{ plane.name }}</p>
+    <div class="card-actions justify-end">
+      @if (belongsToMe() | async) {
+        <button class="btn" [routerLink]="['/edit', plane.id]">Edit</button>
+      }
+      <button class="btn" [routerLink]="['/compute', plane.id]">Compute</button>
+    </div>
+  </div>
+}

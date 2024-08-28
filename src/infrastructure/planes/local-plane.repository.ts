@@ -1,4 +1,4 @@
-import {Observable, of} from "rxjs";
+import {map, Observable, of} from "rxjs";
 import {
   Plane,
   PlanePerformances,
@@ -8,8 +8,10 @@ import {
 } from "../../domain/plane";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {PlaneCreationCommand} from "../../domain/create-plane/plane-creation-command";
+import {User} from "../../domain/user/user";
 
 let idSequence = 1
+const stubbedUser: User = new User('1', 'Emmanuel Colas');
 
 const dr400120TakeOfPerformance = [
   {pressureAltitudeInFeet: 0, temperatureInCelsius: -20, massInKg: 700, distanceInMeters: 285},
@@ -81,21 +83,24 @@ const fgkrd = new Plane(
   (idSequence++).toString(),
   "DR400-120",
   "F-GKRD",
-  dr400120Performances
+  dr400120Performances,
+  stubbedUser
 );
 
 const fgnna = new Plane(
   (idSequence++).toString(),
   "DR400-120",
   "F-GNNA",
-  dr400120Performances
+  dr400120Performances,
+  stubbedUser
 );
 
 const fhato = new Plane(
   (idSequence++).toString(),
   "DR401-120",
   "F-HATO",
-  dr400120Performances
+  dr400120Performances,
+  stubbedUser
 );
 
 const fgukq = new Plane(
@@ -258,7 +263,7 @@ const fhgsm = new Plane(
     ]))
 );
 
-const planes: Map<string, Plane> = new Map([
+const allPlanes: Map<string, Plane> = new Map([
   [fgkrd.id, fgkrd],
   [fgnna.id, fgnna],
   [fhato.id, fhato],
@@ -268,23 +273,70 @@ const planes: Map<string, Plane> = new Map([
   [fhgsm.id, fhgsm]
 ]);
 
+const myPlanes: Map<string, Plane> = new Map([
+  [fgkrd.id, fgkrd],
+  [fgnna.id, fgnna],
+  [fhato.id, fhato],
+]);
+
+const favoritePlanes: Map<string, Plane> = new Map([
+  [fgnnl.id, fgnnl],
+  [fgmxo.id, fgmxo],
+  [fgukq.id, fgukq],
+  [fhgsm.id, fhgsm]
+]);
+
 export class LocalPlaneRepository implements PlaneRepository {
-  list(): Observable<Plane[]> {
-    return of([...planes.values()]);
+  mine(): Observable<Plane[]> {
+    return of([...myPlanes.values()]);
   }
 
   get(id: string): Observable<Plane> {
-    return of(planes.get(id) as Plane);
+    return of(allPlanes.get(id) as Plane);
   }
 
   save(plane: PlaneCreationCommand): Observable<any> {
     const id = (idSequence++).toString()
-    planes.set(id, new Plane(
+    const newPlane = new Plane(
       id,
       plane.name,
       plane.immat,
       plane.performances
-    ));
+    );
+    myPlanes.set(id, newPlane);
+    allPlanes.set(id, newPlane);
     return of(null);
+  }
+
+  toggleFavorite(id: string): Observable<any> {
+    return this.isFavorite(id).pipe(map(isFavorite => {
+      if (isFavorite) {
+        return this.removeFromFavorites(id)
+      } else {
+        return this.addToFavorites(id)
+      }
+    }))
+  }
+
+  addToFavorites(id: string): Observable<any> {
+    this.get(id).subscribe(plane => favoritePlanes.set(plane.id, plane));
+    return of(null);
+  }
+
+  removeFromFavorites(id: string): Observable<any> {
+    favoritePlanes.delete(id);
+    return of(null);
+  }
+
+  favorites(): Observable<Plane[]> {
+    return of([...favoritePlanes.values()]);
+  }
+
+  isFavorite(id: string): Observable<boolean> {
+    return of(favoritePlanes.has(id));
+  }
+
+  isMine(id: string): Observable<boolean> {
+    return of(myPlanes.has(id));
   }
 }
