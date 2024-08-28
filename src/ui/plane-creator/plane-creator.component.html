@@ -7,7 +7,7 @@
       <input type="text" placeholder="Registration"
              aria-label="Registration input"
              class="input input-bordered w-full max-w-xs btn-sm m-1"
-             [(ngModel)]="immat"/>
+             [(ngModel)]="registration"/>
       <input type="text" placeholder="Name"
               aria-label="Name input"
              class="input input-bordered w-full max-w-xs btn-sm m-1"
@@ -30,8 +30,25 @@
         <span>Plane saved</span>
       </div>
     }
+    @if (inError) {
+      <div role="alert" class="alert alert-error w-full p-3">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 shrink-0 stroke-current"
+          fill="none"
+          viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Error while saving</span>
+      </div>
+    }
   </div>
   <plane-performance class="flex flex-wrap"
+                      [performances]="performances"
                      (emittedPerformances)="setPerformances($event)"
                      [mode]="'EDIT'"
   />

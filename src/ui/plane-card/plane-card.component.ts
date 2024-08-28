@@ -4,7 +4,7 @@ import {RouterLink} from "@angular/router";
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {PlaneRepository} from "../../domain/plane.repository";
-import {BehaviorSubject, Observable, of} from "rxjs";
+import {BehaviorSubject, from, Observable, of} from "rxjs";
 import {planeRepositoryProvider} from "../../app/providers";
 import {AsyncPipe} from "@angular/common";
 import {faStar as faStarRegular} from "@fortawesome/free-regular-svg-icons";
@@ -27,6 +27,8 @@ export class PlaneCardComponent {
   protected _plane: Plane | undefined;
 
   @Output() favoriteChanged: EventEmitter<any> = new EventEmitter<any>();
+
+  @Input() showFavorite: boolean = true;
 
   constructor(private readonly planeRepository: PlaneRepository) {
     this.updateFavoriteIcon();

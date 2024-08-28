@@ -1,7 +1,9 @@
 @if (plane) {
   <div class="card-body">
     <h2 class="card-title">
-      <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
+      @if (showFavorite) {
+        <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
+      }
       {{ plane.registration }}
     </h2>
     <p>{{ plane.name }}</p>
