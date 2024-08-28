@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
 import {PlaneSelectorComponent} from "../ui/plane-selector/plane-selector.component";
 import {PerformanceComputerComponent} from "../ui/performance-computer/performance-computer.component";
-import {planeProviderProvider, planeResolver} from "./providers";
+import {planeRepositoryProvider, planeResolver} from "./providers";
 import {PlaneCreatorComponent} from "../ui/plane-creator/plane-creator.component";
 
 export const routes: Routes = [
@@ -14,7 +14,7 @@ export const routes: Routes = [
   {
     path: 'compute/:planeId',
     component: PerformanceComputerComponent,
-    providers: [planeProviderProvider],
+    providers: [planeRepositoryProvider],
     resolve: {
       plane: planeResolver
     }

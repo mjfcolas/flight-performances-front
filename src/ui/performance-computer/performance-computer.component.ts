@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf} from "@angular/common";
 import {Plane} from "../../domain/plane";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {interpolationProviderProvider, performanceComputerProvider} from "../../app/providers";
@@ -7,7 +7,8 @@ import {PerformanceComputer, SECURITY_FACTOR} from "../../domain/performance-com
 import {PressureAltitude} from "../../domain/pressure-altitude";
 import {Temperature} from "../../domain/temperature";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+import {faChevronLeft, faStar} from '@fortawesome/free-solid-svg-icons';
+import {faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons';
 import {ComputationResultsComponent} from "../computation-results/computation-results.component";
 import {
   TakeOffAndLandingPerformanceComputeResponse
@@ -19,6 +20,8 @@ import {PlanePerformanceComponent} from "../plane-performance/plane-performance.
 import {PerformanceTableComponent} from "../plane-performance/performance-table/performance-table.component";
 import {ComputationFactorsComponent} from "../plane-performance/computation-factors/computation-factors.component";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
+import {BehaviorSubject, Observable} from "rxjs";
+import {PlaneRepository} from "../../domain/plane.repository";
 
 
 @Component({
@@ -34,7 +37,8 @@ import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane
     ComputationResultsComponent,
     ComputationDetailsComponent,
     ComputationFormComponent,
-    PlanePerformanceComponent
+    PlanePerformanceComponent,
+    AsyncPipe
   ],
   providers: [
     interpolationProviderProvider,
@@ -46,6 +50,7 @@ export class PerformanceComputerComponent {
   public readonly performanceViewModel: PlanePerformancesViewModel = PlanePerformancesViewModel.fromPlanePerformances(this.plane.performances);
 
   public readonly securityFactor: number;
+  public readonly favoriteIcon: BehaviorSubject<any> = new BehaviorSubject<any>(faStarRegular);
 
   detailedMode: boolean = false;
 
@@ -54,8 +59,9 @@ export class PerformanceComputerComponent {
 
   completePerformanceComputeResponse: TakeOffAndLandingPerformanceComputeResponse | null = null;
 
-  constructor(private readonly performanceComputer: PerformanceComputer) {
+  constructor(private readonly performanceComputer: PerformanceComputer, private readonly planeRepository: PlaneRepository) {
     this.securityFactor = SECURITY_FACTOR;
+    this.updateFavoriteIcon();
   }
 
   public compute(computationFormOutput: ComputationFormOutput): void {
@@ -76,5 +82,17 @@ export class PerformanceComputerComponent {
     this.detailedMode = !this.detailedMode;
   }
 
+  private isFavorite(): Observable<boolean> {
+    return this.planeRepository.isFavorite(this.plane.id);
+  }
 
+  updateFavoriteIcon() {
+    this.isFavorite().subscribe(
+      isFavorite => this.favoriteIcon.next(isFavorite ? faStar : faStarRegular)
+    );
+  }
+
+  toggleFavorite() {
+    this.planeRepository.toggleFavorite(this.plane.id).subscribe(() => this.updateFavoriteIcon());
+  }
 }

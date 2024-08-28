@@ -1,11 +1,13 @@
 import {PerformanceDataPoint} from "./performance-data-point";
+import {User} from "./user/user";
 
 export class Plane {
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly immat: string,
-    public readonly performances: PlanePerformances
+    public readonly registration: string,
+    public readonly performances: PlanePerformances,
+    public readonly owner?: User
   ) {
   }
 }

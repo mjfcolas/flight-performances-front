@@ -1,11 +1,22 @@
-<div class="flex flex-wrap gap-4">
-  <div class="card bg-base-100 w-72 shadow-xl" *ngFor="let plane of planes | async">
-    <div class="card-body">
-      <h2 class="card-title">{{ plane.immat }}</h2>
-      <p>{{ plane.name }}</p>
-      <div class="card-actions justify-end">
-        <button class="btn" [routerLink]="['/compute', plane.id]">Next</button>
-      </div>
-    </div>
+<div class="prose flex flex-col w-full max-w-full p-3">
+  <h2>My planes</h2>
+  <div class="flex flex-wrap gap-4">
+    @for (plane of myPlanes | async; track plane) {
+      <plane-card
+        class="card bg-base-100 w-72 shadow-xl"
+        [plane]="plane"
+        (favoriteChanged)="updateFavorites()"
+      />
+    }
+  </div>
+  <h2>Favorite planes</h2>
+  <div class="flex flex-wrap gap-4">
+    @for (plane of favoritePlanes | async; track plane) {
+      <plane-card
+        class="card bg-base-100 w-72 shadow-xl"
+        [plane]="plane"
+        (favoriteChanged)="updateFavorites()"
+      />
+    }
   </div>
 </div>
