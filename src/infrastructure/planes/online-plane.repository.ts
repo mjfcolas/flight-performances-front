@@ -1,22 +1,26 @@
 import {PlaneRepository} from "../../domain/plane.repository";
 import {Plane, PlanePerformances, RunwayFactors, WindCoefficientComputationData} from "../../domain/plane";
 import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
-import {from, map, mergeMap, Observable, of} from "rxjs";
+import {from, map, mergeMap, Observable, of, ReplaySubject, take} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
 
 const baseUrl = "http://localhost:8080";
 
 export class OnlinePlaneRepository implements PlaneRepository {
 
-  private myPlanes: Plane[] | undefined = undefined;
-  private favoritePlanes: Plane[] | undefined = undefined;
+  private myPlanes: ReplaySubject<Plane[]> | undefined = undefined;
+  private favoritePlanes: ReplaySubject<Plane[]> | undefined = undefined;
+
 
   favorites(): Observable<Plane[]> {
     return from(fetch(`${baseUrl}/users/current/favorite-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
         const favoritePlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
-        this.favoritePlanes = favoritePlanes;
+        if (!this.favoritePlanes) {
+          this.favoritePlanes = new ReplaySubject(1);
+        }
+        this.favoritePlanes.next(favoritePlanes);
         return favoritePlanes;
       })
     )
@@ -31,12 +35,18 @@ export class OnlinePlaneRepository implements PlaneRepository {
 
   isFavorite(id: string): Observable<boolean> {
     return this.initializedFavoritePlanes()
-      .pipe(map(planes => !!planes.find(plane => plane.id === id)));
+      .pipe(
+        take(1),
+        map(planes => !!planes.find(plane => plane.id === id)
+        )
+      );
   }
 
   isMine(id: string): Observable<boolean> {
     return this.initializedMyPlanes()
-      .pipe(map(planes => !!planes.find(plane => plane.id === id)));
+      .pipe(take(1),
+        map(planes => !!planes.find(plane => plane.id === id))
+      );
   }
 
   mine(): Observable<Plane[]> {
@@ -44,7 +54,10 @@ export class OnlinePlaneRepository implements PlaneRepository {
       mergeMap(response => from(response.json())),
       map(planes => {
         const myPlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
-        this.myPlanes = myPlanes;
+        if (!this.myPlanes) {
+          this.myPlanes = new ReplaySubject(1);
+        }
+        this.myPlanes.next(myPlanes);
         return myPlanes;
       })
     );
@@ -65,6 +78,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   toggleFavorite(id: string): Observable<OperationResult<never>> {
+    console.log("toggleFavorite", id);
     return this.isFavorite(id).pipe(mergeMap(isFavorite => {
         let method;
         if (isFavorite) {
@@ -84,24 +98,28 @@ export class OnlinePlaneRepository implements PlaneRepository {
       }))
   }
 
+  search(registration: string, name: string, ownerName: string): Observable<Plane[]> {
+    const queryUrl = `${baseUrl}/planes?registration=${registration}&name=${name}&ownerName=${ownerName}`;
+    return from(fetch(queryUrl)).pipe(
+      mergeMap(response => from(response.json())),
+      map(planes => planes.map((plane: any) => this.dtoPlaneToPlane(plane)))
+    )
+  }
+
   private initializedFavoritePlanes(): Observable<Plane[]> {
-    let sourceList: Observable<Plane[]>;
-    if (this.favoritePlanes) {
-      sourceList = of(this.favoritePlanes);
-    } else {
-      sourceList = this.favorites();
+    if (!this.favoritePlanes) {
+      this.favoritePlanes = new ReplaySubject(1)
+      this.favorites().subscribe((planes) => this.favoritePlanes?.next(planes));
     }
-    return sourceList;
+    return this.favoritePlanes;
   }
 
   private initializedMyPlanes(): Observable<Plane[]> {
-    let sourceList: Observable<Plane[]>;
-    if (this.myPlanes) {
-      sourceList = of(this.myPlanes);
-    } else {
-      sourceList = this.mine();
+    if (!this.myPlanes) {
+      this.myPlanes = new ReplaySubject(1)
+      this.mine().subscribe((planes) => this.myPlanes?.next(planes))
     }
-    return sourceList;
+    return this.myPlanes;
   }
 
 

@@ -11,4 +11,5 @@ export abstract class PlaneRepository {
   abstract get(id: string): Observable<Plane>;
   abstract toggleFavorite(id: string): Observable<OperationResult<never>>;
   abstract save(plane: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>>;
+  abstract search(registration: string, name: string, ownerName: string): Observable<Plane[]>;
 }
