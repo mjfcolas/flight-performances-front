@@ -20,7 +20,7 @@ import {PlanePerformanceComponent} from "../plane-performance/plane-performance.
 import {PerformanceTableComponent} from "../plane-performance/performance-table/performance-table.component";
 import {ComputationFactorsComponent} from "../plane-performance/computation-factors/computation-factors.component";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, from, Observable} from "rxjs";
 import {PlaneRepository} from "../../domain/plane.repository";
 
 

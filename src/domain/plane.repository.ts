@@ -1,6 +1,7 @@
 import {Plane} from "./plane";
 import {Observable} from "rxjs";
-import {PlaneCreationCommand} from "./create-plane/plane-creation-command";
+import {PlaneCreateOrUpdateCommand} from "./create-plane/plane-create-or-update-command";
+import {OperationResult} from "./operation-result";
 
 export abstract class PlaneRepository {
   abstract mine(): Observable<Plane[]>;
@@ -8,6 +9,6 @@ export abstract class PlaneRepository {
   abstract isFavorite(id: string): Observable<boolean>;
   abstract isMine(id: string): Observable<boolean>;
   abstract get(id: string): Observable<Plane>;
-  abstract toggleFavorite(id: string): Observable<any>;
-  abstract save(plane: PlaneCreationCommand): Observable<any>;
+  abstract toggleFavorite(id: string): Observable<OperationResult<never>>;
+  abstract save(plane: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>>;
 }

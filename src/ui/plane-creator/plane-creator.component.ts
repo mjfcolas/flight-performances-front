@@ -1,13 +1,14 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {PlanePerformanceComponent} from "../plane-performance/plane-performance.component";
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {RouterLink} from "@angular/router";
+import {ActivatedRoute, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
-import {PlaneCreationCommand} from "../../domain/create-plane/plane-creation-command";
-import {CreatePlane} from "../../domain/create-plane/create-plane";
-import {createPlaneProvider, planeRepositoryProvider} from "../../app/providers";
+import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
+import {planeRepositoryProvider} from "../../app/providers";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
+import {PlaneRepository} from "../../domain/plane.repository";
+import {Plane} from "../../domain/plane";
 
 @Component({
   selector: 'plane-creator',
@@ -20,25 +21,28 @@ import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane
     FormsModule
   ],
   providers: [
-    planeRepositoryProvider,
-    createPlaneProvider,
+    planeRepositoryProvider
   ]
 })
 export class PlaneCreatorComponent {
 
+  public readonly plane: Plane | undefined = inject(ActivatedRoute).snapshot.data["plane"] as Plane | undefined;
+
   protected readonly faChevronLeft = faChevronLeft;
-  private performances: PlanePerformancesViewModel = PlanePerformancesViewModel.empty();
+  protected performances: PlanePerformancesViewModel = this.plane ? PlanePerformancesViewModel.fromPlanePerformances(this.plane.performances) : PlanePerformancesViewModel.empty();
 
-  immat: string = '';
-  name: string = '';
+  registration: string = this.plane?.registration ?? "";
+  name: string = this.plane?.name ?? "";
   isSaved: boolean = false;
+  inError: boolean = false;
 
-  constructor(private readonly createPlane: CreatePlane) {
+  constructor(private readonly planeRepository: PlaneRepository) {
   }
 
   save() {
-    this.createPlane.apply(this.generateCommand()).subscribe(() => {
-      this.isSaved = true
+    this.planeRepository.save(this.generateCommand()).subscribe((operationResult) => {
+      this.isSaved = operationResult.status === "SUCCESS";
+      this.inError = operationResult.status === "ERROR";
     });
   }
 
@@ -51,9 +55,9 @@ export class PlaneCreatorComponent {
     }
   }
 
-  private generateCommand(): PlaneCreationCommand {
+  private generateCommand(): PlaneCreateOrUpdateCommand {
     const toSave = this.performances.toPlanePerformances();
-    return new PlaneCreationCommand(this.name, this.immat, toSave);
+    return new PlaneCreateOrUpdateCommand(this.plane?.id, this.name, this.registration, toSave);
   }
 
   setPerformances(performancesViewModel: PlanePerformancesViewModel) {

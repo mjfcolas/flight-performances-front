@@ -1,4 +1,3 @@
-import {map, Observable, of} from "rxjs";
 import {
   Plane,
   PlanePerformances,
@@ -7,8 +6,10 @@ import {
   WindCoefficientComputationData
 } from "../../domain/plane";
 import {PlaneRepository} from "../../domain/plane.repository";
-import {PlaneCreationCommand} from "../../domain/create-plane/plane-creation-command";
+import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
 import {User} from "../../domain/user/user";
+import {map, Observable, of} from "rxjs";
+import {OperationResult} from "../../domain/operation-result";
 
 let idSequence = 1
 const stubbedUser: User = new User('1', 'Emmanuel Colas');
@@ -295,37 +296,44 @@ export class LocalPlaneRepository implements PlaneRepository {
     return of(allPlanes.get(id) as Plane);
   }
 
-  save(plane: PlaneCreationCommand): Observable<any> {
+  save(plane: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>> {
     const id = (idSequence++).toString()
     const newPlane = new Plane(
       id,
       plane.name,
-      plane.immat,
+      plane.registration,
       plane.performances
     );
     myPlanes.set(id, newPlane);
     allPlanes.set(id, newPlane);
-    return of(null);
+    return of({
+      status: "SUCCESS"
+    });
   }
 
-  toggleFavorite(id: string): Observable<any> {
+  toggleFavorite(id: string): Observable<OperationResult<never>> {
+
     return this.isFavorite(id).pipe(map(isFavorite => {
       if (isFavorite) {
         return this.removeFromFavorites(id)
       } else {
         return this.addToFavorites(id)
       }
-    }))
+    }));
   }
 
-  addToFavorites(id: string): Observable<any> {
+  addToFavorites(id: string): OperationResult<never> {
     this.get(id).subscribe(plane => favoritePlanes.set(plane.id, plane));
-    return of(null);
+    return {
+      status: "SUCCESS"
+    }
   }
 
-  removeFromFavorites(id: string): Observable<any> {
+  removeFromFavorites(id: string): OperationResult<never> {
     favoritePlanes.delete(id);
-    return of(null);
+    return {
+      status: "SUCCESS"
+    }
   }
 
   favorites(): Observable<Plane[]> {

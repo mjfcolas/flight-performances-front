@@ -3,18 +3,20 @@ import {PlaneCreatorComponent} from "./plane-creator.component";
 import {
   validPlanePerformanceViewModel
 } from "../plane-performance/view-models/__test__/test-plane-performance-view.model";
-import {CreatePlane} from "../../domain/create-plane/create-plane";
-import {MockedCreatePlane} from "../../domain/create-plane/__mock__/mocked-create-plane";
+import {MockedPlaneRepository} from "../../domain/__mock__/mocked-plane-repository";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {MockPlanePerformanceComponent} from "../plane-performance/__mock__/mock-plane-performance.component";
+import {PlaneRepository} from "../../domain/plane.repository";
 import {of} from "rxjs";
 
 describe('PlaneCreatorComponent', () => {
 
-  const mockedCreatePlane = new MockedCreatePlane();
-  mockedCreatePlane.apply.mockReturnValue(of(null));
+  const mockedPlaneRepository = new MockedPlaneRepository();
+  mockedPlaneRepository.save.mockReturnValue(of({
+    status: "SUCCESS"
+  }));
 
   const renderOptions: RenderComponentOptions<PlaneCreatorComponent> = {
     componentImports: [
@@ -24,8 +26,8 @@ describe('PlaneCreatorComponent', () => {
       FormsModule
     ],
     componentProviders: [{
-      provide: CreatePlane,
-      useValue: mockedCreatePlane
+      provide: PlaneRepository,
+      useValue: mockedPlaneRepository
     }],
   }
 
@@ -48,7 +50,7 @@ describe('PlaneCreatorComponent', () => {
 
     const saveButton = await screen.findByRole('button', {name: 'Save'})
     fireEvent.click(saveButton);
-    expect(mockedCreatePlane.apply).toHaveBeenCalledTimes(1);
+    expect(mockedPlaneRepository.save).toHaveBeenCalledTimes(1);
     expect(screen.getByText('Plane saved')).toBeInTheDocument();
   });
 });

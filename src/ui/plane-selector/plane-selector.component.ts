@@ -3,7 +3,7 @@ import {AsyncPipe, NgForOf} from "@angular/common";
 import {Plane} from "../../domain/plane";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {planeRepositoryProvider} from "../../app/providers";
-import {Observable} from "rxjs";
+import {from, Observable, tap} from "rxjs";
 import {RouterLink} from "@angular/router";
 import {PlaneCardComponent} from "../plane-card/plane-card.component";
 

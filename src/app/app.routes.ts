@@ -22,5 +22,13 @@ export const routes: Routes = [
   {
     path: 'create',
     component: PlaneCreatorComponent
-  }
+  },
+  {
+    path: 'edit/:planeId',
+    component: PlaneCreatorComponent,
+    providers: [planeRepositoryProvider],
+    resolve: {
+      plane: planeResolver
+    }
+  },
 ];
