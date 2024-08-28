@@ -3,6 +3,7 @@ import {PlaneSelectorComponent} from "../ui/plane-selector/plane-selector.compon
 import {PerformanceComputerComponent} from "../ui/performance-computer/performance-computer.component";
 import {planeRepositoryProvider, planeResolver} from "./providers";
 import {PlaneCreatorComponent} from "../ui/plane-creator/plane-creator.component";
+import {SearchPlaneComponent} from "../ui/search-plane/search-plane.component";
 
 export const routes: Routes = [
   {path: '', redirectTo: '/planes', pathMatch: 'full'},
@@ -30,5 +31,9 @@ export const routes: Routes = [
     resolve: {
       plane: planeResolver
     }
+  },
+  {
+    path: 'search',
+    component: SearchPlaneComponent
   },
 ];

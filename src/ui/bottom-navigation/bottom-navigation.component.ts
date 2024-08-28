@@ -6,6 +6,7 @@ import {ActivationStart, Router, RouterLink} from "@angular/router";
 import {PlaneSelectorComponent} from "../plane-selector/plane-selector.component";
 import {PlaneCreatorComponent} from "../plane-creator/plane-creator.component";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
+import {SearchPlaneComponent} from "../search-plane/search-plane.component";
 
 export type Page = "HOME" | "ADD" | "PROFILE" | "SEARCH";
 
@@ -34,6 +35,8 @@ export class BottomNavigationComponent {
           this.activatedPage = "HOME";
         } else if (event.snapshot.component?.name === PlaneCreatorComponent.name) {
           this.activatedPage = "ADD";
+        } else if (event.snapshot.component?.name === SearchPlaneComponent.name) {
+          this.activatedPage = "SEARCH";
         } else {
           this.activatedPage = null;
         }

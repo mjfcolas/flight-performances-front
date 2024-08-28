@@ -347,4 +347,13 @@ export class LocalPlaneRepository implements PlaneRepository {
   isMine(id: string): Observable<boolean> {
     return of(myPlanes.has(id));
   }
+
+  search(registration: string, name: string, ownerName: string): Observable<Plane[]> {
+    const result = [...allPlanes.values()].filter(plane => {
+      return plane.registration.includes(registration) &&
+        plane.name.includes(name) &&
+        plane.owner?.displayedName.includes(ownerName);
+    });
+    return of(result);
+  }
 }
