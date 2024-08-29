@@ -3,17 +3,22 @@ import {Plane, PlanePerformances, RunwayFactors, WindCoefficientComputationData}
 import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
 import {from, map, mergeMap, Observable, of, ReplaySubject, take} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
+import {Environment} from "../../app/environment";
+import {LoginRepository} from "../../domain/user/login.repository";
 
-const baseUrl = "http://localhost:8080";
 
 export class OnlinePlaneRepository implements PlaneRepository {
 
   private myPlanes: ReplaySubject<Plane[]> | undefined = undefined;
   private favoritePlanes: ReplaySubject<Plane[]> | undefined = undefined;
 
+  constructor(
+    public readonly environment: Environment,
+    public readonly loginRepository: LoginRepository) {
+  }
 
   favorites(): Observable<Plane[]> {
-    return from(fetch(`${baseUrl}/users/current/favorite-planes`)).pipe(
+    return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
         const favoritePlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
@@ -27,7 +32,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   get(id: string): Observable<Plane> {
-    return from(fetch(`${baseUrl}/planes/${id}`)).pipe(
+    return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes/${id}`)).pipe(
       mergeMap(response => from(response.json())),
       map(plane => this.dtoPlaneToPlane(plane))
     )
@@ -50,7 +55,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   mine(): Observable<Plane[]> {
-    return from(fetch(`${baseUrl}/users/current/created-planes`)).pipe(
+    return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/created-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
         const myPlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
@@ -66,19 +71,21 @@ export class OnlinePlaneRepository implements PlaneRepository {
   save(command: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>> {
     const id = command.id ? `/${command.id}` : '';
 
-    return from(fetch(`${baseUrl}/planes${id}`, {
+    return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes${id}`, {
       method: 'PUT',
       body: JSON.stringify(command),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
       }
-    })).pipe(map((response) => ({
-      status: response.ok ? "SUCCESS" : "ERROR"
-    })));
+    })).pipe(map((response) => {
+      return {
+        status: response.ok ? "SUCCESS" : "ERROR"
+      }
+    }));
   }
 
   toggleFavorite(id: string): Observable<OperationResult<never>> {
-    console.log("toggleFavorite", id);
     return this.isFavorite(id).pipe(mergeMap(isFavorite => {
         let method;
         if (isFavorite) {
@@ -86,7 +93,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
         } else {
           method = 'PUT';
         }
-        return from(fetch(`${baseUrl}/users/current/favorite-planes/${id}`, {
+        return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes/${id}`, {
           method: method,
         }));
       }),
@@ -99,11 +106,25 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   search(registration: string, name: string, ownerName: string): Observable<Plane[]> {
-    const queryUrl = `${baseUrl}/planes?registration=${registration}&name=${name}&ownerName=${ownerName}`;
-    return from(fetch(queryUrl)).pipe(
+    const queryUrl = `${this.environment.backendUrl}/planes?registration=${registration}&name=${name}&ownerName=${ownerName}`;
+    return from(this.authenticatedFetch(queryUrl)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => planes.map((plane: any) => this.dtoPlaneToPlane(plane)))
     )
+  }
+
+  authenticatedFetch(url: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+    let headers = init?.headers;
+    if (this.loginRepository.getAccessToken()) {
+      headers = {
+        ...headers,
+        Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
+      }
+    }
+    return fetch(url, {
+      ...init,
+      headers
+    });
   }
 
   private initializedFavoritePlanes(): Observable<Plane[]> {

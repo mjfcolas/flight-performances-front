@@ -5,7 +5,6 @@ import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
-import {planeRepositoryProvider} from "../../app/providers";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {Plane} from "../../domain/plane";
@@ -19,9 +18,6 @@ import {Plane} from "../../domain/plane";
     FaIconComponent,
     RouterLink,
     FormsModule
-  ],
-  providers: [
-    planeRepositoryProvider
   ]
 })
 export class PlaneCreatorComponent {

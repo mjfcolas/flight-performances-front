@@ -12,7 +12,7 @@ import {map, Observable, of} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
 
 let idSequence = 1
-const stubbedUser: User = new User('1', 'Emmanuel Colas');
+const stubbedUser: User = new User('mjfcolas');
 
 const dr400120TakeOfPerformance = [
   {pressureAltitudeInFeet: 0, temperatureInCelsius: -20, massInKg: 700, distanceInMeters: 285},
@@ -352,7 +352,7 @@ export class LocalPlaneRepository implements PlaneRepository {
     const result = [...allPlanes.values()].filter(plane => {
       return plane.registration.includes(registration) &&
         plane.name.includes(name) &&
-        plane.owner?.displayedName.includes(ownerName);
+        plane.owner?.nickname.includes(ownerName);
     });
     return of(result);
   }

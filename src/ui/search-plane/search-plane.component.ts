@@ -3,7 +3,6 @@ import {PlanePerformanceComponent} from "../plane-performance/plane-performance.
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
-import {planeRepositoryProvider} from "../../app/providers";
 import {AsyncPipe} from "@angular/common";
 import {PlaneCardComponent} from "../plane-card/plane-card.component";
 import {Plane} from "../../domain/plane";
@@ -21,9 +20,6 @@ import {PlaneRepository} from "../../domain/plane.repository";
     FormsModule,
     AsyncPipe,
     PlaneCardComponent
-  ],
-  providers: [
-    planeRepositoryProvider
   ]
 })
 export class SearchPlaneComponent {

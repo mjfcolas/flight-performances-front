@@ -2,7 +2,6 @@ import {Component, inject} from '@angular/core';
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Plane} from "../../domain/plane";
 import {ActivatedRoute, RouterLink} from "@angular/router";
-import {interpolationProviderProvider, performanceComputerProvider} from "../../app/providers";
 import {PerformanceComputer, SECURITY_FACTOR} from "../../domain/performance-computer";
 import {PressureAltitude} from "../../domain/pressure-altitude";
 import {Temperature} from "../../domain/temperature";
@@ -39,10 +38,6 @@ import {PlaneRepository} from "../../domain/plane.repository";
     ComputationFormComponent,
     PlanePerformanceComponent,
     AsyncPipe
-  ],
-  providers: [
-    interpolationProviderProvider,
-    performanceComputerProvider
   ]
 })
 export class PerformanceComputerComponent {
