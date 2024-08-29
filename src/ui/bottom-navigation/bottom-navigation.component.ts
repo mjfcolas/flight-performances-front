@@ -7,6 +7,7 @@ import {PlaneSelectorComponent} from "../plane-selector/plane-selector.component
 import {PlaneCreatorComponent} from "../plane-creator/plane-creator.component";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import {SearchPlaneComponent} from "../search-plane/search-plane.component";
+import {ManageProfileComponent} from "../manage-profile/manage-profile.component";
 
 export type Page = "HOME" | "ADD" | "PROFILE" | "SEARCH";
 
@@ -37,6 +38,8 @@ export class BottomNavigationComponent {
           this.activatedPage = "ADD";
         } else if (event.snapshot.component?.name === SearchPlaneComponent.name) {
           this.activatedPage = "SEARCH";
+        } else if (event.snapshot.component?.name === ManageProfileComponent.name) {
+          this.activatedPage = "PROFILE";
         } else {
           this.activatedPage = null;
         }

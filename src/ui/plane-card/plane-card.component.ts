@@ -4,8 +4,7 @@ import {RouterLink} from "@angular/router";
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {PlaneRepository} from "../../domain/plane.repository";
-import {BehaviorSubject, from, Observable, of} from "rxjs";
-import {planeRepositoryProvider} from "../../app/providers";
+import {BehaviorSubject, Observable, of} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {faStar as faStarRegular} from "@fortawesome/free-regular-svg-icons";
 
@@ -17,9 +16,6 @@ import {faStar as faStarRegular} from "@fortawesome/free-regular-svg-icons";
     RouterLink,
     FaIconComponent,
     AsyncPipe
-  ],
-  providers: [
-    planeRepositoryProvider
   ]
 })
 export class PlaneCardComponent {
@@ -43,7 +39,7 @@ export class PlaneCardComponent {
     this.updateFavoriteIcon();
   }
 
-  get plane(): Plane| undefined {
+  get plane(): Plane | undefined {
     return this._plane;
   }
 

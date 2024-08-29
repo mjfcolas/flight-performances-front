@@ -42,3 +42,4 @@ testem.log
 Thumbs.db
 
 test-report.xml
+/public/config.json
