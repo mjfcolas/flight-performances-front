@@ -1,22 +1,32 @@
 <div class="btm-nav">
+
   <button
     [routerLink]="['/']"
     [class.active]="isActivated('HOME')">
     <fa-icon [icon]="faHouse"></fa-icon>
+    Home
   </button>
-  <button
-    [routerLink]="['/create']"
-    [class.active]="isActivated('ADD')">
-    <fa-icon [icon]="faPlus"></fa-icon>
-  </button>
-  <button
-    [routerLink]="['/profile']"
-    [class.active]="isActivated('PROFILE')">
-    <fa-icon [icon]="faUser"></fa-icon>
-  </button>
+  @if (isLoggedIn()) {
+    <button
+      [routerLink]="['/create']"
+      [class.active]="isActivated('ADD')">
+      <fa-icon [icon]="faPlus"></fa-icon>
+      New Plane
+    </button>
+  }
   <button
     [routerLink]="['/search']"
     [class.active]="isActivated('SEARCH')">
     <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+    Search
+  </button>
+  <button
+    (click)="loginOrLogout()">
+    <fa-icon [icon]="loginOrLogoutIcon()"></fa-icon>
+    @if (isLoggedIn()) {
+      Logout
+    } @else {
+      Login
+    }
   </button>
 </div>

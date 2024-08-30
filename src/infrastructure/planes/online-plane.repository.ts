@@ -5,7 +5,10 @@ import {from, map, mergeMap, Observable, of, ReplaySubject, take} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
 import {Environment} from "../../app/environment";
 import {LoginRepository} from "../../domain/user/login.repository";
+import {User} from "../../domain/user/user";
 
+const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
+const LAST_USED_PLANES_MAX_SIZE = 5;
 
 export class OnlinePlaneRepository implements PlaneRepository {
 
@@ -18,6 +21,9 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   favorites(): Observable<Plane[]> {
+    if (!this.loginRepository.isLoggedIn()) {
+      return of([]);
+    }
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
@@ -39,6 +45,9 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   isFavorite(id: string): Observable<boolean> {
+    if (!this.loginRepository.isLoggedIn()) {
+      return of(false);
+    }
     return this.initializedFavoritePlanes()
       .pipe(
         take(1),
@@ -48,6 +57,9 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   isMine(id: string): Observable<boolean> {
+    if (!this.loginRepository.isLoggedIn()) {
+      return of(false);
+    }
     return this.initializedMyPlanes()
       .pipe(take(1),
         map(planes => !!planes.find(plane => plane.id === id))
@@ -55,6 +67,9 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   mine(): Observable<Plane[]> {
+    if (!this.loginRepository.isLoggedIn()) {
+      return of([]);
+    }
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/created-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
@@ -68,7 +83,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
     );
   }
 
-  save(command: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>> {
+  save(command: PlaneCreateOrUpdateCommand): Observable<OperationResult<Plane>> {
     const id = command.id ? `/${command.id}` : '';
 
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes${id}`, {
@@ -78,9 +93,16 @@ export class OnlinePlaneRepository implements PlaneRepository {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
       }
-    })).pipe(map((response) => {
-      return {
-        status: response.ok ? "SUCCESS" : "ERROR"
+    })).pipe(mergeMap((response): Observable<OperationResult<Plane>> => {
+      if (response.ok) {
+        return from(response.json()).pipe(map((plane) => ({
+          status: "SUCCESS",
+          result: this.dtoPlaneToPlane(plane)
+        })));
+      } else {
+        return of({
+          status: "ERROR"
+        })
       }
     }));
   }
@@ -127,6 +149,33 @@ export class OnlinePlaneRepository implements PlaneRepository {
     });
   }
 
+
+  addToLastUsed(plane: Plane): Observable<OperationResult<never>> {
+    if (this.loginRepository.isLoggedIn()) {
+      return of({
+        status: "SUCCESS"
+      })
+    }
+    const lastUsedPlanes = JSON.parse(localStorage.getItem(LOCALLY_LAST_USED_PLANES_KEY) || '[]');
+    //Add the plane to last used planes, avoid duplicates, and remove the oldest one if the list is too long
+    const newLastUsedPlanes = [plane, ...lastUsedPlanes
+      .filter((p: Plane) => p.id !== plane.id)]
+      .slice(0, LAST_USED_PLANES_MAX_SIZE);
+    localStorage.setItem(LOCALLY_LAST_USED_PLANES_KEY, JSON.stringify(newLastUsedPlanes));
+
+
+    return of({
+      status: "SUCCESS"
+    })
+  }
+
+  lastUsed(): Observable<Plane[]> {
+    if (this.loginRepository.isLoggedIn()) {
+      return of([]);
+    }
+    return of(JSON.parse(localStorage.getItem(LOCALLY_LAST_USED_PLANES_KEY) || '[]'));
+  }
+
   private initializedFavoritePlanes(): Observable<Plane[]> {
     if (!this.favoritePlanes) {
       this.favoritePlanes = new ReplaySubject(1)
@@ -166,7 +215,8 @@ export class OnlinePlaneRepository implements PlaneRepository {
         ),
         WindCoefficientComputationData.fromStepCoefficients(plane.performances.takeOffCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
         WindCoefficientComputationData.fromStepCoefficients(plane.performances.landingCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
-      ));
+      ),
+      new User(plane.owner.nickname)
+    );
   }
-
 }

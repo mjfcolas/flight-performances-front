@@ -1,0 +1,56 @@
+<div class="prose flex flex-col w-full max-w-full p-3 h-full">
+  @if (mustDisplayMyPlanes()) {
+    <h2>My planes</h2>
+    <div class="flex flex-wrap gap-4">
+      @for (plane of myPlanes; track plane) {
+        <plane-card
+          class="card bg-base-100 w-72 shadow-xl"
+          [plane]="plane"
+          [showFavorite]="false"
+        />
+      }
+    </div>
+  }
+  @if (mustDisplayFavoritePlanes()) {
+    <h2>Favorite planes</h2>
+    <div class="flex flex-wrap gap-4">
+      @for (plane of favoritePlanes; track plane) {
+        <plane-card
+          class="card bg-base-100 w-72 shadow-xl"
+          [plane]="plane"
+          (favoriteChanged)="updateFavorites()"
+        />
+      }
+    </div>
+  }
+  @if (mustDisplayLastUsedPlanes()) {
+    <h2>Last used planes</h2>
+    <div class="flex flex-wrap gap-4">
+      @for (plane of lastUsedPlanes; track plane) {
+        <plane-card
+          class="card bg-base-100 w-72 shadow-xl"
+          [plane]="plane"
+          [showFavorite]="false"
+        />
+      }
+    </div>
+  }
+  @if (mustDisplayWelcomeMessages()) {
+    <div class="flex flex-row justify-center h-full items-center">
+      <div class="flex flex-col text-2xl">
+        <div class="mb-8">
+          Why don't you start by <a [routerLink]="['/search']">looking for a plane</a> created by the community?
+        </div>
+        @if(isLoggedIn()){
+        <div>
+          Or perhaps you already want to <a [routerLink]="['/create']">create a new plane</a>?
+        </div>
+        } @else {
+          <div>
+            Or perhaps you already want to <a (click)="login()" class="cursor-pointer">login</a>?
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

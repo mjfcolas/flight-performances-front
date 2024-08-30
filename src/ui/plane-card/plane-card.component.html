@@ -1,12 +1,15 @@
 @if (plane) {
   <div class="card-body">
     <h2 class="card-title">
-      @if (showFavorite) {
+      @if (mustDisplayFavoriteIcon()) {
         <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
       }
       {{ plane.registration }}
     </h2>
-    <p>{{ plane.name }}</p>
+    <p class="m-0">{{ plane.name }}</p>
+    @if (!(belongsToMe() | async) && plane.owner?.nickname) {
+      <em>by <b>{{ plane.owner?.nickname }}</b></em>
+    }
     <div class="card-actions justify-end">
       @if (belongsToMe() | async) {
         <button class="btn" [routerLink]="['/edit', plane.id]">Edit</button>

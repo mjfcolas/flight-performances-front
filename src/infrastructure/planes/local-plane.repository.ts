@@ -287,6 +287,11 @@ const favoritePlanes: Map<string, Plane> = new Map([
   [fhgsm.id, fhgsm]
 ]);
 
+let lastUsedPlanes: Plane[] = [];
+
+const LAST_USED_PLANES_MAX_SIZE = 5;
+
+
 export class LocalPlaneRepository implements PlaneRepository {
   mine(): Observable<Plane[]> {
     return of([...myPlanes.values()]);
@@ -355,5 +360,19 @@ export class LocalPlaneRepository implements PlaneRepository {
         plane.owner?.nickname.includes(ownerName);
     });
     return of(result);
+  }
+
+  addToLastUsed(plane: Plane): Observable<OperationResult<never>> {
+    lastUsedPlanes = [plane, ...lastUsedPlanes
+      .filter((p: Plane) => p.id !== plane.id)]
+      .slice(0, LAST_USED_PLANES_MAX_SIZE);
+
+    return of({
+      status: "SUCCESS"
+    })
+  }
+
+  lastUsed(): Observable<Plane[]> {
+    return of(lastUsedPlanes);
   }
 }

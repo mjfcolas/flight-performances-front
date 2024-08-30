@@ -1,6 +1,5 @@
 import {Component, inject} from '@angular/core';
 import {PlanePerformanceComponent} from "../plane-performance/plane-performance.component";
-import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
@@ -8,6 +7,8 @@ import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {Plane} from "../../domain/plane";
+import {LoginRepository} from "../../domain/user/login.repository";
+import {NotLoggedInComponent} from "../not-logged-in/not-logged-in.component";
 
 @Component({
   selector: 'plane-creator',
@@ -17,14 +18,14 @@ import {Plane} from "../../domain/plane";
     PlanePerformanceComponent,
     FaIconComponent,
     RouterLink,
-    FormsModule
+    FormsModule,
+    NotLoggedInComponent
   ]
 })
 export class PlaneCreatorComponent {
 
-  public readonly plane: Plane | undefined = inject(ActivatedRoute).snapshot.data["plane"] as Plane | undefined;
+  public plane: Plane | undefined = inject(ActivatedRoute).snapshot.data["plane"] as Plane | undefined;
 
-  protected readonly faChevronLeft = faChevronLeft;
   protected performances: PlanePerformancesViewModel = this.plane ? PlanePerformancesViewModel.fromPlanePerformances(this.plane.performances) : PlanePerformancesViewModel.empty();
 
   registration: string = this.plane?.registration ?? "";
@@ -32,13 +33,16 @@ export class PlaneCreatorComponent {
   isSaved: boolean = false;
   inError: boolean = false;
 
-  constructor(private readonly planeRepository: PlaneRepository) {
+  constructor(private readonly planeRepository: PlaneRepository, private readonly loginRepository: LoginRepository) {
   }
 
   save() {
     this.planeRepository.save(this.generateCommand()).subscribe((operationResult) => {
       this.isSaved = operationResult.status === "SUCCESS";
       this.inError = operationResult.status === "ERROR";
+      if (operationResult.status === "SUCCESS") {
+        this.plane = operationResult.result;
+      }
     });
   }
 
@@ -59,5 +63,9 @@ export class PlaneCreatorComponent {
   setPerformances(performancesViewModel: PlanePerformancesViewModel) {
     this.isSaved = false;
     this.performances = performancesViewModel;
+  }
+
+  isLoggedIn() {
+    return this.loginRepository.isLoggedIn();
   }
 }

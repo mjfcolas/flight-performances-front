@@ -10,6 +10,8 @@ import {FormsModule} from "@angular/forms";
 import {MockPlanePerformanceComponent} from "../plane-performance/__mock__/mock-plane-performance.component";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {of} from "rxjs";
+import {LoginRepository} from "../../domain/user/login.repository";
+import {MockedLoginRepository} from "../../domain/user/__mock__/mocked-login.repository";
 
 describe('PlaneCreatorComponent', () => {
 
@@ -17,6 +19,9 @@ describe('PlaneCreatorComponent', () => {
   mockedPlaneRepository.save.mockReturnValue(of({
     status: "SUCCESS"
   }));
+
+  const mockedLoginRepository = new MockedLoginRepository();
+  mockedLoginRepository.isLoggedIn.mockReturnValue(of(true));
 
   const renderOptions: RenderComponentOptions<PlaneCreatorComponent> = {
     componentImports: [
@@ -28,7 +33,11 @@ describe('PlaneCreatorComponent', () => {
     componentProviders: [{
       provide: PlaneRepository,
       useValue: mockedPlaneRepository
-    }],
+    },
+      {
+        provide: LoginRepository,
+        useValue: mockedLoginRepository
+      }],
   }
 
   test(`When rendering plane creator component,

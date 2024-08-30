@@ -6,7 +6,7 @@ import {PerformanceComputer, SECURITY_FACTOR} from "../../domain/performance-com
 import {PressureAltitude} from "../../domain/pressure-altitude";
 import {Temperature} from "../../domain/temperature";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
-import {faChevronLeft, faStar} from '@fortawesome/free-solid-svg-icons';
+import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons';
 import {ComputationResultsComponent} from "../computation-results/computation-results.component";
 import {
@@ -19,8 +19,9 @@ import {PlanePerformanceComponent} from "../plane-performance/plane-performance.
 import {PerformanceTableComponent} from "../plane-performance/performance-table/performance-table.component";
 import {ComputationFactorsComponent} from "../plane-performance/computation-factors/computation-factors.component";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
-import {BehaviorSubject, from, Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {PlaneRepository} from "../../domain/plane.repository";
+import {LoginRepository} from "../../domain/user/login.repository";
 
 
 @Component({
@@ -50,16 +51,20 @@ export class PerformanceComputerComponent {
   detailedMode: boolean = false;
 
   massInKg: number = 800;
-  public readonly faChevronLeft = faChevronLeft
 
   completePerformanceComputeResponse: TakeOffAndLandingPerformanceComputeResponse | null = null;
 
-  constructor(private readonly performanceComputer: PerformanceComputer, private readonly planeRepository: PlaneRepository) {
+  constructor(
+    private readonly performanceComputer: PerformanceComputer,
+    private readonly planeRepository: PlaneRepository,
+    private readonly loginRepository: LoginRepository
+  ) {
     this.securityFactor = SECURITY_FACTOR;
     this.updateFavoriteIcon();
   }
 
   public compute(computationFormOutput: ComputationFormOutput): void {
+    this.planeRepository.addToLastUsed(this.plane);
     this.completePerformanceComputeResponse = this.performanceComputer.compute({
       performances: this.plane.performances,
       pressureAltitude: PressureAltitude.fromAltitudeInFeetAndQnhInHpa(
@@ -89,5 +94,9 @@ export class PerformanceComputerComponent {
 
   toggleFavorite() {
     this.planeRepository.toggleFavorite(this.plane.id).subscribe(() => this.updateFavoriteIcon());
+  }
+
+  mustDisplayFavoriteIcon(): boolean {
+    return this.loginRepository.isLoggedIn();
   }
 }
