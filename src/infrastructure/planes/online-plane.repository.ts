@@ -10,6 +10,13 @@ import {User} from "../../domain/user/user";
 const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
 const LAST_USED_PLANES_MAX_SIZE = 5;
 
+interface PlaneCreateOrUpdateCommandDto {
+  readonly id: string | undefined;
+  readonly name: string;
+  readonly registration: string;
+  readonly performances: string;
+}
+
 export class OnlinePlaneRepository implements PlaneRepository {
 
   private myPlanes: ReplaySubject<Plane[]> | undefined = undefined;
@@ -27,7 +34,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
-        const favoritePlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
+        const favoritePlanes = this.dtoPlaneCollectionToPlanes(planes);
         if (!this.favoritePlanes) {
           this.favoritePlanes = new ReplaySubject(1);
         }
@@ -40,7 +47,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
   get(id: string): Observable<Plane> {
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes/${id}`)).pipe(
       mergeMap(response => from(response.json())),
-      map(plane => this.dtoPlaneToPlane(plane))
+      map(plane => this.dtoPlaneToPlaneOrThrow(plane))
     )
   }
 
@@ -73,7 +80,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/created-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
-        const myPlanes = planes.map((plane: any) => this.dtoPlaneToPlane(plane));
+        const myPlanes = this.dtoPlaneCollectionToPlanes(planes);
         if (!this.myPlanes) {
           this.myPlanes = new ReplaySubject(1);
         }
@@ -83,12 +90,20 @@ export class OnlinePlaneRepository implements PlaneRepository {
     );
   }
 
+
   save(command: PlaneCreateOrUpdateCommand): Observable<OperationResult<Plane>> {
     const id = command.id ? `/${command.id}` : '';
 
+    const dtoCommand: PlaneCreateOrUpdateCommandDto = {
+      id: command.id,
+      name: command.name,
+      registration: command.registration,
+      performances: JSON.stringify(command.performances)
+    }
+
     return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes${id}`, {
       method: 'PUT',
-      body: JSON.stringify(command),
+      body: JSON.stringify(dtoCommand),
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
@@ -97,7 +112,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
       if (response.ok) {
         return from(response.json()).pipe(map((plane) => ({
           status: "SUCCESS",
-          result: this.dtoPlaneToPlane(plane)
+          result: this.dtoPlaneToPlaneOrThrow(plane)
         })));
       } else {
         return of({
@@ -131,7 +146,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
     const queryUrl = `${this.environment.backendUrl}/planes?registration=${registration}&name=${name}&ownerName=${ownerName}`;
     return from(this.authenticatedFetch(queryUrl)).pipe(
       mergeMap(response => from(response.json())),
-      map(planes => planes.map((plane: any) => this.dtoPlaneToPlane(plane)))
+      map(planes => this.dtoPlaneCollectionToPlanes(planes))
     )
   }
 
@@ -163,7 +178,6 @@ export class OnlinePlaneRepository implements PlaneRepository {
       .slice(0, LAST_USED_PLANES_MAX_SIZE);
     localStorage.setItem(LOCALLY_LAST_USED_PLANES_KEY, JSON.stringify(newLastUsedPlanes));
 
-
     return of({
       status: "SUCCESS"
     })
@@ -173,7 +187,8 @@ export class OnlinePlaneRepository implements PlaneRepository {
     if (this.loginRepository.isLoggedIn()) {
       return of([]);
     }
-    return of(JSON.parse(localStorage.getItem(LOCALLY_LAST_USED_PLANES_KEY) || '[]'));
+    const lastUsedPlanes = this.dtoPlaneCollectionToPlanes(JSON.parse(localStorage.getItem(LOCALLY_LAST_USED_PLANES_KEY) || '[]'));
+    return of(lastUsedPlanes);
   }
 
   private initializedFavoritePlanes(): Observable<Plane[]> {
@@ -193,30 +208,50 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
 
-  private dtoPlaneToPlane(plane: any): Plane {
-    return new Plane(
-      plane.id,
-      plane.name,
-      plane.registration,
-      new PlanePerformances(
-        plane.performances.takeOffDataPoints,
-        plane.performances.landingDataPoints,
-        new RunwayFactors(
-          plane.performances.takeOffRunwayFactors.grass,
-          plane.performances.takeOffRunwayFactors.grassWet,
-          plane.performances.takeOffRunwayFactors.hard,
-          plane.performances.takeOffRunwayFactors.hardWet
+  private dtoPlaneCollectionToPlanes(planes: any[]): Plane[] {
+    return planes.map(plane => this.dtoPlaneToPlaneOrUndefined(plane))
+      .filter(plane => plane !== undefined) as Plane[];
+  }
+
+  private dtoPlaneToPlaneOrThrow(dtoPlane: any): Plane {
+    const plane = this.dtoPlaneToPlaneOrUndefined(dtoPlane);
+    if (!plane) {
+      throw new Error('Plane parsing error');
+    }
+    return plane
+  }
+
+  private dtoPlaneToPlaneOrUndefined(plane: any): Plane | undefined {
+
+    try {
+      const planePerformancesDto = JSON.parse(plane.performances);
+      return new Plane(
+        plane.id,
+        plane.name,
+        plane.registration,
+        new PlanePerformances(
+          planePerformancesDto.takeOffDataPoints,
+          planePerformancesDto.landingDataPoints,
+          new RunwayFactors(
+            planePerformancesDto.takeOffRunwayFactors.grass,
+            planePerformancesDto.takeOffRunwayFactors.grassWet,
+            planePerformancesDto.takeOffRunwayFactors.hard,
+            planePerformancesDto.takeOffRunwayFactors.hardWet
+          ),
+          new RunwayFactors(
+            planePerformancesDto.landingRunwayFactors.grass,
+            planePerformancesDto.landingRunwayFactors.grassWet,
+            planePerformancesDto.landingRunwayFactors.hard,
+            planePerformancesDto.landingRunwayFactors.hardWet
+          ),
+          WindCoefficientComputationData.fromStepCoefficients(planePerformancesDto.takeOffCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
+          WindCoefficientComputationData.fromStepCoefficients(planePerformancesDto.landingCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
         ),
-        new RunwayFactors(
-          plane.performances.landingRunwayFactors.grass,
-          plane.performances.landingRunwayFactors.grassWet,
-          plane.performances.landingRunwayFactors.hard,
-          plane.performances.landingRunwayFactors.hardWet
-        ),
-        WindCoefficientComputationData.fromStepCoefficients(plane.performances.takeOffCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
-        WindCoefficientComputationData.fromStepCoefficients(plane.performances.landingCoefficientsComputationData.byStepsCoefficients.stepCoefficients),
-      ),
-      new User(plane.owner.nickname)
-    );
+        new User(plane.owner.nickname)
+      );
+    } catch (e) {
+      console.warn('Error while parsing plane', plane, e);
+      return undefined
+    }
   }
 }
