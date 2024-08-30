@@ -1,12 +1,11 @@
 import {ActivatedRouteSnapshot, ResolveFn, Routes} from '@angular/router';
-import {PlaneSelectorComponent} from "../ui/plane-selector/plane-selector.component";
 import {PerformanceComputerComponent} from "../ui/performance-computer/performance-computer.component";
 import {PlaneCreatorComponent} from "../ui/plane-creator/plane-creator.component";
 import {SearchPlaneComponent} from "../ui/search-plane/search-plane.component";
-import {ManageProfileComponent} from "../ui/manage-profile/manage-profile.component";
 import {Plane} from "../domain/plane";
 import {inject} from "@angular/core";
 import {PlaneRepository} from "../domain/plane.repository";
+import {HomeComponent} from "../ui/home/home.component";
 
 const planeResolver: ResolveFn<Plane> = (route: ActivatedRouteSnapshot) => {
   const planeId = route.paramMap.get('planeId');
@@ -15,10 +14,9 @@ const planeResolver: ResolveFn<Plane> = (route: ActivatedRouteSnapshot) => {
 }
 
 export const routes: Routes = [
-  {path: '', redirectTo: '/planes', pathMatch: 'full'},
   {
-    path: 'planes',
-    component: PlaneSelectorComponent,
+    path: '',
+    component: HomeComponent,
 
   },
   {
@@ -42,9 +40,5 @@ export const routes: Routes = [
   {
     path: 'search',
     component: SearchPlaneComponent
-  },
-  {
-    path: 'profile',
-    component: ManageProfileComponent
   }
 ];

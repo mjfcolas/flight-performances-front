@@ -7,6 +7,7 @@ import {PlaneRepository} from "../../domain/plane.repository";
 import {BehaviorSubject, Observable, of} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {faStar as faStarRegular} from "@fortawesome/free-regular-svg-icons";
+import {LoginRepository} from "../../domain/user/login.repository";
 
 @Component({
   selector: 'plane-card',
@@ -26,7 +27,9 @@ export class PlaneCardComponent {
 
   @Input() showFavorite: boolean = true;
 
-  constructor(private readonly planeRepository: PlaneRepository) {
+  constructor(
+    private readonly planeRepository: PlaneRepository,
+    private readonly loginRepository: LoginRepository) {
     this.updateFavoriteIcon();
   }
 
@@ -44,7 +47,7 @@ export class PlaneCardComponent {
   }
 
   belongsToMe(): Observable<boolean> {
-    if (this.plane === undefined) {
+    if (!this.isLoggedIn() || this.plane === undefined) {
       return of(false);
     }
     return this.planeRepository.isMine(this.plane.id);
@@ -58,9 +61,8 @@ export class PlaneCardComponent {
     );
   }
 
-
   private isFavorite(): Observable<boolean> {
-    if (this.plane === undefined) {
+    if (!this.isLoggedIn() || this.plane === undefined) {
       return of(false);
     }
     return this.planeRepository.isFavorite(this.plane.id);
@@ -74,5 +76,13 @@ export class PlaneCardComponent {
       this.favoriteChanged.emit()
       this.updateFavoriteIcon();
     });
+  }
+
+  isLoggedIn(): boolean {
+    return this.loginRepository.isLoggedIn();
+  }
+
+  mustDisplayFavoriteIcon(): boolean {
+    return this.showFavorite && this.isLoggedIn();
   }
 }

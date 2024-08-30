@@ -2,15 +2,13 @@
   <div class="flex flex-col w-96 m-3">
     <div class="flex justify-between m-3">
       <h2 class="m-1">
-        <fa-icon class="cursor-pointer" [icon]="faChevronLeft" [routerLink]="['/planes']"></fa-icon>
-      </h2>
-      <h2 class="m-1">
         {{ plane.registration }}
       </h2>
-
-      <h3 class="m-1">
-        <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
-      </h3>
+      @if (mustDisplayFavoriteIcon()) {
+        <h3 class="m-1">
+          <fa-icon class="cursor-pointer" (click)="toggleFavorite()" [icon]="favoriteIcon | async"></fa-icon>
+        </h3>
+      }
     </div>
     <div class="flex ml-1 justify-between">
       <h3 class="m-1">

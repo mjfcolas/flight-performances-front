@@ -1,13 +1,12 @@
 import {Component} from '@angular/core';
-import {faHouse, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faHouse, faPlus, faRightFromBracket, faRightToBracket, IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {faUser} from "@fortawesome/free-solid-svg-icons/faUser";
 import {ActivationStart, Router, RouterLink} from "@angular/router";
-import {PlaneSelectorComponent} from "../plane-selector/plane-selector.component";
+import {HomeComponent} from "../home/home.component";
 import {PlaneCreatorComponent} from "../plane-creator/plane-creator.component";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import {SearchPlaneComponent} from "../search-plane/search-plane.component";
-import {ManageProfileComponent} from "../manage-profile/manage-profile.component";
+import {LoginRepository} from "../../domain/user/login.repository";
 
 export type Page = "HOME" | "ADD" | "PROFILE" | "SEARCH";
 
@@ -25,21 +24,19 @@ export class BottomNavigationComponent {
 
   protected readonly faHouse = faHouse;
   protected readonly faPlus = faPlus;
-  protected readonly faUser = faUser;
+
 
   private activatedPage: Page | null = null;
 
-  constructor(private readonly router: Router) {
+  constructor(private readonly router: Router, private readonly loginRepository: LoginRepository) {
     this.router.events.subscribe((event) => {
       if (event instanceof ActivationStart) {
-        if (event.snapshot.component?.name === PlaneSelectorComponent.name) {
+        if (event.snapshot.component?.name === HomeComponent.name) {
           this.activatedPage = "HOME";
         } else if (event.snapshot.component?.name === PlaneCreatorComponent.name) {
           this.activatedPage = "ADD";
         } else if (event.snapshot.component?.name === SearchPlaneComponent.name) {
           this.activatedPage = "SEARCH";
-        } else if (event.snapshot.component?.name === ManageProfileComponent.name) {
-          this.activatedPage = "PROFILE";
         } else {
           this.activatedPage = null;
         }
@@ -52,4 +49,28 @@ export class BottomNavigationComponent {
   }
 
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
+
+  private login() {
+    this.loginRepository.login();
+  }
+
+  private logout() {
+    this.loginRepository.logout();
+  }
+
+  loginOrLogoutIcon(): IconDefinition {
+    return this.isLoggedIn() ? faRightFromBracket : faRightToBracket;
+  }
+
+  isLoggedIn(): boolean {
+    return this.loginRepository.isLoggedIn();
+  }
+
+  loginOrLogout() {
+    if (this.isLoggedIn()) {
+      this.logout();
+    } else {
+      this.login();
+    }
+  }
 }

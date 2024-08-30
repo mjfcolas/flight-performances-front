@@ -2,24 +2,17 @@ import {Component} from '@angular/core';
 import {LoginRepository} from "../../domain/user/login.repository";
 
 @Component({
-  selector: 'manage-profile',
+  selector: 'not-logged-in',
   standalone: true,
-  templateUrl: './manage-profile.component.html',
+  templateUrl: './not-logged-in.component.html',
+  imports: []
 })
-export class ManageProfileComponent {
+export class NotLoggedInComponent {
 
   constructor(private readonly loginRepository: LoginRepository) {
   }
 
   login() {
     this.loginRepository.login();
-  }
-
-  logout() {
-    this.loginRepository.logout();
-  }
-
-  isLoggedIn() {
-    return this.loginRepository.isLoggedIn();
   }
 }

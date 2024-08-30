@@ -10,6 +10,8 @@ export abstract class PlaneRepository {
   abstract isMine(id: string): Observable<boolean>;
   abstract get(id: string): Observable<Plane>;
   abstract toggleFavorite(id: string): Observable<OperationResult<never>>;
-  abstract save(plane: PlaneCreateOrUpdateCommand): Observable<OperationResult<never>>;
+  abstract save(plane: PlaneCreateOrUpdateCommand): Observable<OperationResult<Plane>>;
   abstract search(registration: string, name: string, ownerName: string): Observable<Plane[]>;
+  abstract addToLastUsed(plane: Plane): Observable<OperationResult<never>>;
+  abstract lastUsed(): Observable<Plane[]>;
 }

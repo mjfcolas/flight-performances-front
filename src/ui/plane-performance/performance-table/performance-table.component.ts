@@ -7,45 +7,6 @@ import {pushAtSortPosition} from "array-push-at-sort-position";
 import {PerformanceDataPointViewModel} from "../view-models/plane-performances-view.model";
 
 
-const exampleDataPoints: PerformanceDataPointViewModel[] = [
-  // new PerformanceDataPointViewModel({
-  //   "massInKg": 800,
-  //   "temperatureInCelsius": 0,
-  //   "pressureAltitudeInFeet": 4000,
-  //   "distanceInMeters": 800
-  // }),
-  // new PerformanceDataPointViewModel({
-  //   "massInKg": 800,
-  //   "temperatureInCelsius": -15,
-  //   "pressureAltitudeInFeet": 4000,
-  //   "distanceInMeters": 700
-  // }),
-  // new PerformanceDataPointViewModel({
-  //   "massInKg": 800,
-  //   "temperatureInCelsius": 15,
-  //   "pressureAltitudeInFeet": 4000,
-  //   "distanceInMeters": 900
-  // }),
-  // new PerformanceDataPointViewModel({
-  //   "massInKg": 900,
-  //   "temperatureInCelsius": 15,
-  //   "pressureAltitudeInFeet": 4000,
-  //   "distanceInMeters": 800
-  // }),
-  // new PerformanceDataPointViewModel({
-  //   "massInKg": 1000,
-  //   "temperatureInCelsius": 15,
-  //   "pressureAltitudeInFeet": 4000,
-  //   "distanceInMeters": 800
-  // }),
-  // new PerformanceDataPointViewModel({
-  //   "pressureAltitudeInFeet": 4000,
-  //   "temperatureInCelsius": 15,
-  //   "massInKg": 1000,
-  //   "distanceInMeters": 800
-  // })
-]
-
 @Component({
   selector: 'performance-table',
   standalone: true,
@@ -77,16 +38,13 @@ export class PerformanceTableComponent {
 
   @Input()
   set dataPoints(dataPoints: PerformanceDataPointViewModel[]) {
-    if (dataPoints.length == 0) {
-      dataPoints = exampleDataPoints
-    }
 
-    this._masses = [...new Set(dataPoints.map(dataPoint => dataPoint.massInKg).sort((a, b) => a - b))];
-    this._altitudes = [...new Set(dataPoints.map(dataPoint => dataPoint.pressureAltitudeInFeet).sort((a, b) => a - b))];
+    this._masses = [...new Set([...this._masses, ...dataPoints.map(dataPoint => dataPoint.massInKg)].sort((a, b) => a - b))];
+    this._altitudes = [...new Set([...this._altitudes, ...dataPoints.map(dataPoint => dataPoint.pressureAltitudeInFeet)].sort((a, b) => a - b))];
     if (this._altitudes.length == 0) {
       this._altitudes = [0];
     }
-    this._temperatures = [...new Set(dataPoints.map(dataPoint => dataPoint.temperatureInCelsius).sort((a, b) => a - b))];
+    this._temperatures = [...new Set([...this._temperatures, ...dataPoints.map(dataPoint => dataPoint.temperatureInCelsius)].sort((a, b) => a - b))];
     if (this._temperatures.length == 0) {
       this._temperatures = [0];
     }
