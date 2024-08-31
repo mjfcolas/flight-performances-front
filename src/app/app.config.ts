@@ -10,9 +10,12 @@ import {PerformanceComputer} from "../domain/performance-computer";
 import {InterpolationProvider} from "../domain/interpolation.provider";
 import {TrilinearInterpolationProvider} from "../infrastructure/interpolation/trilinear-interpolation.provider";
 import {LoginRepository} from "../domain/user/login.repository";
-import {SpaLoginRepository} from "../infrastructure/user/spa-login.repository";
+import {SpaLoginRepository} from "../infrastructure/login/spa-login.repository";
 import {PlaneRepository} from "../domain/plane.repository";
 import {OnlinePlaneRepository} from "../infrastructure/planes/online-plane.repository";
+import {WebClient} from "../infrastructure/web-client";
+import {UserRepository} from "../domain/user/user.repository";
+import {OnlineUserRepository} from "../infrastructure/user/online-user.repository";
 
 const environment = new Environment();
 
@@ -38,6 +41,14 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideOAuthClient(),
     {
+      provide: LoginRepository,
+      useFactory: () => new SpaLoginRepository(inject(Environment), inject(OAuthService))
+    },
+    {
+      provide: WebClient,
+      useFactory: () => new WebClient(inject(LoginRepository))
+    },
+    {
       provide: InterpolationProvider,
       useClass: TrilinearInterpolationProvider
     },
@@ -46,12 +57,12 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => new PerformanceComputer(inject(InterpolationProvider))
     },
     {
-      provide: LoginRepository,
-      useFactory: () => new SpaLoginRepository(inject(Environment), inject(OAuthService))
+      provide: PlaneRepository,
+      useFactory: () => new OnlinePlaneRepository(inject(Environment), inject(LoginRepository), inject(WebClient))
     },
     {
-      provide: PlaneRepository,
-      useFactory: () => new OnlinePlaneRepository(inject(Environment), inject(LoginRepository))
+      provide: UserRepository,
+      useFactory: () => new OnlineUserRepository(inject(WebClient), inject(Environment))
     }
   ]
 };

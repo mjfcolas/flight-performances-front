@@ -12,6 +12,9 @@ import {PlaneRepository} from "../../domain/plane.repository";
 import {of} from "rxjs";
 import {LoginRepository} from "../../domain/user/login.repository";
 import {MockedLoginRepository} from "../../domain/user/__mock__/mocked-login.repository";
+import {UserRepository} from "../../domain/user/user.repository";
+import {MockedUserRepository} from "../../domain/user/__mock__/mocked-user.repository";
+import {AsyncPipe} from "@angular/common";
 
 describe('PlaneCreatorComponent', () => {
 
@@ -23,20 +26,31 @@ describe('PlaneCreatorComponent', () => {
   const mockedLoginRepository = new MockedLoginRepository();
   mockedLoginRepository.isLoggedIn.mockReturnValue(of(true));
 
+  const mockedUserRepository = new MockedUserRepository();
+  mockedUserRepository.getUser.mockReturnValue(of({
+    nickname: 'John'
+  }));
+
   const renderOptions: RenderComponentOptions<PlaneCreatorComponent> = {
     componentImports: [
       MockPlanePerformanceComponent,
       FaIconComponent,
       RouterLink,
-      FormsModule
+      FormsModule,
+      AsyncPipe
     ],
-    componentProviders: [{
-      provide: PlaneRepository,
-      useValue: mockedPlaneRepository
-    },
+    componentProviders: [
+      {
+        provide: PlaneRepository,
+        useValue: mockedPlaneRepository
+      },
       {
         provide: LoginRepository,
         useValue: mockedLoginRepository
+      },
+      {
+        provide: UserRepository,
+        useValue: mockedUserRepository
       }],
   }
 

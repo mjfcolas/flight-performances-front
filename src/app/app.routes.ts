@@ -6,6 +6,7 @@ import {Plane} from "../domain/plane";
 import {inject} from "@angular/core";
 import {PlaneRepository} from "../domain/plane.repository";
 import {HomeComponent} from "../ui/home/home.component";
+import {UserProfileComponent} from "../ui/user-profile/user-profile.component";
 
 const planeResolver: ResolveFn<Plane> = (route: ActivatedRouteSnapshot) => {
   const planeId = route.paramMap.get('planeId');
@@ -40,5 +41,9 @@ export const routes: Routes = [
   {
     path: 'search',
     component: SearchPlaneComponent
+  },
+  {
+    path: 'profile',
+    component: UserProfileComponent
   }
 ];

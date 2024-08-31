@@ -7,9 +7,7 @@
       {{ plane.registration }}
     </h2>
     <p class="m-0">{{ plane.name }}</p>
-    @if (!(belongsToMe() | async) && plane.owner?.nickname) {
-      <em>by <b>{{ plane.owner?.nickname }}</b></em>
-    }
+    <em>by <b>{{ plane.owner?.nickname }}</b></em>
     <div class="card-actions justify-end">
       @if (belongsToMe() | async) {
         <button class="btn" [routerLink]="['/edit', plane.id]">Edit</button>
