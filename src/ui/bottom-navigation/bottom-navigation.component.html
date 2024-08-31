@@ -20,6 +20,14 @@
     <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
     Search
   </button>
+  @if (isLoggedIn()) {
+    <button
+      [routerLink]="['/profile']"
+      [class.active]="isActivated('PROFILE')">
+      <fa-icon [icon]="faUser"></fa-icon>
+      My Profile
+    </button>
+  }
   <button
     (click)="loginOrLogout()">
     <fa-icon [icon]="loginOrLogoutIcon()"></fa-icon>

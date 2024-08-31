@@ -6,6 +6,7 @@ import {OperationResult} from "../../domain/operation-result";
 import {Environment} from "../../app/environment";
 import {LoginRepository} from "../../domain/user/login.repository";
 import {User} from "../../domain/user/user";
+import {WebClient} from "../web-client";
 
 const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
 const LAST_USED_PLANES_MAX_SIZE = 5;
@@ -24,14 +25,15 @@ export class OnlinePlaneRepository implements PlaneRepository {
 
   constructor(
     public readonly environment: Environment,
-    public readonly loginRepository: LoginRepository) {
+    public readonly loginRepository: LoginRepository,
+    public readonly webClient: WebClient) {
   }
 
   favorites(): Observable<Plane[]> {
     if (!this.loginRepository.isLoggedIn()) {
       return of([]);
     }
-    return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes`)).pipe(
+    return from(this.webClient.fetch(`${this.environment.backendUrl}/users/current/favorite-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
         const favoritePlanes = this.dtoPlaneCollectionToPlanes(planes);
@@ -45,7 +47,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
   }
 
   get(id: string): Observable<Plane> {
-    return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes/${id}`)).pipe(
+    return from(this.webClient.fetch(`${this.environment.backendUrl}/planes/${id}`)).pipe(
       mergeMap(response => from(response.json())),
       map(plane => this.dtoPlaneToPlaneOrThrow(plane))
     )
@@ -77,7 +79,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
     if (!this.loginRepository.isLoggedIn()) {
       return of([]);
     }
-    return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/created-planes`)).pipe(
+    return from(this.webClient.fetch(`${this.environment.backendUrl}/users/current/created-planes`)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => {
         const myPlanes = this.dtoPlaneCollectionToPlanes(planes);
@@ -101,12 +103,11 @@ export class OnlinePlaneRepository implements PlaneRepository {
       performances: JSON.stringify(command.performances)
     }
 
-    return from(this.authenticatedFetch(`${this.environment.backendUrl}/planes${id}`, {
+    return from(this.webClient.fetch(`${this.environment.backendUrl}/planes${id}`, {
       method: 'PUT',
       body: JSON.stringify(dtoCommand),
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
+        'Content-Type': 'application/json'
       }
     })).pipe(mergeMap((response): Observable<OperationResult<Plane>> => {
       if (response.ok) {
@@ -130,7 +131,7 @@ export class OnlinePlaneRepository implements PlaneRepository {
         } else {
           method = 'PUT';
         }
-        return from(this.authenticatedFetch(`${this.environment.backendUrl}/users/current/favorite-planes/${id}`, {
+        return from(this.webClient.fetch(`${this.environment.backendUrl}/users/current/favorite-planes/${id}`, {
           method: method,
         }));
       }),
@@ -144,24 +145,10 @@ export class OnlinePlaneRepository implements PlaneRepository {
 
   search(registration: string, name: string, ownerName: string): Observable<Plane[]> {
     const queryUrl = `${this.environment.backendUrl}/planes?registration=${registration}&name=${name}&ownerName=${ownerName}`;
-    return from(this.authenticatedFetch(queryUrl)).pipe(
+    return from(this.webClient.fetch(queryUrl)).pipe(
       mergeMap(response => from(response.json())),
       map(planes => this.dtoPlaneCollectionToPlanes(planes))
     )
-  }
-
-  authenticatedFetch(url: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-    let headers = init?.headers;
-    if (this.loginRepository.getAccessToken()) {
-      headers = {
-        ...headers,
-        Authorization: `Bearer ${this.loginRepository.getAccessToken()}`
-      }
-    }
-    return fetch(url, {
-      ...init,
-      headers
-    });
   }
 
 

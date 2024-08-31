@@ -1,5 +1,12 @@
 import {Component} from '@angular/core';
-import {faHouse, faPlus, faRightFromBracket, faRightToBracket, IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {
+  faHouse,
+  faPlus,
+  faRightFromBracket,
+  faRightToBracket,
+  faUser,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {ActivationStart, Router, RouterLink} from "@angular/router";
 import {HomeComponent} from "../home/home.component";
@@ -7,6 +14,7 @@ import {PlaneCreatorComponent} from "../plane-creator/plane-creator.component";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import {SearchPlaneComponent} from "../search-plane/search-plane.component";
 import {LoginRepository} from "../../domain/user/login.repository";
+import {UserProfileComponent} from "../user-profile/user-profile.component";
 
 export type Page = "HOME" | "ADD" | "PROFILE" | "SEARCH";
 
@@ -24,6 +32,7 @@ export class BottomNavigationComponent {
 
   protected readonly faHouse = faHouse;
   protected readonly faPlus = faPlus;
+  protected readonly faUser = faUser;
 
 
   private activatedPage: Page | null = null;
@@ -37,6 +46,8 @@ export class BottomNavigationComponent {
           this.activatedPage = "ADD";
         } else if (event.snapshot.component?.name === SearchPlaneComponent.name) {
           this.activatedPage = "SEARCH";
+        } else if (event.snapshot.component?.name === UserProfileComponent.name) {
+          this.activatedPage = "PROFILE";
         } else {
           this.activatedPage = null;
         }
