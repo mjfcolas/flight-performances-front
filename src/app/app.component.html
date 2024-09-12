@@ -1,4 +1,14 @@
-<div class="pb-16 h-screen overflow-y-scroll">
-  <router-outlet/>
+<div class="pb-16 h-screen flex flex-col overflow-y-scroll">
+  <div class="grow">
+    <router-outlet/>
+  </div>
+  <footer class="footer bg-base text-base-content p-2">
+    <nav>
+      <h6 class="footer-title">Legal</h6>
+      <a class="link link-hover" href="privacy-policies.html">Privacy Policies</a>
+      <a class="link link-hover" href="tos.html">Terms of use</a>
+    </nav>
+  </footer>
+
 </div>
 <app-bottom-navigation/>

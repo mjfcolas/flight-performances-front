@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {Title} from "@angular/platform-browser";
 import {BottomNavigationComponent} from "../ui/bottom-navigation/bottom-navigation.component";
-import {LoginRepository} from "../domain/user/login.repository";
 
 @Component({
   selector: 'app-root',
