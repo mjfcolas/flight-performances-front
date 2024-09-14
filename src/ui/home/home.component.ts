@@ -48,15 +48,16 @@ export class HomeComponent {
       && (this.lastUsedPlanes !== undefined && this.lastUsedPlanes.length === 0);
   }
 
-  updateFavorites() {
-    this.planeProvider.favorites().subscribe(value => this.favoritePlanes = value);
-  }
-
   isLoggedIn() {
     return this.loginRepository.isLoggedIn();
   }
 
   login() {
     this.loginRepository.login();
+  }
+
+  updatePlanes() {
+    this.planeProvider.favorites().subscribe(value => this.favoritePlanes = value);
+    this.planeProvider.mine().subscribe(value => this.myPlanes = value);
   }
 }

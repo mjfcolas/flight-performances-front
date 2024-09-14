@@ -11,4 +11,5 @@ export class MockedPlaneRepository implements PlaneRepository {
   search = jest.fn()
   addToLastUsed = jest.fn()
   lastUsed = jest.fn()
+  delete = jest.fn()
 }

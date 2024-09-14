@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Plane} from "../../domain/plane";
 import {RouterLink} from "@angular/router";
 import {faStar} from '@fortawesome/free-solid-svg-icons';
@@ -21,9 +21,12 @@ import {LoginRepository} from "../../domain/user/login.repository";
 })
 export class PlaneCardComponent {
 
+  @ViewChild('deleteModal') deleteModal: ElementRef<HTMLDialogElement> | undefined;
+
   protected _plane: Plane | undefined;
 
   @Output() favoriteChanged: EventEmitter<any> = new EventEmitter<any>();
+  @Output() planeDeleted: EventEmitter<any> = new EventEmitter<any>();
 
   @Input() showFavorite: boolean = true;
 
@@ -84,5 +87,20 @@ export class PlaneCardComponent {
 
   mustDisplayFavoriteIcon(): boolean {
     return this.showFavorite && this.isLoggedIn();
+  }
+
+  clickOnDelete() {
+    if (this.deleteModal !== undefined) {
+      this.deleteModal.nativeElement.showModal();
+    }
+  }
+
+  confirmDelete(id: string) {
+    this.planeRepository.delete(id).subscribe(() => {
+      if (this.deleteModal !== undefined) {
+        this.planeDeleted.emit();
+        this.deleteModal.nativeElement.close();
+      }
+    });
   }
 }
