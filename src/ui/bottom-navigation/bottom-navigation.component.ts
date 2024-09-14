@@ -8,7 +8,7 @@ import {
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {ActivationStart, Router, RouterLink} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router, RouterLink} from "@angular/router";
 import {HomeComponent} from "../home/home.component";
 import {PlaneCreatorComponent} from "../plane-creator/plane-creator.component";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
@@ -37,22 +37,37 @@ export class BottomNavigationComponent {
 
   private activatedPage: Page | null = null;
 
-  constructor(private readonly router: Router, private readonly loginRepository: LoginRepository) {
+  constructor(
+    private readonly router: Router,
+    private activatedRoute: ActivatedRoute,
+    private readonly loginRepository: LoginRepository
+  ) {
     this.router.events.subscribe((event) => {
-      if (event instanceof ActivationStart) {
-        if (event.snapshot.component?.name === HomeComponent.name) {
+      if (event instanceof NavigationEnd) {
+        const activatedComponent = this.getActivatedComponent(this.activatedRoute);
+        console.log(activatedComponent);
+        if (activatedComponent === HomeComponent) {
           this.activatedPage = "HOME";
-        } else if (event.snapshot.component?.name === PlaneCreatorComponent.name) {
+        } else if (activatedComponent === PlaneCreatorComponent) {
           this.activatedPage = "ADD";
-        } else if (event.snapshot.component?.name === SearchPlaneComponent.name) {
+        } else if (activatedComponent === SearchPlaneComponent) {
           this.activatedPage = "SEARCH";
-        } else if (event.snapshot.component?.name === UserProfileComponent.name) {
+        } else if (activatedComponent === UserProfileComponent) {
           this.activatedPage = "PROFILE";
         } else {
           this.activatedPage = null;
         }
       }
     })
+  }
+
+
+  private getActivatedComponent(route: ActivatedRoute): any {
+    if (route.firstChild) {
+      return this.getActivatedComponent(route.firstChild);
+    } else {
+      return route.component;
+    }
   }
 
   isActivated(page: Page): boolean {
