@@ -2,5 +2,6 @@
   "backendUrl": "",
   "oAuth2Issuer": "",
   "oAuth2LogoutUrl": "",
-  "oAuth2ClientId": ""
+  "oAuth2ClientId": "",
+  "contactAddress": "foo@bar.com"
 }
