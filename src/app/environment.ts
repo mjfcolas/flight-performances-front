@@ -5,6 +5,7 @@ export class Environment {
   private _oAuth2Issuer: string = ""
   private _oAuth2ClientId: string = ""
   private _oAuth2LogoutUrl: string = ""
+  private _contactAddress: string = ""
 
   constructor() {
   }
@@ -18,6 +19,7 @@ export class Environment {
           this._oAuth2Issuer = config.oAuth2Issuer
           this._oAuth2ClientId = config.oAuth2ClientId
           this._oAuth2LogoutUrl = config.oAuth2LogoutUrl
+          this._contactAddress = config.contactAddress
         }));
   }
 
@@ -35,5 +37,9 @@ export class Environment {
 
   public get oAuth2LogoutUrl(): string {
     return this._oAuth2LogoutUrl
+  }
+
+  public get contactAddress(): string {
+    return this._contactAddress
   }
 }
