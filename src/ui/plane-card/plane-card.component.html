@@ -10,9 +10,23 @@
     <em>by <b>{{ plane.owner?.nickname }}</b></em>
     <div class="card-actions justify-end">
       @if (belongsToMe() | async) {
-        <button class="btn" [routerLink]="['/edit', plane.id]">Edit</button>
+        <button class="btn p-3" (click)="clickOnDelete()" >Delete</button>
+        <button class="btn p-3" [routerLink]="['/edit', plane.id]">Edit</button>
       }
-      <button class="btn" [routerLink]="['/compute', plane.id]">Compute</button>
+      <button class="btn p-3" [routerLink]="['/compute', plane.id]">Compute</button>
     </div>
   </div>
+  <dialog #deleteModal [attr.id]="'delete_modal_'+ plane.id" class="modal">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">{{plane.name}} deletion</h3>
+      <p class="py-4">This action is not reversible. Are you sure?</p>
+      <div class="modal-action">
+        <button class="btn btn-error" (click)="confirmDelete(plane.id)">Yes</button>
+        <form method="dialog">
+          <!-- if there is a button in form, it will close the modal -->
+          <button class="btn">Abort</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
 }

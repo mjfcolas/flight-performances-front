@@ -53,6 +53,16 @@ export class OnlinePlaneRepository implements PlaneRepository {
     )
   }
 
+  delete(id: string): Observable<OperationResult<never>> {
+    return from(this.webClient.fetch(`${this.environment.backendUrl}/planes/${id}`, {
+      method: 'DELETE'
+    })).pipe(mergeMap((response): Observable<OperationResult<never>> => {
+      return of({
+        status: response.ok ? "SUCCESS" : "ERROR"
+      })
+    }));
+  }
+
   isFavorite(id: string): Observable<boolean> {
     if (!this.loginRepository.isLoggedIn()) {
       return of(false);

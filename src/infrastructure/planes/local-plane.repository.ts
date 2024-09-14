@@ -375,4 +375,10 @@ export class LocalPlaneRepository implements PlaneRepository {
   lastUsed(): Observable<Plane[]> {
     return of(lastUsedPlanes);
   }
+
+  delete(id: string): Observable<OperationResult<never>> {
+    return of({
+      status: "SUCCESS"
+    });
+  }
 }
