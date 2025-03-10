@@ -1,6 +1,14 @@
 import {from, map, mergeMap, Observable} from "rxjs";
 
-export class Environment {
+export abstract class Environment {
+  public abstract get backendUrl(): string
+  public abstract get oAuth2Issuer(): string
+  public abstract get oAuth2ClientId(): string
+  public abstract get oAuth2LogoutUrl(): string
+  public abstract get contactAddress(): string
+}
+
+export class ConfigJsonEnvironment implements Environment {
   private _backendUrl: string = ""
   private _oAuth2Issuer: string = ""
   private _oAuth2ClientId: string = ""

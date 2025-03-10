@@ -8,11 +8,11 @@ export class TrilinearInterpolationProvider implements InterpolationProvider {
     const raw: D3Element[] = grid
       .map(({
               pressureAltitudeInFeet,
-              temperatureInCelsius,
+              diffWithIsaTemperatureInCelsius,
               massInKg,
               distanceInMeters
-            }) => [pressureAltitudeInFeet, temperatureInCelsius, massInKg, distanceInMeters]);
+            }) => [pressureAltitudeInFeet, diffWithIsaTemperatureInCelsius, massInKg, distanceInMeters]);
 
-    return interpolate.d3(raw, [toInterpolate.pressureAltitudeInFeet, toInterpolate.temperatureInCelsius, toInterpolate.massInKg])
+    return interpolate.d3(raw, [toInterpolate.pressureAltitudeInFeet, toInterpolate.diffWithIsaTemperatureInCelsius, toInterpolate.massInKg])
   }
 }

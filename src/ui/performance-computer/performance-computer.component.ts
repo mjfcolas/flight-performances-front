@@ -29,11 +29,7 @@ import {LoginRepository} from "../../domain/user/login.repository";
   standalone: true,
   templateUrl: './performance-computer.component.html',
   imports: [
-    NgForOf,
     FontAwesomeModule,
-    RouterLink,
-    PerformanceTableComponent,
-    ComputationFactorsComponent,
     ComputationResultsComponent,
     ComputationDetailsComponent,
     ComputationFormComponent,

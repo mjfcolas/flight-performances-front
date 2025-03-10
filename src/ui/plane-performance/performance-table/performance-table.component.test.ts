@@ -64,6 +64,7 @@ describe('PerformanceTableComponent', () => {
       temperatureInCelsius: 0,
       massInKg: 1050,
       distanceInMeters: 800
+
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
@@ -78,7 +79,6 @@ describe('PerformanceTableComponent', () => {
       distanceInMeters: 890
     })
   ];
-
 
   describe(`Read only table`, () => {
 
@@ -195,12 +195,12 @@ describe('PerformanceTableComponent', () => {
           value: 400
         }
       });
-      expect(emittedDataPoints).toHaveBeenCalledWith([{
+      expect(emittedDataPoints).toHaveBeenCalledWith([new PerformanceDataPointViewModel({
         pressureAltitudeInFeet: 0,
         temperatureInCelsius: 0,
         massInKg: 850,
         distanceInMeters: 400
-      }]);
+      })]);
     });
   });
 

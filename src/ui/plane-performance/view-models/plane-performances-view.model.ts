@@ -1,8 +1,15 @@
-import {PlanePerformances, RunwayFactors, StepCoefficient, WindCoefficientComputationData} from "../../../domain/plane";
+import {
+  PlanePerformances,
+  RunwayFactors,
+  StepCoefficient,
+  TemperatureMode,
+  WindCoefficientComputationData
+} from "../../../domain/plane";
 import {PerformanceDataPoint} from "../../../domain/performance-data-point";
 
 
 type PlanePerformancesViewModelConstructorParameterType = {
+  temperatureMode: 'ISA' | 'ABSOLUTE',
   takeOffDataPoints: PerformanceDataPointViewModel[],
   landingDataPoints: PerformanceDataPointViewModel[],
   takeOffRunwayFactors: RunwayFactorsViewModel,
@@ -12,6 +19,7 @@ type PlanePerformancesViewModelConstructorParameterType = {
 }
 
 export class PlanePerformancesViewModel {
+  readonly temperatureMode: TemperatureMode;
   readonly takeOffDataPoints: PerformanceDataPointViewModel[];
   readonly landingDataPoints: PerformanceDataPointViewModel[];
   readonly takeOffRunwayFactors: RunwayFactorsViewModel;
@@ -21,6 +29,7 @@ export class PlanePerformancesViewModel {
 
   private constructor(
     params: PlanePerformancesViewModelConstructorParameterType) {
+    this.temperatureMode = params.temperatureMode;
     this.takeOffDataPoints = params.takeOffDataPoints;
     this.landingDataPoints = params.landingDataPoints;
     this.takeOffRunwayFactors = params.takeOffRunwayFactors;
@@ -32,11 +41,11 @@ export class PlanePerformancesViewModel {
   public toPlanePerformances(): PlanePerformances {
     const takeOffDataPoints: PerformanceDataPoint[] = this.takeOffDataPoints
       .filter(dataPoint => dataPoint.distanceInMeters !== undefined)
-      .map(dataPoint => dataPoint.toDomain());
+      .map(dataPoint => dataPoint.toDomain(this.temperatureMode));
 
     const landingDataPoints: PerformanceDataPoint[] = this.landingDataPoints
       .filter(dataPoint => dataPoint.distanceInMeters !== undefined)
-      .map(dataPoint => dataPoint.toDomain());
+      .map(dataPoint => dataPoint.toDomain(this.temperatureMode));
 
     const takeOffRunwayFactors = this.takeOffRunwayFactors.toDomain();
     const landingRunwayFactors = this.landingRunwayFactors.toDomain();
@@ -45,6 +54,7 @@ export class PlanePerformancesViewModel {
     const landingCoefficientsComputationData = WindCoefficientComputationData.fromStepCoefficients(this.landingCoefficientsComputationData);
 
     return new PlanePerformances(
+      this.temperatureMode,
       takeOffDataPoints,
       landingDataPoints,
       takeOffRunwayFactors,
@@ -56,6 +66,7 @@ export class PlanePerformancesViewModel {
 
   public copyWith(params: Partial<PlanePerformancesViewModelConstructorParameterType>) {
     return new PlanePerformancesViewModel({
+      temperatureMode: params.temperatureMode ?? this.temperatureMode,
       takeOffDataPoints: params.takeOffDataPoints ?? this.takeOffDataPoints,
       landingDataPoints: params.landingDataPoints ?? this.landingDataPoints,
       takeOffRunwayFactors: params.takeOffRunwayFactors ?? this.takeOffRunwayFactors,
@@ -65,8 +76,16 @@ export class PlanePerformancesViewModel {
     })
   };
 
-  static empty() {
+  changeTemperatureMode(temperatureMode: TemperatureMode): PlanePerformancesViewModel {
     return new PlanePerformancesViewModel({
+      ...this,
+      temperatureMode: temperatureMode
+    });
+  }
+
+  static empty(): PlanePerformancesViewModel {
+    return new PlanePerformancesViewModel({
+      temperatureMode: 'ISA',
       takeOffDataPoints: [],
       landingDataPoints: [],
       takeOffRunwayFactors: new RunwayFactorsViewModel({
@@ -87,18 +106,22 @@ export class PlanePerformancesViewModel {
   }
 
   static fromPlanePerformances(planePerformances: PlanePerformances): PlanePerformancesViewModel {
+
+    const temperatureGetter = (dataPoint: PerformanceDataPoint) => planePerformances.temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperatureInCelsius : dataPoint.absoluteTemperatureInCelsius;
+
     return new PlanePerformancesViewModel({
+      temperatureMode: planePerformances.temperatureMode,
       takeOffDataPoints: planePerformances.takeOffDataPoints.map(dataPoint => new PerformanceDataPointViewModel({
         pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
-        temperatureInCelsius: dataPoint.temperatureInCelsius,
+        temperatureInCelsius: temperatureGetter(dataPoint),
         massInKg: dataPoint.massInKg,
         distanceInMeters: dataPoint.distanceInMeters
       })),
       landingDataPoints: planePerformances.landingDataPoints.map(dataPoint => new PerformanceDataPointViewModel({
         pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
-        temperatureInCelsius: dataPoint.temperatureInCelsius,
+        temperatureInCelsius: temperatureGetter(dataPoint),
         massInKg: dataPoint.massInKg,
-        distanceInMeters: dataPoint.distanceInMeters,
+        distanceInMeters: dataPoint.distanceInMeters
       })),
       takeOffRunwayFactors: new RunwayFactorsViewModel({
         grass: planePerformances.takeOffRunwayFactors.grass,
@@ -128,6 +151,7 @@ export class PlanePerformancesViewModel {
         }))
     });
   }
+
 }
 
 export class RunwayFactorsViewModel {
@@ -175,7 +199,7 @@ export class PerformanceDataPointViewModel {
   pressureAltitudeInFeet: number;
   temperatureInCelsius: number;
   massInKg: number;
-  distanceInMeters?: number | null;
+  distanceInMeters?: number;
 
   constructor(params: {
     pressureAltitudeInFeet: number,
@@ -186,18 +210,28 @@ export class PerformanceDataPointViewModel {
     this.pressureAltitudeInFeet = params.pressureAltitudeInFeet;
     this.temperatureInCelsius = params.temperatureInCelsius;
     this.massInKg = params.massInKg;
-    this.distanceInMeters = params.distanceInMeters
+    this.distanceInMeters = params.distanceInMeters;
   }
 
-  toDomain(): PerformanceDataPoint {
+  toDomain(temperatureMode: TemperatureMode): PerformanceDataPoint {
     if (this.distanceInMeters == undefined) {
       throw new Error('PERFORMANCE_DATAPOINT_UNDEFINED_DISTANCE');
     }
-    return {
-      pressureAltitudeInFeet: this.pressureAltitudeInFeet,
-      temperatureInCelsius: this.temperatureInCelsius,
-      massInKg: this.massInKg,
-      distanceInMeters: this.distanceInMeters,
+
+    if (temperatureMode === 'ISA') {
+      return PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+        pressureAltitudeInFeet: this.pressureAltitudeInFeet,
+        diffWithIsaTemperatureInCelsius: this.temperatureInCelsius,
+        massInKg: this.massInKg,
+        distanceInMeters: this.distanceInMeters,
+      });
+    } else {
+      return PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+        pressureAltitudeInFeet: this.pressureAltitudeInFeet,
+        absoluteTemperatureInCelsius: this.temperatureInCelsius,
+        massInKg: this.massInKg,
+        distanceInMeters: this.distanceInMeters,
+      });
     }
   }
 }

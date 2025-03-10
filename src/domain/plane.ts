@@ -1,6 +1,8 @@
 import {PerformanceDataPoint} from "./performance-data-point";
 import {User} from "./user/user";
 
+export type TemperatureMode = 'ISA' | 'ABSOLUTE';
+
 export class Plane {
   constructor(
     public readonly id: string,
@@ -14,6 +16,7 @@ export class Plane {
 
 export class PlanePerformances {
   constructor(
+    public readonly temperatureMode: TemperatureMode,
     public readonly takeOffDataPoints: PerformanceDataPoint[],
     public readonly landingDataPoints: PerformanceDataPoint[],
     public readonly takeOffRunwayFactors: RunwayFactors,
@@ -45,7 +48,7 @@ export class WindCoefficientComputationData {
     return this.byStepsCoefficients?.coefficientFor(value) ?? 1;
   }
 
-  static fromStepCoefficients(stepCoefficients: StepCoefficient[]): WindCoefficientComputationData {
+  static fromStepCoefficients(stepCoefficients: readonly StepCoefficient[]): WindCoefficientComputationData {
     return new WindCoefficientComputationData(new ByStepCoefficients(stepCoefficients));
   }
 
@@ -62,7 +65,7 @@ export class ByStepCoefficients {
   public readonly stepCoefficients: readonly StepCoefficient[];
 
   constructor(
-    stepCoefficients: StepCoefficient[]) {
+    stepCoefficients: readonly StepCoefficient[]) {
     this.stepCoefficients = [...stepCoefficients]
       .sort((a, b) => a.step - b.step);
   }

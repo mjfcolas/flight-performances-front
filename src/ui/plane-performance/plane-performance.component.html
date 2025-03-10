@@ -1,9 +1,25 @@
 <div class="flex flex-col m-3">
   <h2 class="mt-3">Performances</h2>
+
+  @if (mode === 'EDIT') {
+    <div class="flex flex-col">
+      <h4 class="m-1">Temperature mode</h4>
+      <label class="label cursor-pointer">
+        <span class="label-text mx-1">Difference with ISA temperature</span>
+        <input type="radio" name="temperature-mode" class="radio" [ngModel]="this.performances.temperatureMode" [value]="'ISA'"
+               (ngModelChange)="changeTemperatureMode($event)"/>
+        <span class="label-text mx-1">Absolute temperature</span>
+        <input type="radio" name="temperature-mode" class="radio" [ngModel]="this.performances.temperatureMode" [value]="'ABSOLUTE'"
+               (ngModelChange)="changeTemperatureMode($event)"/>
+      </label>
+    </div>
+  }
+
   <div class="flex flex-wrap gap-2">
     <div class="w-96">
       <h4 class="m-1">Take off</h4>
       <performance-table
+        [temperatureMode]="this.performances.temperatureMode"
         [mode]="mode"
         [dataPoints]="performances.takeOffDataPoints"
         (emittedDataPoints)="newTakeOffDataPoints($event)"
@@ -12,6 +28,7 @@
     <div class="w-96">
       <h4 class="m-1">Landing</h4>
       <performance-table
+        [temperatureMode]="this.performances.temperatureMode"
         [mode]="mode"
         [dataPoints]="performances.landingDataPoints"
         (emittedDataPoints)="newLandingDataPoints($event)"
