@@ -19,7 +19,6 @@ import {AsyncPipe} from "@angular/common";
   templateUrl: './plane-creator.component.html',
   imports: [
     PlanePerformanceComponent,
-    FaIconComponent,
     RouterLink,
     FormsModule,
     NotLoggedInComponent,

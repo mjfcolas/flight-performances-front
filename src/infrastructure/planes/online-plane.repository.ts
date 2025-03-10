@@ -1,5 +1,12 @@
 import {PlaneRepository} from "../../domain/plane.repository";
-import {Plane, PlanePerformances, RunwayFactors, WindCoefficientComputationData} from "../../domain/plane";
+import {
+  Plane,
+  PlanePerformances,
+  RunwayFactors,
+  StepCoefficient,
+  TemperatureMode,
+  WindCoefficientComputationData
+} from "../../domain/plane";
 import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
 import {from, map, mergeMap, Observable, of, ReplaySubject, take} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
@@ -7,6 +14,7 @@ import {Environment} from "../../app/environment";
 import {LoginRepository} from "../../domain/user/login.repository";
 import {User} from "../../domain/user/user";
 import {WebClient} from "../web-client";
+import {PerformanceDataPoint} from "../../domain/performance-data-point";
 
 const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
 const LAST_USED_PLANES_MAX_SIZE = 5;
@@ -16,6 +24,30 @@ interface PlaneCreateOrUpdateCommandDto {
   readonly name: string;
   readonly registration: string;
   readonly performances: string;
+}
+
+interface PerformanceDataPointDto {
+  readonly pressureAltitudeInFeet: number,
+  readonly massInKg: number,
+  readonly distanceInMeters: number,
+  readonly diffWithIsaTemperatureInCelsius?: number,
+  readonly absoluteTemperatureInCelsius?: number
+}
+
+interface WindCoefficientComputationDataDto {
+  byStepsCoefficients: {
+    stepCoefficients: readonly StepCoefficient[]
+  }
+}
+
+interface PerformanceDto {
+  readonly temperatureMode: TemperatureMode;
+  readonly takeOffDataPoints: PerformanceDataPointDto[];
+  readonly landingDataPoints: PerformanceDataPointDto[];
+  readonly takeOffRunwayFactors: RunwayFactors;
+  readonly landingRunwayFactors: RunwayFactors;
+  readonly takeOffCoefficientsComputationData: WindCoefficientComputationDataDto;
+  readonly landingCoefficientsComputationData: WindCoefficientComputationDataDto;
 }
 
 export class OnlinePlaneRepository implements PlaneRepository {
@@ -106,11 +138,39 @@ export class OnlinePlaneRepository implements PlaneRepository {
   save(command: PlaneCreateOrUpdateCommand): Observable<OperationResult<Plane>> {
     const id = command.id ? `/${command.id}` : '';
 
+    const temperatureMode = command.performances.temperatureMode;
+
+    const dataPointDtoBuilder = (dataPoint: PerformanceDataPoint) => ({
+      pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
+      massInKg: dataPoint.massInKg,
+      distanceInMeters: dataPoint.distanceInMeters,
+      absoluteTemperatureInCelsius: temperatureMode === 'ABSOLUTE' ? dataPoint.absoluteTemperatureInCelsius : undefined,
+      diffWithIsaTemperatureInCelsius: temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperatureInCelsius : undefined
+    });
+
+    const planePerformanceDto: PerformanceDto = {
+      temperatureMode: temperatureMode,
+      takeOffDataPoints: command.performances.takeOffDataPoints.map(dataPointDtoBuilder),
+      landingDataPoints: command.performances.landingDataPoints.map(dataPointDtoBuilder),
+      takeOffRunwayFactors: command.performances.takeOffRunwayFactors,
+      landingRunwayFactors: command.performances.landingRunwayFactors,
+      takeOffCoefficientsComputationData: {
+        byStepsCoefficients: {
+          stepCoefficients: command.performances.takeOffCoefficientsComputationData.get()
+        }
+      },
+      landingCoefficientsComputationData: {
+        byStepsCoefficients: {
+          stepCoefficients: command.performances.landingCoefficientsComputationData.get()
+        }
+      },
+    }
+
     const dtoCommand: PlaneCreateOrUpdateCommandDto = {
       id: command.id,
       name: command.name,
       registration: command.registration,
-      performances: JSON.stringify(command.performances)
+      performances: JSON.stringify(planePerformanceDto)
     }
 
     return from(this.webClient.fetch(`${this.environment.backendUrl}/planes${id}`, {
@@ -218,17 +278,63 @@ export class OnlinePlaneRepository implements PlaneRepository {
     return plane
   }
 
+
   private dtoPlaneToPlaneOrUndefined(plane: any): Plane | undefined {
 
     try {
-      const planePerformancesDto = JSON.parse(plane.performances);
+      const backwardCompatiblePerformanceDatapointDtoBuilder: (performanceDataPointDto: any) => PerformanceDataPointDto = (performanceDataPointDto: any) => {
+        return {
+          pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
+          massInKg: performanceDataPointDto.massInKg,
+          distanceInMeters: performanceDataPointDto.distanceInMeters,
+          diffWithIsaTemperatureInCelsius: performanceDataPointDto.diffWithIsaTemperatureInCelsius !== undefined ? performanceDataPointDto.diffWithIsaTemperatureInCelsius : performanceDataPointDto.temperatureInCelsius,
+          absoluteTemperatureInCelsius: performanceDataPointDto.absoluteTemperatureInCelsius
+        }
+      }
+
+      const backwardCompatiblePlanePerformanceDtoBuilder: (planePerformanceDto: any) => PerformanceDto = (planePerformancesDto: any) => {
+        const temperatureMode = planePerformancesDto.temperatureMode ?? 'ISA';
+        return {
+          temperatureMode: temperatureMode,
+          takeOffDataPoints: planePerformancesDto.takeOffDataPoints.map(backwardCompatiblePerformanceDatapointDtoBuilder),
+          landingDataPoints: planePerformancesDto.landingDataPoints.map(backwardCompatiblePerformanceDatapointDtoBuilder),
+          takeOffRunwayFactors: planePerformancesDto.takeOffRunwayFactors,
+          landingRunwayFactors: planePerformancesDto.landingRunwayFactors,
+          takeOffCoefficientsComputationData: planePerformancesDto.takeOffCoefficientsComputationData,
+          landingCoefficientsComputationData: planePerformancesDto.landingCoefficientsComputationData
+        }
+      }
+
+      const planePerformancesDto: PerformanceDto = backwardCompatiblePlanePerformanceDtoBuilder(JSON.parse(plane.performances));
+
+      const temperatureMode = planePerformancesDto.temperatureMode ?? 'ISA';
+
+      const performanceDataPointDtoToPerformanceDataPoint = (performanceDataPointDto: PerformanceDataPointDto) => {
+        if (performanceDataPointDto.absoluteTemperatureInCelsius !== null && performanceDataPointDto.absoluteTemperatureInCelsius !== undefined) {
+          return PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+            pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
+            absoluteTemperatureInCelsius: performanceDataPointDto.absoluteTemperatureInCelsius,
+            massInKg: performanceDataPointDto.massInKg,
+            distanceInMeters: performanceDataPointDto.distanceInMeters
+          });
+        } else {
+          return PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+            pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
+            diffWithIsaTemperatureInCelsius: performanceDataPointDto.diffWithIsaTemperatureInCelsius as number,
+            massInKg: performanceDataPointDto.massInKg,
+            distanceInMeters: performanceDataPointDto.distanceInMeters
+          })
+        }
+      }
+
       return new Plane(
         plane.id,
         plane.name,
         plane.registration,
         new PlanePerformances(
-          planePerformancesDto.takeOffDataPoints,
-          planePerformancesDto.landingDataPoints,
+          temperatureMode,
+          planePerformancesDto.takeOffDataPoints.map(performanceDataPointDtoToPerformanceDataPoint),
+          planePerformancesDto.landingDataPoints.map(performanceDataPointDtoToPerformanceDataPoint),
           new RunwayFactors(
             planePerformancesDto.takeOffRunwayFactors.grass,
             planePerformancesDto.takeOffRunwayFactors.grassWet,

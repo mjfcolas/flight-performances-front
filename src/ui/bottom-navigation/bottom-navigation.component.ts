@@ -45,7 +45,6 @@ export class BottomNavigationComponent {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const activatedComponent = this.getActivatedComponent(this.activatedRoute);
-        console.log(activatedComponent);
         if (activatedComponent === HomeComponent) {
           this.activatedPage = "HOME";
         } else if (activatedComponent === PlaneCreatorComponent) {

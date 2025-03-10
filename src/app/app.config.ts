@@ -4,7 +4,7 @@ import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 import {OAuthService, provideOAuthClient} from "angular-oauth2-oidc";
 import {firstValueFrom} from "rxjs";
-import {Environment} from "./environment";
+import {ConfigJsonEnvironment, Environment} from "./environment";
 import {provideHttpClient, withFetch} from "@angular/common/http";
 import {PerformanceComputer} from "../domain/performance-computer";
 import {InterpolationProvider} from "../domain/interpolation.provider";
@@ -13,11 +13,11 @@ import {LoginRepository} from "../domain/user/login.repository";
 import {SpaLoginRepository} from "../infrastructure/login/spa-login.repository";
 import {PlaneRepository} from "../domain/plane.repository";
 import {OnlinePlaneRepository} from "../infrastructure/planes/online-plane.repository";
-import {WebClient} from "../infrastructure/web-client";
+import {DefaultWebClient, WebClient} from "../infrastructure/web-client";
 import {UserRepository} from "../domain/user/user.repository";
 import {OnlineUserRepository} from "../infrastructure/user/online-user.repository";
 
-const environment = new Environment();
+const environment = new ConfigJsonEnvironment();
 
 const loadEnvironment = () => {
   return (): Promise<any> => {
@@ -46,7 +46,7 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: WebClient,
-      useFactory: () => new WebClient(inject(LoginRepository))
+      useFactory: () => new DefaultWebClient(inject(LoginRepository))
     },
     {
       provide: InterpolationProvider,

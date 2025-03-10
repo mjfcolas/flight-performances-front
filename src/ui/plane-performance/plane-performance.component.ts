@@ -7,8 +7,8 @@ import {
   RunwayFactorsViewModel
 } from "./view-models/plane-performances-view.model";
 import {UiMode} from "../ui-mode";
-import {StepCoefficient} from "../../domain/plane";
-
+import {StepCoefficient, TemperatureMode} from "../../domain/plane";
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'plane-performance',
@@ -16,7 +16,8 @@ import {StepCoefficient} from "../../domain/plane";
   templateUrl: './plane-performance.component.html',
   imports: [
     ComputationFactorsComponent,
-    PerformanceTableComponent
+    PerformanceTableComponent,
+    FormsModule
   ],
   providers: []
 })
@@ -27,12 +28,20 @@ export class PlanePerformanceComponent {
 
   @Input()
   securityFactor: number | null = null;
+  private _performances: PlanePerformancesViewModel = PlanePerformancesViewModel.empty();
 
   @Input()
-  performances: PlanePerformancesViewModel = PlanePerformancesViewModel.empty();
+  set performances(data: PlanePerformancesViewModel) {
+    this._performances = data;
+  };
+
+  get performances() {
+    return this._performances;
+  }
 
   @Output()
   emittedPerformances: EventEmitter<PlanePerformancesViewModel> = new EventEmitter<PlanePerformancesViewModel>();
+
 
   newTakeOffDataPoints(takeOffDataPoints: PerformanceDataPointViewModel[]) {
     this.performances = this.performances.copyWith({takeOffDataPoints: takeOffDataPoints})
@@ -61,6 +70,11 @@ export class PlanePerformanceComponent {
 
   newLandingWindCoefficients(coefficients: StepCoefficient[]) {
     this.performances = this.performances.copyWith({landingCoefficientsComputationData: coefficients})
+    this.emittedPerformances.emit(this.performances);
+  }
+
+  changeTemperatureMode(temperatureMode: TemperatureMode) {
+    this.performances = this.performances.changeTemperatureMode(temperatureMode);
     this.emittedPerformances.emit(this.performances);
   }
 }

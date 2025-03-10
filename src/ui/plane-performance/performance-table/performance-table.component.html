@@ -12,7 +12,10 @@
       </button>
     </div>
     <div class="flex flex-row">
-      <label for="temperature" class="input input-bordered input-sm flex items-center gap-2 min-w-64"><span class="min-w-32">Diff with ISA Temp</span><input
+      <label for="temperature" class="input input-bordered input-sm flex items-center gap-2 min-w-64"><span
+        class="min-w-32">
+        {{ temperatureMode === 'ISA' ? 'Diff with ISA Temp' : 'Temperature' }}
+      </span><input
         class="w-16" type="number" id="temperature"
         [(ngModel)]="currentTemperature">°C</label>
       <button class="btn btn-sm m-1" aria-label="Add temperature" (click)="addTemp()"
@@ -46,10 +49,10 @@
             @if ($index === 0) {
               <td [attr.rowspan]="temperatures.length">{{ altitude }}</td>
             }
-            @if (temperature === 0) {
-              <td>Std = {{ (ISATemperatureAt(altitude)) | number: '1.0-0' }}</td>
+            @if (isIsaTemperature(temperature)) {
+              <td>Std = {{ temperatureAt(altitude, temperature) | number: '1.0-0' }}</td>
             } @else {
-              <td>{{ (ISATemperatureAt(altitude) + temperature)  | number: '1.0-0' }}</td>
+              <td>{{ temperatureAt(altitude, temperature)  | number: '1.0-0' }}</td>
             }
 
             @for (masse of masses; track masse) {

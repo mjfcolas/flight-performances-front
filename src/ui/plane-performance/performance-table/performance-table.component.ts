@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
-import {Temperature} from "../../../domain/temperature";
 import {UiMode} from "../../ui-mode";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {pushAtSortPosition} from "array-push-at-sort-position";
 import {PerformanceDataPointViewModel} from "../view-models/plane-performances-view.model";
-
+import {Temperature} from "../../../domain/temperature";
+import {TemperatureMode} from "../../../domain/plane";
 
 @Component({
   selector: 'performance-table',
@@ -35,6 +35,9 @@ export class PerformanceTableComponent {
 
   @Input()
   mode: UiMode = 'READ_ONLY';
+
+  @Input()
+  temperatureMode: TemperatureMode = 'ISA';
 
   @Input()
   set dataPoints(dataPoints: PerformanceDataPointViewModel[]) {
@@ -80,8 +83,12 @@ export class PerformanceTableComponent {
     this.emitDataPoints();
   }
 
-  ISATemperatureAt(altitudeInFeet: number): number {
-    return Temperature.ISATemperatureAt(altitudeInFeet).valueInCelsius;
+  isIsaTemperature(temperature: number): boolean {
+    if (this.temperatureMode == 'ISA') {
+      return temperature == 0;
+    } else {
+      return false;
+    }
   }
 
   addAltitude() {
@@ -99,6 +106,14 @@ export class PerformanceTableComponent {
   addMass() {
     if (this.currentMass != undefined) {
       this.updateMasses(this.currentMass);
+    }
+  }
+
+  temperatureAt(altitudeInFeet: number, temperature: number): number {
+    if (this.temperatureMode == 'ISA') {
+      return Temperature.ISATemperatureAt(altitudeInFeet).valueInCelsius + temperature;
+    } else {
+      return temperature
     }
   }
 

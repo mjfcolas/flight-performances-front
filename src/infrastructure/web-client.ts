@@ -1,6 +1,10 @@
 import {LoginRepository} from "../domain/user/login.repository";
 
-export class WebClient {
+export abstract class WebClient {
+  abstract fetch(url: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+}
+
+export class DefaultWebClient implements WebClient {
   constructor(public readonly loginRepository: LoginRepository) {
   }
 

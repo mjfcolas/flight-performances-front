@@ -18,14 +18,15 @@ export class PerformanceComputer {
 
     const takeOffDataPointMinimumPressureAltitudeInFeet = request.performances.takeOffDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
     const takeOffDataPointMinimumMassInKg = request.performances.takeOffDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
-    const takeOffDataPointMinimumTemperatureInCelsius = request.performances.takeOffDataPoints.reduce((min, p) => p.temperatureInCelsius < min ? p.temperatureInCelsius : min, Number.MAX_VALUE);
+    const takeOffDataPointMinimumTemperatureInCelsius = request.performances.takeOffDataPoints.reduce((min, p) => p.diffWithIsaTemperatureInCelsius < min ? p.diffWithIsaTemperatureInCelsius : min, Number.MAX_VALUE);
 
-    const toInterpolateForTakeOff: PerformanceDataPoint = {
+    const toInterpolateForTakeOff: PerformanceDataPoint = PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
       pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, takeOffDataPointMinimumPressureAltitudeInFeet),
-      temperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, takeOffDataPointMinimumTemperatureInCelsius),
+      diffWithIsaTemperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, takeOffDataPointMinimumTemperatureInCelsius),
       massInKg: Math.max(request.massInKg, takeOffDataPointMinimumMassInKg),
       distanceInMeters: 0
-    }
+    });
+
     let rawTakeOffPerformance = 0;
     let outOfBoundTakeOffComputationError = false;
     try {
@@ -36,14 +37,15 @@ export class PerformanceComputer {
 
     const landingDataPointMinimumPressureAltitudeInFeet = request.performances.landingDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
     const landingDataPointMinimumMassInKg = request.performances.landingDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
-    const landingDataPointMinimumTemperatureInCelsius = request.performances.landingDataPoints.reduce((min, p) => p.temperatureInCelsius < min ? p.temperatureInCelsius : min, Number.MAX_VALUE);
+    const landingDataPointMinimumTemperatureInCelsius = request.performances.landingDataPoints.reduce((min, p) => p.diffWithIsaTemperatureInCelsius < min ? p.diffWithIsaTemperatureInCelsius : min, Number.MAX_VALUE);
 
-    const toInterpolateForLanding: PerformanceDataPoint = {
+    const toInterpolateForLanding: PerformanceDataPoint = PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
       pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, landingDataPointMinimumPressureAltitudeInFeet),
-      temperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, landingDataPointMinimumTemperatureInCelsius),
+      diffWithIsaTemperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, landingDataPointMinimumTemperatureInCelsius),
       massInKg: Math.max(request.massInKg, landingDataPointMinimumMassInKg),
       distanceInMeters: 0
-    }
+    })
+
     let rawLandingPerformance = 0;
     let outOfBoundLandingComputationError = false;
     try {
@@ -111,7 +113,7 @@ export class PerformanceComputer {
       new ComputationData(
         takeOffComputationFactor,
         toInterpolateForTakeOff.pressureAltitudeInFeet,
-        toInterpolateForTakeOff.temperatureInCelsius,
+        toInterpolateForTakeOff.diffWithIsaTemperatureInCelsius,
         toInterpolateForTakeOff.massInKg
       )
     )
@@ -123,7 +125,7 @@ export class PerformanceComputer {
       new ComputationData(
         landingComputationFactor,
         toInterpolateForLanding.pressureAltitudeInFeet,
-        toInterpolateForLanding.temperatureInCelsius,
+        toInterpolateForLanding.diffWithIsaTemperatureInCelsius,
         toInterpolateForLanding.massInKg
       )
     )
