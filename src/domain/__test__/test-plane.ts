@@ -1,7 +1,7 @@
 import {PlanePerformances, RunwayFactors, StepCoefficient, WindCoefficientComputationData} from "../plane";
 import {PerformanceDataPoint} from "../performance-data-point";
 
-const validTakeOffPerformances = [
+const validDiffWithISATakeOffPerformances = [
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 340},
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 530},
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 375},
@@ -16,7 +16,7 @@ const validTakeOffPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
 ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius(dto));
 
-const validLandingPerformances = [
+const validDiffWithISALandingPerformances = [
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 435},
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 510},
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 460},
@@ -30,6 +30,37 @@ const validLandingPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
 ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius(dto));
+
+const validAbsoluteTemperatureTakeOffPerformances = [
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 340},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 530},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 375},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 590},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 415},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 655},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 445},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 710},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 500},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius(dto));
+
+const validAbsoluteTemperatureLandingPerformances = [
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 435},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 510},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 460},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 545},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 485},
+  {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 575},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 475},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: -20, massInKg: 1050, distanceInMeters: 565},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 850, distanceInMeters: 505},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
+  {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius(dto));
+
 
 const validRunwayFactors: RunwayFactors = new RunwayFactors(1.15, 1.15, 1, 1);
 
@@ -57,10 +88,20 @@ const validLandingWindCoefficients: StepCoefficient[] = [
   {step: 30, coefficient: 0.55},
 ]
 
-export const validPlanePerformances: PlanePerformances = new PlanePerformances(
+export const validDiffWithISAPlanePerformances: PlanePerformances = new PlanePerformances(
   'ISA',
-  validTakeOffPerformances,
-  validLandingPerformances,
+  validDiffWithISATakeOffPerformances,
+  validDiffWithISALandingPerformances,
+  validRunwayFactors,
+  validRunwayFactors,
+  WindCoefficientComputationData.fromStepCoefficients(validTakeOffWindCoefficients),
+  WindCoefficientComputationData.fromStepCoefficients(validLandingWindCoefficients)
+);
+
+export const validAbsoluteTemperaturePlanePerformances: PlanePerformances = new PlanePerformances(
+  'ABSOLUTE',
+  validAbsoluteTemperatureTakeOffPerformances,
+  validAbsoluteTemperatureLandingPerformances,
   validRunwayFactors,
   validRunwayFactors,
   WindCoefficientComputationData.fromStepCoefficients(validTakeOffWindCoefficients),
