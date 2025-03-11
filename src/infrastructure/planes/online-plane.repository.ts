@@ -15,6 +15,8 @@ import {LoginRepository} from "../../domain/user/login.repository";
 import {User} from "../../domain/user/user";
 import {WebClient} from "../web-client";
 import {PerformanceDataPoint} from "../../domain/performance-data-point";
+import {Distance} from "../../domain/distance";
+import {Mass} from "../../domain/mass";
 
 const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
 const LAST_USED_PLANES_MAX_SIZE = 5;
@@ -142,8 +144,8 @@ export class OnlinePlaneRepository implements PlaneRepository {
 
     const dataPointDtoBuilder = (dataPoint: PerformanceDataPoint) => ({
       pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
-      massInKg: dataPoint.massInKg,
-      distanceInMeters: dataPoint.distanceInMeters,
+      massInKg: dataPoint.mass.valueIn('KILOGRAMS'),
+      distanceInMeters: dataPoint.distance.valueIn('METERS'),
       absoluteTemperatureInCelsius: temperatureMode === 'ABSOLUTE' ? dataPoint.absoluteTemperatureInCelsius : undefined,
       diffWithIsaTemperatureInCelsius: temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperatureInCelsius : undefined
     });
@@ -314,15 +316,15 @@ export class OnlinePlaneRepository implements PlaneRepository {
           return PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
             pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
             absoluteTemperatureInCelsius: performanceDataPointDto.absoluteTemperatureInCelsius,
-            massInKg: performanceDataPointDto.massInKg,
-            distanceInMeters: performanceDataPointDto.distanceInMeters
+            mass: Mass.forValueAndUnit(performanceDataPointDto.massInKg, 'KILOGRAMS'),
+            distance: Distance.forValueAndUnit(performanceDataPointDto.distanceInMeters, "METERS")
           });
         } else {
           return PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
             pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
             diffWithIsaTemperatureInCelsius: performanceDataPointDto.diffWithIsaTemperatureInCelsius as number,
-            massInKg: performanceDataPointDto.massInKg,
-            distanceInMeters: performanceDataPointDto.distanceInMeters
+            mass: Mass.forValueAndUnit(performanceDataPointDto.massInKg, 'KILOGRAMS'),
+            distance: Distance.forValueAndUnit(performanceDataPointDto.distanceInMeters, "METERS")
           })
         }
       }

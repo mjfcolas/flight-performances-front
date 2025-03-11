@@ -3,8 +3,12 @@ import {ComputationData, FactorType, PerformanceComputeResponse} from "./perform
 import {InterpolationProvider} from "./interpolation.provider";
 import {PerformanceDataPoint} from "./performance-data-point";
 import {TakeOffAndLandingPerformanceComputeResponse} from "./take-off-and-landing-performance-compute.response";
+import {Distance, DistanceUnit} from "./distance";
+import {Mass} from "./mass";
 
 export const SECURITY_FACTOR = 1.2;
+const DEFAULT_DISTANCE_UNIT: DistanceUnit = "METERS";
+const DEFAULT_MASS_UNIT = "KILOGRAMS";
 
 export class PerformanceComputer {
 
@@ -17,8 +21,8 @@ export class PerformanceComputer {
     const differenceWithISATemperatureInCelsius: number = request.temperatureInCelsius.differenceWithISATemperatureAt(pressureAltitudeInFeet);
     const absoluteTemperatureInCelsius: number = request.temperatureInCelsius.valueInCelsius;
 
-    const takeOffDataPointMinimumPressureAltitudeInFeet = request.performances.takeOffDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
-    const takeOffDataPointMinimumMassInKg = request.performances.takeOffDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
+    const takeOffDataPointMinimumPressureAltitudeInFeet = request.performances.takeOffDataPoints.map(value => value.pressureAltitudeInFeet).reduce((min, p) => p < min ? p : min, Number.MAX_VALUE);
+    const takeOffDataPointMinimumMassInKg = request.performances.takeOffDataPoints.map(value => value.mass.valueIn(DEFAULT_MASS_UNIT)).reduce((min, p) => p < min ? p : min, Number.MAX_VALUE);
 
     let takeOffDataPointMinimumTemperatureInCelsius: number;
     let toInterpolateForTakeOff: PerformanceDataPoint
@@ -28,29 +32,29 @@ export class PerformanceComputer {
       toInterpolateForTakeOff = PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
         pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, takeOffDataPointMinimumPressureAltitudeInFeet),
         diffWithIsaTemperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, takeOffDataPointMinimumTemperatureInCelsius),
-        massInKg: Math.max(request.massInKg, takeOffDataPointMinimumMassInKg),
-        distanceInMeters: 0
+        mass: Mass.forValueAndUnit(Math.max(request.massInKg, takeOffDataPointMinimumMassInKg), DEFAULT_MASS_UNIT),
+        distance: Distance.forValueAndUnit(0, DEFAULT_DISTANCE_UNIT)
       });
     } else {
       takeOffDataPointMinimumTemperatureInCelsius = request.performances.takeOffDataPoints.reduce((min, p) => p.absoluteTemperatureInCelsius < min ? p.absoluteTemperatureInCelsius : min, Number.MAX_VALUE);
       toInterpolateForTakeOff = PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
         pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, takeOffDataPointMinimumPressureAltitudeInFeet),
         absoluteTemperatureInCelsius: Math.max(absoluteTemperatureInCelsius, takeOffDataPointMinimumTemperatureInCelsius),
-        massInKg: Math.max(request.massInKg, takeOffDataPointMinimumMassInKg),
-        distanceInMeters: 0
+        mass: Mass.forValueAndUnit(Math.max(request.massInKg, takeOffDataPointMinimumMassInKg), DEFAULT_MASS_UNIT),
+        distance: Distance.forValueAndUnit(0, DEFAULT_DISTANCE_UNIT)
       });
     }
 
     let rawTakeOffPerformance = 0;
     let outOfBoundTakeOffComputationError = false;
     try {
-      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.performances.takeOffDataPoints, toInterpolateForTakeOff, request.performances.temperatureMode);
+      rawTakeOffPerformance = this.interpolationProvider.interpolate(request.performances.takeOffDataPoints, toInterpolateForTakeOff, request.performances.temperatureMode).valueIn(DEFAULT_DISTANCE_UNIT);
     } catch (e) {
       outOfBoundTakeOffComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
 
-    const landingDataPointMinimumPressureAltitudeInFeet = request.performances.landingDataPoints.reduce((min, p) => p.pressureAltitudeInFeet < min ? p.pressureAltitudeInFeet : min, Number.MAX_VALUE);
-    const landingDataPointMinimumMassInKg = request.performances.landingDataPoints.reduce((min, p) => p.massInKg < min ? p.massInKg : min, Number.MAX_VALUE);
+    const landingDataPointMinimumPressureAltitudeInFeet = request.performances.landingDataPoints.map(value => value.pressureAltitudeInFeet).reduce((min, p) => p < min ? p : min, Number.MAX_VALUE);
+    const landingDataPointMinimumMassInKg = request.performances.landingDataPoints.map(value => value.mass.valueIn(DEFAULT_MASS_UNIT)).reduce((min, p) => p < min ? p : min, Number.MAX_VALUE);
 
     let landingDataPointMinimumTemperatureInCelsius: number
     let toInterpolateForLanding: PerformanceDataPoint
@@ -60,23 +64,23 @@ export class PerformanceComputer {
       toInterpolateForLanding = PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
         pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, landingDataPointMinimumPressureAltitudeInFeet),
         diffWithIsaTemperatureInCelsius: Math.max(differenceWithISATemperatureInCelsius, landingDataPointMinimumTemperatureInCelsius),
-        massInKg: Math.max(request.massInKg, landingDataPointMinimumMassInKg),
-        distanceInMeters: 0
+        mass: Mass.forValueAndUnit(Math.max(request.massInKg, landingDataPointMinimumMassInKg), DEFAULT_MASS_UNIT),
+        distance: Distance.forValueAndUnit(0, DEFAULT_DISTANCE_UNIT)
       })
     } else {
       landingDataPointMinimumTemperatureInCelsius = request.performances.landingDataPoints.reduce((min, p) => p.absoluteTemperatureInCelsius < min ? p.absoluteTemperatureInCelsius : min, Number.MAX_VALUE);
       toInterpolateForLanding = PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
         pressureAltitudeInFeet: Math.max(pressureAltitudeInFeet, landingDataPointMinimumPressureAltitudeInFeet),
         absoluteTemperatureInCelsius: Math.max(absoluteTemperatureInCelsius, landingDataPointMinimumTemperatureInCelsius),
-        massInKg: Math.max(request.massInKg, landingDataPointMinimumMassInKg),
-        distanceInMeters: 0
+        mass: Mass.forValueAndUnit(Math.max(request.massInKg, landingDataPointMinimumMassInKg), DEFAULT_MASS_UNIT),
+        distance: Distance.forValueAndUnit(0, DEFAULT_DISTANCE_UNIT)
       })
     }
 
     let rawLandingPerformance = 0;
     let outOfBoundLandingComputationError = false;
     try {
-      rawLandingPerformance = this.interpolationProvider.interpolate(request.performances.landingDataPoints, toInterpolateForLanding, request.performances.temperatureMode);
+      rawLandingPerformance = this.interpolationProvider.interpolate(request.performances.landingDataPoints, toInterpolateForLanding, request.performances.temperatureMode).valueIn(DEFAULT_DISTANCE_UNIT);
     } catch (e) {
       outOfBoundLandingComputationError = e instanceof Error && e.message === 'OUT_OF_BOUND_ERROR';
     }
@@ -140,8 +144,9 @@ export class PerformanceComputer {
       new ComputationData(
         takeOffComputationFactor,
         toInterpolateForTakeOff.pressureAltitudeInFeet,
-        toInterpolateForTakeOff.diffWithIsaTemperatureInCelsius,
-        toInterpolateForTakeOff.massInKg
+        request.performances.temperatureMode === "ISA" ? toInterpolateForTakeOff.diffWithIsaTemperatureInCelsius : undefined,
+        request.performances.temperatureMode === "ABSOLUTE" ? toInterpolateForTakeOff.absoluteTemperatureInCelsius : undefined,
+        toInterpolateForTakeOff.mass
       )
     )
 
@@ -152,8 +157,9 @@ export class PerformanceComputer {
       new ComputationData(
         landingComputationFactor,
         toInterpolateForLanding.pressureAltitudeInFeet,
-        toInterpolateForLanding.diffWithIsaTemperatureInCelsius,
-        toInterpolateForLanding.massInKg
+        request.performances.temperatureMode === "ISA" ? toInterpolateForLanding.diffWithIsaTemperatureInCelsius : undefined,
+        request.performances.temperatureMode === "ABSOLUTE" ? toInterpolateForLanding.absoluteTemperatureInCelsius : undefined,
+        toInterpolateForLanding.mass
       )
     )
 

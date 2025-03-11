@@ -1,5 +1,7 @@
 import {PlanePerformances, RunwayFactors, StepCoefficient, WindCoefficientComputationData} from "../plane";
 import {PerformanceDataPoint} from "../performance-data-point";
+import {Distance} from "../distance";
+import {Mass} from "../mass";
 
 const validDiffWithISATakeOffPerformances = [
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 340},
@@ -14,7 +16,11 @@ const validDiffWithISATakeOffPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius(dto));
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+  ...dto,
+  distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+}));
 
 const validDiffWithISALandingPerformances = [
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 435},
@@ -29,7 +35,11 @@ const validDiffWithISALandingPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius(dto));
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+  ...dto,
+  distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+}));
 
 const validAbsoluteTemperatureTakeOffPerformances = [
   {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 340},
@@ -44,7 +54,11 @@ const validAbsoluteTemperatureTakeOffPerformances = [
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
-].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius(dto));
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+  ...dto,
+  distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+}));
 
 const validAbsoluteTemperatureLandingPerformances = [
   {pressureAltitudeInFeet: 0, absoluteTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 435},
@@ -59,7 +73,11 @@ const validAbsoluteTemperatureLandingPerformances = [
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
-].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius(dto));
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+  ...dto,
+  distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+}));
 
 
 const validRunwayFactors: RunwayFactors = new RunwayFactors(1.15, 1.15, 1, 1);
@@ -113,14 +131,14 @@ export const simpleValidPlanePerformance: PlanePerformances = new PlanePerforman
   [PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
     pressureAltitudeInFeet: 0,
     diffWithIsaTemperatureInCelsius: -20,
-    massInKg: 850,
-    distanceInMeters: 340
+    mass: Mass.forValueAndUnit(850, "KILOGRAMS"),
+    distance: Distance.forValueAndUnit(340, "METERS")
   })],
   [PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
     pressureAltitudeInFeet: 0,
     diffWithIsaTemperatureInCelsius: -20,
-    massInKg: 850,
-    distanceInMeters: 435
+    mass: Mass.forValueAndUnit(850, "KILOGRAMS"),
+    distance: Distance.forValueAndUnit(435, "METERS")
   })],
   validRunwayFactors,
   validRunwayFactors,
