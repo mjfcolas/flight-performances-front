@@ -1,6 +1,8 @@
 import {fireEvent, render, screen} from "@testing-library/angular";
 import {PerformanceTableComponent} from "./performance-table.component";
 import {PerformanceDataPointViewModel} from "../view-models/plane-performances-view.model";
+import {Mass} from "../../../domain/mass";
+import {Distance} from "../../../domain/distance";
 
 describe('PerformanceTableComponent', () => {
 
@@ -8,75 +10,75 @@ describe('PerformanceTableComponent', () => {
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: -20,
-      massInKg: 850,
-      distanceInMeters: 340
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(340, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: -20,
-      massInKg: 1050,
-      distanceInMeters: 530
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(530, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: 0,
-      massInKg: 850,
-      distanceInMeters: 375
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(375, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: 0,
-      massInKg: 1050,
-      distanceInMeters: 590
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(590, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: 20,
-      massInKg: 850,
-      distanceInMeters: 415
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(415, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 0,
       temperatureInCelsius: 20,
-      massInKg: 1050,
-      distanceInMeters: 655
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(655, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: -20,
-      massInKg: 850,
-      distanceInMeters: 445
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(445, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: -20,
-      massInKg: 1050,
-      distanceInMeters: 710
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(710, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: 0,
-      massInKg: 850,
-      distanceInMeters: 500
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(500, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: 0,
-      massInKg: 1050,
-      distanceInMeters: 800
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(800, "METERS")
 
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: 20,
-      massInKg: 850,
-      distanceInMeters: 550
+      mass: Mass.forValueAndUnit(850, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(550, "METERS")
     }),
     new PerformanceDataPointViewModel({
       pressureAltitudeInFeet: 4000,
       temperatureInCelsius: 20,
-      massInKg: 1050,
-      distanceInMeters: 890
+      mass: Mass.forValueAndUnit(1050, 'KILOGRAMS'),
+      distance: Distance.forValueAndUnit(890, "METERS")
     })
   ];
 
@@ -94,10 +96,10 @@ describe('PerformanceTableComponent', () => {
       })
 
       expect(screen.getByRole('columnheader', {
-        name: '850 Kg (m)'
+        name: '850 kg (m)'
       })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', {
-        name: '1050 Kg (m)'
+        name: '1050 kg (m)'
       })).toBeInTheDocument();
       expect(screen.getByRole('cell', {
         name: '0'
@@ -198,8 +200,8 @@ describe('PerformanceTableComponent', () => {
       expect(emittedDataPoints).toHaveBeenCalledWith([new PerformanceDataPointViewModel({
         pressureAltitudeInFeet: 0,
         temperatureInCelsius: 0,
-        massInKg: 850,
-        distanceInMeters: 400
+        mass: Mass.forValueAndUnit(850, "KILOGRAMS"),
+        distance: Distance.forValueAndUnit(400, "METERS")
       })]);
     });
   });

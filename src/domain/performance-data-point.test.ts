@@ -1,10 +1,12 @@
 import {PerformanceDataPoint} from "./performance-data-point";
+import {Distance} from "./distance";
+import {Mass} from "./mass";
 
 describe(`Performance data point`, () => {
 
   const aPressureAltitude = 0;
-  const aMass = 900;
-  const aDistance = 1000
+  const aMass = Mass.forValueAndUnit(900, "KILOGRAMS");
+  const aDistance = Distance.forValueAndUnit(1000, 'METERS');
 
   test(`Given a pressure altitude, a mass, a distance and an absolute temperature,
   when creating a performance data point,
@@ -13,8 +15,8 @@ describe(`Performance data point`, () => {
 
     const dataPoint = PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
       pressureAltitudeInFeet: aPressureAltitude,
-      massInKg: aMass,
-      distanceInMeters: aDistance,
+      mass: aMass,
+      distance: aDistance,
       absoluteTemperatureInCelsius: anAbsoluteTemperature
     })
 
@@ -29,8 +31,8 @@ describe(`Performance data point`, () => {
 
     const dataPoint = PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
       pressureAltitudeInFeet: aPressureAltitude,
-      massInKg: aMass,
-      distanceInMeters: aDistance,
+      mass: aMass,
+      distance: aDistance,
       diffWithIsaTemperatureInCelsius: aTemperatureDifference
     })
 

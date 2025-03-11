@@ -1,35 +1,37 @@
 import {Temperature} from "./temperature";
+import {Distance} from "./distance";
+import {Mass} from "./mass";
 
 type IsaTemperatureConstructorParameterType = {
   readonly pressureAltitudeInFeet: number;
   readonly diffWithIsaTemperatureInCelsius: number;
-  readonly massInKg: number;
-  readonly distanceInMeters: number;
+  readonly mass: Mass;
+  readonly distance: Distance;
 }
 
 type AbsoluteTemperatureConstructorParameterType = {
   readonly pressureAltitudeInFeet: number;
   readonly absoluteTemperatureInCelsius: number;
-  readonly massInKg: number;
-  readonly distanceInMeters: number;
+  readonly mass: Mass;
+  readonly distance: Distance;
 }
 
 export class PerformanceDataPoint {
 
   private constructor(readonly pressureAltitudeInFeet: number,
-                      readonly massInKg: number,
-                      readonly distanceInMeters: number,
+                      readonly mass: Mass,
+                      readonly distance: Distance,
                       private readonly _diffWithIsaTemperatureInCelsius?: number,
                       private readonly _absoluteTemperatureInCelsius?: number,
   ) {
   }
 
   static fromDiffWithIsaTemperatureInCelsius(params: IsaTemperatureConstructorParameterType): PerformanceDataPoint {
-    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.massInKg, params.distanceInMeters, params.diffWithIsaTemperatureInCelsius);
+    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, params.diffWithIsaTemperatureInCelsius);
   }
 
   static fromAbsoluteTemperatureInCelsius(params: AbsoluteTemperatureConstructorParameterType): PerformanceDataPoint {
-    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.massInKg, params.distanceInMeters, undefined, params.absoluteTemperatureInCelsius);
+    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, undefined, params.absoluteTemperatureInCelsius);
   }
 
   get diffWithIsaTemperatureInCelsius(): number {

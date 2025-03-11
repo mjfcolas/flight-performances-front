@@ -9,8 +9,7 @@ import {ComputationData, FactorType, PerformanceComputeResponse} from "../../dom
   standalone: true,
   templateUrl: './computation-details.component.html',
   imports: [
-    DecimalPipe,
-    FaIconComponent,
+    DecimalPipe
   ],
   providers: [],
 })

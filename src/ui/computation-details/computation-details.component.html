@@ -1,22 +1,30 @@
-@if(_computationData && _rawPerformanceInMeters){
+@if (_computationData && _rawPerformanceInMeters) {
   <div class="overflow-x-auto table-xs">
     <table class="table mt-1">
       <tbody>
       <tr>
         <th>Mass</th>
-        <td>{{ _computationData.massInKg }} kg</td>
+        <td>{{ _computationData.mass.valueIn('KILOGRAMS') }} kg</td>
       </tr>
       <tr>
         <th>Pressure Altitude</th>
         <td>{{ _computationData.pressureAltitudeInFeet }} ft</td>
       </tr>
-      <tr>
-        <th>Difference with ISA temperature</th>
-        <td>{{ _computationData.differenceWithISATemperature | number: '1.1-1'}} °C</td>
-      </tr>
+        @if (_computationData.differenceWithISATemperature) {
+          <tr>
+            <th>Difference with ISA temperature</th>
+            <td>{{ _computationData.differenceWithISATemperature | number: '1.1-1' }} °C</td>
+          </tr>
+        }
+        @if (_computationData.absoluteTemperature) {
+          <tr>
+            <th>Absolute temperature</th>
+            <td>{{ _computationData.absoluteTemperature | number: '1.1-1' }} °C</td>
+          </tr>
+        }
       <tr>
         <th>Interpolated Raw performance</th>
-        <td>{{ _rawPerformanceInMeters  | number: '1.0-0'}} m</td>
+        <td>{{ _rawPerformanceInMeters  | number: '1.0-0' }} m</td>
       </tr>
         @for (factorKey of _factorKeys; track factorKey) {
           <tr>
@@ -26,7 +34,7 @@
         }
       <tr>
         <th>Final performance</th>
-        <td>{{ _securedPerformanceInMeters  | number: '1.0-0'}} m</td>
+        <td>{{ _securedPerformanceInMeters  | number: '1.0-0' }} m</td>
       </tr>
       </tbody>
     </table>
