@@ -3,7 +3,7 @@ import {PressureAltitude} from "./pressure-altitude";
 import {PerformanceComputeRequest} from "./performance-compute.request";
 import {Temperature} from "./temperature";
 import {TrilinearInterpolationProvider} from "../infrastructure/interpolation/trilinear-interpolation.provider";
-import {validPlanePerformances} from "./__test__/test-plane";
+import {validAbsoluteTemperaturePlanePerformances, validDiffWithISAPlanePerformances} from "./__test__/test-plane";
 
 describe(`PerformanceComputer`, () => {
 
@@ -17,7 +17,7 @@ describe(`PerformanceComputer`, () => {
   const nominalTestCase = [
     "Normally loaded plane at nominal temperature and pressure on a dry hard runway at nominal elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       A_NOMINAL_ELEVATION,
       new Temperature(A_NOMINAL_TEMPERATURE),
       900,
@@ -36,7 +36,7 @@ describe(`PerformanceComputer`, () => {
   const nominalOnGrassRunwayTestCase = [
     "Normally loaded plane at nominal temperature and pressure on a dry grass runway at nominal elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       A_NOMINAL_ELEVATION,
       new Temperature(A_NOMINAL_TEMPERATURE),
       900,
@@ -54,7 +54,7 @@ describe(`PerformanceComputer`, () => {
   const nominalOnWetRunwayTestCase = [
     "Normally loaded plane at nominal temperature and pressure on a wet hard runway at nominal elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       A_NOMINAL_ELEVATION,
       new Temperature(A_NOMINAL_TEMPERATURE),
       900,
@@ -72,7 +72,7 @@ describe(`PerformanceComputer`, () => {
   const overloadedPlaneTestCase = [
     "Over loaded plane at nominal temperature and pressure on a dry hard runway at nominal elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       A_NOMINAL_ELEVATION,
       new Temperature(A_NOMINAL_TEMPERATURE),
       1200,
@@ -90,7 +90,7 @@ describe(`PerformanceComputer`, () => {
   const underloadedPlaneTestCase = [
     "Under loaded plane at nominal temperature and pressure on a dry hard runway at nominal elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       A_NOMINAL_ELEVATION,
       new Temperature(A_NOMINAL_TEMPERATURE),
       750,
@@ -108,7 +108,7 @@ describe(`PerformanceComputer`, () => {
   const seaLevelWithHighAtmosphericPressureTestCase = [
     "Normally loaded plane at nominal temperature and high atmospheric pressure on a dry hard runway at seat level elevation without wind",
     new PerformanceComputeRequest(
-      validPlanePerformances,
+      validDiffWithISAPlanePerformances,
       PressureAltitude.fromAltitudeInFeetAndQnhInHpa(0, 1020),
       new Temperature(A_NOMINAL_TEMPERATURE),
       900,
@@ -123,12 +123,31 @@ describe(`PerformanceComputer`, () => {
     }
   ]
 
+  const absoluteTemperatureTestCase = [
+    "Performances based on absolute temperature at sea level and standard pressure for a plane loaded under minimal data",
+    new PerformanceComputeRequest(
+      validAbsoluteTemperaturePlanePerformances,
+      PressureAltitude.fromAltitudeInFeetAndQnhInHpa(0, 1013),
+      new Temperature(10),
+      500,
+      "DRY",
+      "HARD",
+      0
+    ), {
+      rawTakeOffPerformance: 395,
+      securedTakeOffPerformance: 474,
+      rawLandingPerformance: 472.5,
+      securedLandingPerformance: 567
+    }
+  ]
+
   const completedCases: any[] = [
     nominalTestCase,
     nominalOnGrassRunwayTestCase,
     nominalOnWetRunwayTestCase,
     underloadedPlaneTestCase,
-    seaLevelWithHighAtmosphericPressureTestCase
+    seaLevelWithHighAtmosphericPressureTestCase,
+    absoluteTemperatureTestCase
   ]
 
   const inErrorCases: any[] = [
