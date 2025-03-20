@@ -9,7 +9,7 @@ import {
 import {UiMode} from "../ui-mode";
 import {StepCoefficient, TemperatureMode} from "../../domain/plane";
 import {FormsModule} from "@angular/forms";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
 
 @Component({
   selector: 'plane-performance',

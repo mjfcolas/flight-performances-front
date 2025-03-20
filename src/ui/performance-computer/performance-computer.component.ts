@@ -20,7 +20,8 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {LoginRepository} from "../../domain/user/login.repository";
 import {ChooseUnitFormComponent} from "../choose-unit-form/choose-unit-form.component";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
+import {DefaultUnitRepository} from "../../domain/physical-quantity/default-unit.repository";
 
 
 @Component({
@@ -48,19 +49,18 @@ export class PerformanceComputerComponent {
 
   completePerformanceComputeResponse: TakeOffAndLandingPerformanceComputeResponse | null = null;
   unitPanel: boolean = false;
-  chosenUnit: ChosenUnit = {
-    massUnit: 'KILOGRAMS',
-    horizontalDistanceUnit: 'METERS',
-    atmosphericPressureUnit: 'HPA',
-    temperatureUnit: 'CELSIUS'
-  }
+  chosenUnit: ChosenUnit | undefined
 
   constructor(
     private readonly performanceComputer: PerformanceComputer,
     private readonly planeRepository: PlaneRepository,
-    private readonly loginRepository: LoginRepository
+    private readonly loginRepository: LoginRepository,
+    defaultUnitRepository: DefaultUnitRepository
   ) {
     this.securityFactor = SECURITY_FACTOR;
+    defaultUnitRepository.getChosenUnit().then(chosenUnit => {
+      this.chosenUnit = chosenUnit;
+    })
     this.updateFavoriteIcon();
   }
 

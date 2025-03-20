@@ -1,6 +1,5 @@
 import {Component, inject} from '@angular/core';
 import {PlanePerformanceComponent} from "../plane-performance/plane-performance.component";
-import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {PlaneCreateOrUpdateCommand} from "../../domain/create-plane/plane-create-or-update-command";
@@ -13,7 +12,8 @@ import {UserRepository} from "../../domain/user/user.repository";
 import {map, Observable} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {ChooseUnitFormComponent} from "../choose-unit-form/choose-unit-form.component";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
+import {DefaultUnitRepository} from "../../domain/physical-quantity/default-unit.repository";
 
 @Component({
   selector: 'plane-creator',
@@ -41,16 +41,17 @@ export class PlaneCreatorComponent {
   inError: boolean = false;
 
   unitPanel: boolean = false;
-  chosenUnit: ChosenUnit = {
-    massUnit: 'KILOGRAMS',
-    horizontalDistanceUnit: 'METERS',
-    atmosphericPressureUnit: 'HPA',
-    temperatureUnit: 'CELSIUS'
-  }
+  chosenUnit: ChosenUnit | undefined
 
-  constructor(private readonly planeRepository: PlaneRepository, private readonly loginRepository: LoginRepository, private readonly userRepository: UserRepository) {
+  constructor(
+    private readonly planeRepository: PlaneRepository,
+    private readonly loginRepository: LoginRepository,
+    private readonly userRepository: UserRepository,
+    defaultUnitRepository: DefaultUnitRepository) {
     this.isNicknameDefined = this.userRepository.getUser().pipe(map(user => !!user.nickname));
-
+    defaultUnitRepository.getChosenUnit().then(chosenUnit => {
+      this.chosenUnit = chosenUnit;
+    })
   }
 
   save() {

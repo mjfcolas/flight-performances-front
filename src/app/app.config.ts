@@ -70,7 +70,7 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: DefaultUnitRepository,
-      useFactory: () => new LocalStorageDefaultUnitRepository()
+      useFactory: () => new LocalStorageDefaultUnitRepository(inject(LoginRepository), inject(UserRepository))
     }
   ]
 };

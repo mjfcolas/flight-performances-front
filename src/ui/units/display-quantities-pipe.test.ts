@@ -1,4 +1,4 @@
-import {ChosenUnit} from "./chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
 import {testChosenUnit} from "./__test__/test-chose-unit";
 import {Mass} from "../../domain/physical-quantity/mass";
 import {Distance} from "../../domain/physical-quantity/distance";

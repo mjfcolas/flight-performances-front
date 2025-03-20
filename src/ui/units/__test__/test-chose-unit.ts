@@ -1,4 +1,4 @@
-import {ChosenUnit} from "../chosen-unit";
+import {ChosenUnit} from "../../../domain/physical-quantity/chosen-unit";
 
 export const testChosenUnit: ChosenUnit = {
   massUnit: 'KILOGRAMS',

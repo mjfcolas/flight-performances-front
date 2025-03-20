@@ -15,6 +15,8 @@ import {MockedLoginRepository} from "../../domain/user/__mock__/mocked-login.rep
 import {UserRepository} from "../../domain/user/user.repository";
 import {MockedUserRepository} from "../../domain/user/__mock__/mocked-user.repository";
 import {AsyncPipe} from "@angular/common";
+import {DefaultUnitRepository} from "../../domain/physical-quantity/default-unit.repository";
+import {MockedDefaultUnitRepository} from "../../domain/physical-quantity/__mock__/mocked-default-unit.repository";
 
 describe('PlaneCreatorComponent', () => {
 
@@ -51,7 +53,12 @@ describe('PlaneCreatorComponent', () => {
       {
         provide: UserRepository,
         useValue: mockedUserRepository
-      }],
+      },
+      {
+        provide: DefaultUnitRepository,
+        useValue: new MockedDefaultUnitRepository()
+      }
+    ],
   }
 
   test(`When rendering plane creator component,

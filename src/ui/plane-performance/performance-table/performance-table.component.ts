@@ -7,7 +7,7 @@ import {Temperature, TemperatureDifference} from "../../../domain/physical-quant
 import {TemperatureMode} from "../../../domain/plane";
 import {Distance} from "../../../domain/physical-quantity/distance";
 import {Mass} from "../../../domain/physical-quantity/mass";
-import {ChosenUnit} from "../../units/chosen-unit";
+import {ChosenUnit} from "../../../domain/physical-quantity/chosen-unit";
 import {DisplayTemperatureUnitPipe} from "../../units/display-temperature-unit.pipe";
 import {DisplayMassUnitPipe} from "../../units/display-mass-unit.pipe";
 import {DisplayMassPipe} from "../../units/display-mass.pipe";

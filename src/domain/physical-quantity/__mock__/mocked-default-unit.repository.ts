@@ -1,23 +1,20 @@
 import {DefaultUnitRepository} from "../default-unit.repository";
-import {AtmosphericPressureUnit} from "../atmospheric-pressure";
-import {DistanceUnit} from "../distance";
-import {TemperatureUnit} from "../temperature";
-import {MassUnit} from "../mass";
+import {ChosenUnit} from "../chosen-unit";
 
 export class MockedDefaultUnitRepository implements DefaultUnitRepository {
-  getAtmosphericPressureUnit(): AtmosphericPressureUnit {
-    return 'HPA';
+
+  private chosenUnit: ChosenUnit = {
+    massUnit: 'POUNDS',
+    horizontalDistanceUnit: 'METERS',
+    atmosphericPressureUnit: 'HPA',
+    temperatureUnit: 'CELSIUS'
   }
 
-  getHorizontalDistanceUnit(): DistanceUnit {
-    return 'METERS';
+  getChosenUnit(): Promise<ChosenUnit> {
+    return Promise.resolve(this.chosenUnit);
   }
 
-  getMassUnit(): MassUnit {
-    return 'KILOGRAMS';
-  }
-
-  getTemperatureUnit(): TemperatureUnit {
-    return 'CELSIUS';
+  persistChosenUnit(chosenUnit: ChosenUnit): void {
+    this.chosenUnit = chosenUnit;
   }
 }
