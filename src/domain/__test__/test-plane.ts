@@ -1,7 +1,8 @@
 import {PlanePerformances, RunwayFactors, StepCoefficient, WindCoefficientComputationData} from "../plane";
 import {PerformanceDataPoint} from "../performance-data-point";
-import {Distance} from "../distance";
-import {Mass} from "../mass";
+import {Distance} from "../physical-quantity/distance";
+import {Mass} from "../physical-quantity/mass";
+import {Temperature, TemperatureDifference} from "../physical-quantity/temperature";
 
 const validDiffWithISATakeOffPerformances = [
   {pressureAltitudeInFeet: 0, diffWithIsaTemperatureInCelsius: -20, massInKg: 850, distanceInMeters: 340},
@@ -16,10 +17,11 @@ const validDiffWithISATakeOffPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
-  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS'),
+  diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS')
 }));
 
 const validDiffWithISALandingPerformances = [
@@ -35,10 +37,11 @@ const validDiffWithISALandingPerformances = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
-  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS'),
+  diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS')
 }));
 
 const validAbsoluteTemperatureTakeOffPerformances = [
@@ -54,10 +57,11 @@ const validAbsoluteTemperatureTakeOffPerformances = [
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
-].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
-  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS'),
+  absoluteTemperature: Temperature.forValueAndUnit(dto.absoluteTemperatureInCelsius, 'CELSIUS')
 }));
 
 const validAbsoluteTemperatureLandingPerformances = [
@@ -73,10 +77,11 @@ const validAbsoluteTemperatureLandingPerformances = [
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
   {pressureAltitudeInFeet: 4000, absoluteTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
-].map((dto) => PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromAbsoluteTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
-  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
+  mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS'),
+  absoluteTemperature: Temperature.forValueAndUnit(dto.absoluteTemperatureInCelsius, 'CELSIUS')
 }));
 
 
@@ -128,15 +133,15 @@ export const validAbsoluteTemperaturePlanePerformances: PlanePerformances = new 
 
 export const simpleValidPlanePerformance: PlanePerformances = new PlanePerformances(
   'ISA',
-  [PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+  [PerformanceDataPoint.fromDiffWithIsaTemperature({
     pressureAltitudeInFeet: 0,
-    diffWithIsaTemperatureInCelsius: -20,
+    diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(-20, 'CELSIUS'),
     mass: Mass.forValueAndUnit(850, "KILOGRAMS"),
     distance: Distance.forValueAndUnit(340, "METERS")
   })],
-  [PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+  [PerformanceDataPoint.fromDiffWithIsaTemperature({
     pressureAltitudeInFeet: 0,
-    diffWithIsaTemperatureInCelsius: -20,
+    diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(-20, 'CELSIUS'),
     mass: Mass.forValueAndUnit(850, "KILOGRAMS"),
     distance: Distance.forValueAndUnit(435, "METERS")
   })],

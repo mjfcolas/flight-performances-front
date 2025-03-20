@@ -1,17 +1,17 @@
-import {Temperature} from "./temperature";
-import {Distance} from "./distance";
-import {Mass} from "./mass";
+import {Temperature, TemperatureDifference} from "./physical-quantity/temperature";
+import {Distance} from "./physical-quantity/distance";
+import {Mass} from "./physical-quantity/mass";
 
 type IsaTemperatureConstructorParameterType = {
   readonly pressureAltitudeInFeet: number;
-  readonly diffWithIsaTemperatureInCelsius: number;
+  readonly diffWithIsaTemperature: TemperatureDifference;
   readonly mass: Mass;
   readonly distance: Distance;
 }
 
 type AbsoluteTemperatureConstructorParameterType = {
   readonly pressureAltitudeInFeet: number;
-  readonly absoluteTemperatureInCelsius: number;
+  readonly absoluteTemperature: Temperature;
   readonly mass: Mass;
   readonly distance: Distance;
 }
@@ -21,33 +21,32 @@ export class PerformanceDataPoint {
   private constructor(readonly pressureAltitudeInFeet: number,
                       readonly mass: Mass,
                       readonly distance: Distance,
-                      private readonly _diffWithIsaTemperatureInCelsius?: number,
-                      private readonly _absoluteTemperatureInCelsius?: number,
+                      private readonly _diffWithIsaTemperature?: TemperatureDifference,
+                      private readonly _absoluteTemperature?: Temperature,
   ) {
   }
 
-  static fromDiffWithIsaTemperatureInCelsius(params: IsaTemperatureConstructorParameterType): PerformanceDataPoint {
-    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, params.diffWithIsaTemperatureInCelsius);
+  static fromDiffWithIsaTemperature(params: IsaTemperatureConstructorParameterType): PerformanceDataPoint {
+    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, params.diffWithIsaTemperature);
   }
 
-  static fromAbsoluteTemperatureInCelsius(params: AbsoluteTemperatureConstructorParameterType): PerformanceDataPoint {
-    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, undefined, params.absoluteTemperatureInCelsius);
+  static fromAbsoluteTemperature(params: AbsoluteTemperatureConstructorParameterType): PerformanceDataPoint {
+    return new PerformanceDataPoint(params.pressureAltitudeInFeet, params.mass, params.distance, undefined, params.absoluteTemperature);
   }
 
-  get diffWithIsaTemperatureInCelsius(): number {
-    if (this._diffWithIsaTemperatureInCelsius !== undefined) {
-      return this._diffWithIsaTemperatureInCelsius;
+  get diffWithIsaTemperature(): TemperatureDifference {
+    if (this._diffWithIsaTemperature !== undefined) {
+      return this._diffWithIsaTemperature;
     } else {
-      return new Temperature(this._absoluteTemperatureInCelsius as number).differenceWithISATemperatureAt(this.pressureAltitudeInFeet);
+      return (this._absoluteTemperature as Temperature).differenceWithISATemperatureAt(this.pressureAltitudeInFeet);
     }
   }
 
-  get absoluteTemperatureInCelsius(): number {
-    if (this._absoluteTemperatureInCelsius !== undefined) {
-      return this._absoluteTemperatureInCelsius;
+  get absoluteTemperature(): Temperature {
+    if (this._absoluteTemperature !== undefined) {
+      return this._absoluteTemperature;
     } else {
-      return Temperature.ISATemperatureAt(this.pressureAltitudeInFeet).valueInCelsius + (this._diffWithIsaTemperatureInCelsius as number);
-
+      return Temperature.ISATemperatureAt(this.pressureAltitudeInFeet).add(this._diffWithIsaTemperature as TemperatureDifference);
     }
   }
 }

@@ -1,12 +1,18 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, LOCALE_ID, Output} from '@angular/core';
 import {UiMode} from "../../ui-mode";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {pushAtSortPosition} from "array-push-at-sort-position";
 import {PerformanceDataPointViewModel} from "../view-models/plane-performances-view.model";
-import {Temperature} from "../../../domain/temperature";
+import {Temperature, TemperatureDifference} from "../../../domain/physical-quantity/temperature";
 import {TemperatureMode} from "../../../domain/plane";
-import {Distance, DistanceUnit} from "../../../domain/distance";
-import {Mass, MassUnit} from "../../../domain/mass";
+import {Distance} from "../../../domain/physical-quantity/distance";
+import {Mass} from "../../../domain/physical-quantity/mass";
+import {ChosenUnit} from "../../units/chosen-unit";
+import {DisplayTemperatureUnitPipe} from "../../units/display-temperature-unit.pipe";
+import {DisplayMassUnitPipe} from "../../units/display-mass-unit.pipe";
+import {DisplayMassPipe} from "../../units/display-mass.pipe";
+import {DisplayDistanceUnitPipe} from "../../units/display-distance-unit.pipe";
+import {formatTemperature} from "../../units/format-physical-value";
 
 @Component({
   selector: 'performance-table',
@@ -14,14 +20,18 @@ import {Mass, MassUnit} from "../../../domain/mass";
   templateUrl: './performance-table.component.html',
   imports: [
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    DisplayTemperatureUnitPipe,
+    DisplayMassUnitPipe,
+    DisplayMassPipe,
+    DisplayDistanceUnitPipe
   ],
   providers: []
 })
 export class PerformanceTableComponent {
 
   private _massesInKg: number[] = [];
-  private _temperatures: number[] = [];
+  private _temperaturesInCelsius: number[] = [];
   private _altitudes: number[] = [];
 
   private _dataMap: Map<number, Map<number, Map<number, (Distance | null | undefined)>>> = new Map();
@@ -39,52 +49,32 @@ export class PerformanceTableComponent {
   @Input()
   temperatureMode: TemperatureMode = 'ISA';
 
-  private _horizontalDistanceUnit: DistanceUnit = 'METERS';
-
   @Input()
-  set horizontalDistanceUnit(distanceUnit: DistanceUnit) {
-    this._horizontalDistanceUnit = distanceUnit;
-    if (distanceUnit == 'METERS') {
-      this.horizontalDistanceUnitLabel = 'm';
-    } else {
-      this.horizontalDistanceUnitLabel = 'ft';
-    }
-  };
-
-  get horizontalDistanceUnit() {
-    return this._horizontalDistanceUnit;
-  }
-
-  private _massUnit: MassUnit = 'KILOGRAMS';
-
-  @Input()
-  set massUnit(massUnit: MassUnit) {
-    this._massUnit = massUnit;
-    if (massUnit == 'KILOGRAMS') {
-      this.massUnitLabel = 'kg';
-    } else {
-      this.massUnitLabel = 'lb';
-    }
-  };
-
-  get massUnit() {
-    return this._massUnit;
-  }
-
-  horizontalDistanceUnitLabel: string = 'm';
-  massUnitLabel: string = 'kg';
+  chosenUnit: ChosenUnit | undefined;
 
   @Input()
   set dataPoints(dataPoints: PerformanceDataPointViewModel[]) {
 
-    this._massesInKg = [...new Set([...this._massesInKg, ...dataPoints.map(dataPoint => dataPoint.mass.valueIn("KILOGRAMS"))].sort((a, b) => a - b))];
-    this._altitudes = [...new Set([...this._altitudes, ...dataPoints.map(dataPoint => dataPoint.pressureAltitudeInFeet)].sort((a, b) => a - b))];
+    this._massesInKg = [...new Set([
+      ...this._massesInKg,
+      ...dataPoints.map(dataPoint => dataPoint.mass.valueIn("KILOGRAMS"))]
+      .sort((a, b) => a - b))
+    ];
+    this._altitudes = [...new Set([
+      ...this._altitudes,
+      ...dataPoints.map(dataPoint => dataPoint.pressureAltitudeInFeet)]
+      .sort((a, b) => a - b))
+    ];
     if (this._altitudes.length == 0) {
       this._altitudes = [0];
     }
-    this._temperatures = [...new Set([...this._temperatures, ...dataPoints.map(dataPoint => dataPoint.temperatureInCelsius)].sort((a, b) => a - b))];
-    if (this._temperatures.length == 0) {
-      this._temperatures = [0];
+    this._temperaturesInCelsius = [...new Set([
+      ...this._temperaturesInCelsius,
+      ...dataPoints.map(dataPoint => dataPoint.temperatureInCelsius)]
+      .sort((a, b) => a - b))
+    ];
+    if (this._temperaturesInCelsius.length == 0) {
+      this._temperaturesInCelsius = [0];
     }
     dataPoints.forEach(dataPoint => {
       this.addPerformanceDataPointToMap(dataPoint);
@@ -99,20 +89,29 @@ export class PerformanceTableComponent {
     return this._altitudes;
   }
 
-  get temperatures(): number[] {
-    return this._temperatures;
+  get temperaturesInCelsius(): number[] {
+    return this._temperaturesInCelsius;
+  }
+
+  constructor(@Inject(LOCALE_ID) private locale: string) {
   }
 
   valueAt(massInKg: number, temperature: number, altitude: number): string | undefined {
-    return this._dataMap.get(massInKg)?.get(temperature)?.get(altitude)?.valueIn(this._horizontalDistanceUnit)?.toFixed(0) || undefined;
+    if (this.chosenUnit === undefined) {
+      return undefined;
+    }
+    return this._dataMap.get(massInKg)?.get(temperature)?.get(altitude)?.valueIn(this.chosenUnit.horizontalDistanceUnit)?.toFixed(0) || undefined;
   }
 
-  setValueAt(massInKg: number, temperature: number, altitude: number, value: number) {
+  setValueAt(massInKg: number, temperatureInCelsius: number, altitude: number, value: number) {
+    if (this.chosenUnit === undefined) {
+      return;
+    }
     this.addPerformanceDataPointToMap(new PerformanceDataPointViewModel({
       mass: Mass.forValueAndUnit(massInKg, 'KILOGRAMS'),
-      temperatureInCelsius: temperature,
+      temperatureInCelsius: temperatureInCelsius,
       pressureAltitudeInFeet: altitude,
-      distance: Distance.forValueAndUnit(value, this._horizontalDistanceUnit)
+      distance: Distance.forValueAndUnit(value, this.chosenUnit.horizontalDistanceUnit)
     }))
     this.emitDataPoints();
   }
@@ -135,14 +134,19 @@ export class PerformanceTableComponent {
     }
   }
 
-  temperatureLabelAt(altitudeInFeet: number, temperature: number): string {
+  temperatureLabelAt(altitudeInFeet: number, temperatureInCelsius: number): string {
 
-    if (this.temperatureMode == 'ISA') {
-      const absoluteTemperature = Temperature.ISATemperatureAt(altitudeInFeet).valueInCelsius + temperature;
-      return `${temperature === 0 ? 'Std = ' : ''} ${absoluteTemperature.toFixed(0)}`;
-    } else {
-      return `${temperature.toFixed(0)}`;
+    if (this.chosenUnit === undefined) {
+      return '';
     }
+
+    let absoluteTemperature;
+    if (this.temperatureMode == 'ISA') {
+      absoluteTemperature = Temperature.ISATemperatureAt(altitudeInFeet).add(TemperatureDifference.forValueAndUnit(temperatureInCelsius, 'CELSIUS'));
+    } else {
+      absoluteTemperature = Temperature.forValueAndUnit(temperatureInCelsius, 'CELSIUS')
+    }
+    return formatTemperature(absoluteTemperature, this.chosenUnit.temperatureUnit, this.locale);
 
   }
 
@@ -165,14 +169,22 @@ export class PerformanceTableComponent {
   }
 
   private updateTemperatures(newTemperature: number) {
-    const temperaturesToUpdate = this._temperatures;
-    pushAtSortPosition(temperaturesToUpdate, newTemperature, (a, b) => a > b ? 1 : a < b ? -1 : 0, 0);
-    this._temperatures = [...new Set(temperaturesToUpdate)];
+    if (this.chosenUnit === undefined) {
+      return;
+    }
+    const temperaturesToUpdate = this._temperaturesInCelsius;
+    const newTemperatureInCelsius = Temperature.forValueAndUnit(newTemperature, this.chosenUnit.temperatureUnit).valueIn("CELSIUS");
+    pushAtSortPosition(temperaturesToUpdate, newTemperatureInCelsius, (a, b) => a > b ? 1 : a < b ? -1 : 0, 0);
+    this._temperaturesInCelsius = [...new Set(temperaturesToUpdate)];
   }
 
   private updateMasses(newMass: number) {
+    if (this.chosenUnit === undefined) {
+      return;
+    }
     const massesToUpdate = this._massesInKg;
-    pushAtSortPosition(massesToUpdate, Mass.forValueAndUnit(newMass, this._massUnit).valueIn("KILOGRAMS"), (a, b) => a > b ? 1 : a < b ? -1 : 0, 0);
+    const newMassInKg = Mass.forValueAndUnit(newMass, this.chosenUnit.massUnit).valueIn("KILOGRAMS");
+    pushAtSortPosition(massesToUpdate, newMassInKg, (a, b) => a > b ? 1 : a < b ? -1 : 0, 0);
     this._massesInKg = [...new Set(massesToUpdate)];
   }
 

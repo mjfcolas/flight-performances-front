@@ -6,14 +6,14 @@ import {
   WindCoefficientComputationData
 } from "../../../domain/plane";
 import {PerformanceDataPoint} from "../../../domain/performance-data-point";
-import {Distance, DistanceUnit} from "../../../domain/distance";
-import {Mass, MassUnit} from "../../../domain/mass";
+import {Distance} from "../../../domain/physical-quantity/distance";
+import {Mass} from "../../../domain/physical-quantity/mass";
+import {Temperature, TemperatureDifference} from "../../../domain/physical-quantity/temperature";
+import {ChosenUnit} from "../../units/chosen-unit";
 
 
 type PlanePerformancesViewModelConstructorParameterType = {
   temperatureMode: TemperatureMode,
-  horizontalDistanceUnit: DistanceUnit,
-  massUnit: MassUnit,
   takeOffDataPoints: PerformanceDataPointViewModel[],
   landingDataPoints: PerformanceDataPointViewModel[],
   takeOffRunwayFactors: RunwayFactorsViewModel,
@@ -24,8 +24,6 @@ type PlanePerformancesViewModelConstructorParameterType = {
 
 export class PlanePerformancesViewModel {
   readonly temperatureMode: TemperatureMode;
-  readonly horizontalDistanceUnit: DistanceUnit;
-  readonly massUnit: MassUnit;
   readonly takeOffDataPoints: PerformanceDataPointViewModel[];
   readonly landingDataPoints: PerformanceDataPointViewModel[];
   readonly takeOffRunwayFactors: RunwayFactorsViewModel;
@@ -36,8 +34,6 @@ export class PlanePerformancesViewModel {
   private constructor(
     params: PlanePerformancesViewModelConstructorParameterType) {
     this.temperatureMode = params.temperatureMode;
-    this.horizontalDistanceUnit = params.horizontalDistanceUnit;
-    this.massUnit = params.massUnit;
     this.takeOffDataPoints = params.takeOffDataPoints;
     this.landingDataPoints = params.landingDataPoints;
     this.takeOffRunwayFactors = params.takeOffRunwayFactors;
@@ -75,8 +71,6 @@ export class PlanePerformancesViewModel {
   public copyWith(params: Partial<PlanePerformancesViewModelConstructorParameterType>) {
     return new PlanePerformancesViewModel({
       temperatureMode: params.temperatureMode ?? this.temperatureMode,
-      horizontalDistanceUnit: params.horizontalDistanceUnit ?? this.horizontalDistanceUnit,
-      massUnit: params.massUnit ?? this.massUnit,
       takeOffDataPoints: params.takeOffDataPoints ?? this.takeOffDataPoints,
       landingDataPoints: params.landingDataPoints ?? this.landingDataPoints,
       takeOffRunwayFactors: params.takeOffRunwayFactors ?? this.takeOffRunwayFactors,
@@ -93,25 +87,16 @@ export class PlanePerformancesViewModel {
     });
   }
 
-  changeHorizontalDistanceUnit(horizontalDistanceUnit: DistanceUnit): PlanePerformancesViewModel {
+  changeChosenUnit(chosenUnit: ChosenUnit): PlanePerformancesViewModel {
     return new PlanePerformancesViewModel({
       ...this,
-      horizontalDistanceUnit: horizontalDistanceUnit
-    });
-  }
-
-  changeMassUnit(massUnit: MassUnit) {
-    return new PlanePerformancesViewModel({
-      ...this,
-      massUnit: massUnit
+      chosenUnit: chosenUnit
     });
   }
 
   static empty(): PlanePerformancesViewModel {
     return new PlanePerformancesViewModel({
       temperatureMode: 'ISA',
-      horizontalDistanceUnit: 'METERS',
-      massUnit: 'KILOGRAMS',
       takeOffDataPoints: [],
       landingDataPoints: [],
       takeOffRunwayFactors: new RunwayFactorsViewModel({
@@ -133,12 +118,13 @@ export class PlanePerformancesViewModel {
 
   static fromPlanePerformances(planePerformances: PlanePerformances): PlanePerformancesViewModel {
 
-    const temperatureGetter = (dataPoint: PerformanceDataPoint) => planePerformances.temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperatureInCelsius : dataPoint.absoluteTemperatureInCelsius;
+    const temperatureGetter = (dataPoint: PerformanceDataPoint) =>
+      planePerformances.temperatureMode === 'ISA'
+        ? dataPoint.diffWithIsaTemperature.valueIn('CELSIUS')
+        : dataPoint.absoluteTemperature.valueIn('CELSIUS');
 
     return new PlanePerformancesViewModel({
       temperatureMode: planePerformances.temperatureMode,
-      horizontalDistanceUnit: 'METERS',
-      massUnit: 'KILOGRAMS',
       takeOffDataPoints: planePerformances.takeOffDataPoints.map(dataPoint => new PerformanceDataPointViewModel({
         pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
         temperatureInCelsius: temperatureGetter(dataPoint),
@@ -246,16 +232,16 @@ export class PerformanceDataPointViewModel {
     }
 
     if (temperatureMode === 'ISA') {
-      return PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+      return PerformanceDataPoint.fromDiffWithIsaTemperature({
         pressureAltitudeInFeet: this.pressureAltitudeInFeet,
-        diffWithIsaTemperatureInCelsius: this.temperatureInCelsius,
+        diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(this.temperatureInCelsius, 'CELSIUS'),
         mass: this.mass,
         distance: this.distance,
       });
     } else {
-      return PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+      return PerformanceDataPoint.fromAbsoluteTemperature({
         pressureAltitudeInFeet: this.pressureAltitudeInFeet,
-        absoluteTemperatureInCelsius: this.temperatureInCelsius,
+        absoluteTemperature: Temperature.forValueAndUnit(this.temperatureInCelsius, 'CELSIUS'),
         mass: this.mass,
         distance: this.distance,
       });

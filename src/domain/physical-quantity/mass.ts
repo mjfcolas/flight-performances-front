@@ -1,4 +1,5 @@
 export type MassUnit = 'KILOGRAMS' | 'POUNDS';
+export const isMassUnit = (value: string): value is MassUnit => ['KILOGRAMS', 'POUNDS'].includes(value);
 
 const POUNDS_IN_KILOGRAMS = 0.45359237;
 

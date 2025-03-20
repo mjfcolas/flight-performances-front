@@ -1,10 +1,9 @@
 import {Component, inject} from '@angular/core';
-import {AsyncPipe, NgForOf} from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {Plane} from "../../domain/plane";
-import {ActivatedRoute, RouterLink} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {PerformanceComputer, SECURITY_FACTOR} from "../../domain/performance-computer";
-import {PressureAltitude} from "../../domain/pressure-altitude";
-import {Temperature} from "../../domain/temperature";
+import {PressureAltitude} from "../../domain/physical-quantity/pressure-altitude";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons';
@@ -16,12 +15,12 @@ import {ComputationDetailsComponent} from "../computation-details/computation-de
 import {ComputationFormComponent} from "../computation-form/computation-form.component";
 import {ComputationFormOutput} from "../computation-form/output/computation-form.output";
 import {PlanePerformanceComponent} from "../plane-performance/plane-performance.component";
-import {PerformanceTableComponent} from "../plane-performance/performance-table/performance-table.component";
-import {ComputationFactorsComponent} from "../plane-performance/computation-factors/computation-factors.component";
 import {PlanePerformancesViewModel} from "../plane-performance/view-models/plane-performances-view.model";
 import {BehaviorSubject, Observable} from "rxjs";
 import {PlaneRepository} from "../../domain/plane.repository";
 import {LoginRepository} from "../../domain/user/login.repository";
+import {ChooseUnitFormComponent} from "../choose-unit-form/choose-unit-form.component";
+import {ChosenUnit} from "../units/chosen-unit";
 
 
 @Component({
@@ -34,7 +33,8 @@ import {LoginRepository} from "../../domain/user/login.repository";
     ComputationDetailsComponent,
     ComputationFormComponent,
     PlanePerformanceComponent,
-    AsyncPipe
+    AsyncPipe,
+    ChooseUnitFormComponent
   ]
 })
 export class PerformanceComputerComponent {
@@ -46,9 +46,14 @@ export class PerformanceComputerComponent {
 
   detailedMode: boolean = false;
 
-  massInKg: number = 800;
-
   completePerformanceComputeResponse: TakeOffAndLandingPerformanceComputeResponse | null = null;
+  unitPanel: boolean = false;
+  chosenUnit: ChosenUnit = {
+    massUnit: 'KILOGRAMS',
+    horizontalDistanceUnit: 'METERS',
+    atmosphericPressureUnit: 'HPA',
+    temperatureUnit: 'CELSIUS'
+  }
 
   constructor(
     private readonly performanceComputer: PerformanceComputer,
@@ -63,11 +68,11 @@ export class PerformanceComputerComponent {
     this.planeRepository.addToLastUsed(this.plane);
     this.completePerformanceComputeResponse = this.performanceComputer.compute({
       performances: this.plane.performances,
-      pressureAltitude: PressureAltitude.fromAltitudeInFeetAndQnhInHpa(
+      pressureAltitude: PressureAltitude.fromAltitudeInFeetAndQnh(
         computationFormOutput.altitude,
-        computationFormOutput.qnhInHpa),
-      temperatureInCelsius: new Temperature(computationFormOutput.temperatureInCelsius),
-      massInKg: computationFormOutput.massInKg,
+        computationFormOutput.qnh),
+      temperature: computationFormOutput.temperature,
+      mass: computationFormOutput.mass,
       runwayStatus: computationFormOutput.runwayStatus,
       runwayType: computationFormOutput.runwayType,
       headwindInKnots: computationFormOutput.headWindInKnots
@@ -94,5 +99,13 @@ export class PerformanceComputerComponent {
 
   mustDisplayFavoriteIcon(): boolean {
     return this.loginRepository.isLoggedIn();
+  }
+
+  toggleUnitPanel() {
+    this.unitPanel = !this.unitPanel;
+  }
+
+  newChosenUnit(chosenUnit: ChosenUnit) {
+    this.chosenUnit = chosenUnit;
   }
 }

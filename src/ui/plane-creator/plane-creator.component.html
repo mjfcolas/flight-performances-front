@@ -1,6 +1,15 @@
 @if (isLoggedIn()) {
   <div class="prose flex flex-col w-full max-w-full p-3">
-    <h2>Create a plane</h2>
+    <div class="flex ml-1 justify-between max-w-screen-md">
+      <h2 class="m-1">
+        Create a plane
+      </h2>
+      <h3 class="m-1">
+        <button class="btn btn-active btn-sm"
+                (click)="toggleUnitPanel()">kg ⇄ lb
+        </button>
+      </h3>
+    </div>
     @if (!(isNicknameDefined | async)) {
       <div role="alert" class="alert alert-info max-w-screen-md">
         <svg
@@ -14,7 +23,8 @@
             stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span>To allow other members to easily find your plane, consider <a class="text-black" [routerLink]="['/profile']">defining a nickname</a></span>
+        <span>To allow other members to easily find your plane, consider <a class="text-black"
+                                                                            [routerLink]="['/profile']">defining a nickname</a></span>
       </div>
     }
     <div class="flex flex-col w-full max-w-screen-md">
@@ -62,8 +72,14 @@
         </div>
       }
     </div>
+    @if (unitPanel) {
+      <choose-unit-form
+        (output)="newChosenUnit($event)"
+      />
+    }
     <plane-performance class="flex flex-wrap"
                        [performances]="performances"
+                       [chosenUnit]="chosenUnit"
                        (emittedPerformances)="setPerformances($event)"
                        [mode]="'EDIT'"
     />

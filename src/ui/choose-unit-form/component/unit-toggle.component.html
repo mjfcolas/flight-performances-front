@@ -1,0 +1,11 @@
+<div class="m-1 flex">
+  <label for="toggle" class="input input-sm flex items-center gap-2">
+    <span class="min-w-44">{{ labelText }}</span>
+  </label>
+  <div class="flex">
+    <div class="w-8">{{ firstUnitLabel }}</div>
+    <input id="toggle" type="checkbox" class="toggle toggle-md" checked="checked"
+           [(ngModel)]="toggleValue" (ngModelChange)="emitNewUnit()"/>
+    <div class="mx-2">{{ secondUnitLabel }}</div>
+  </div>
+</div>

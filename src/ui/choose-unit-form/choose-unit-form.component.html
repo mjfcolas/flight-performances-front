@@ -1,0 +1,43 @@
+<div class="flex flex-col w-full max-w-96">
+
+  <unit-toggle
+    id="mass-unit"
+    [labelText]="'Mass unit'"
+    [chosenUnit]="massUnit"
+    [firstUnitLabel]="'Kg'"
+    [secondUnitLabel]="'Lb'"
+    [firstUnitValue]="'KILOGRAMS'"
+    [secondUnitValue]="'POUNDS'"
+    (output)="massUnitChanged($event)"
+  />
+  <unit-toggle
+    id="horizontal-distance-unit"
+    [labelText]="'Horizontal distance unit'"
+    [chosenUnit]="horizontalDistanceUnit"
+    [firstUnitLabel]="'m'"
+    [secondUnitLabel]="'ft'"
+    [firstUnitValue]="'METERS'"
+    [secondUnitValue]="'FEET'"
+    (output)="horizontalDistanceUnitChanged($event)"
+  />
+  <unit-toggle
+    id="atmospheric-pressure-unit"
+    [labelText]="'Atmospheric pressure unit'"
+    [chosenUnit]="atmosphericPressureUnit"
+    [firstUnitLabel]="'hPa'"
+    [secondUnitLabel]="'mmHg'"
+    [firstUnitValue]="'HPA'"
+    [secondUnitValue]="'INHG'"
+    (output)="atmosphericPressureUnitChanged($event)"
+  />
+  <unit-toggle
+    id="temperature-unit"
+    [labelText]="'Temperature unit'"
+    [chosenUnit]="temperatureUnit"
+    [firstUnitLabel]="'°C'"
+    [secondUnitLabel]="'°F'"
+    [firstUnitValue]="'CELSIUS'"
+    [secondUnitValue]="'FAHRENHEIT'"
+    (output)="temperatureUnitChanged($event)"
+  />
+</div>

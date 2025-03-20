@@ -1,45 +1,48 @@
-@if (_computationData && _rawPerformanceInMeters) {
-  <div class="overflow-x-auto table-xs">
-    <table class="table mt-1">
-      <tbody>
-      <tr>
-        <th>Mass</th>
-        <td>{{ _computationData.mass.valueIn('KILOGRAMS') }} kg</td>
-      </tr>
-      <tr>
-        <th>Pressure Altitude</th>
-        <td>{{ _computationData.pressureAltitudeInFeet }} ft</td>
-      </tr>
-        @if (_computationData.differenceWithISATemperature) {
-          <tr>
-            <th>Difference with ISA temperature</th>
-            <td>{{ _computationData.differenceWithISATemperature | number: '1.1-1' }} °C</td>
-          </tr>
-        }
-        @if (_computationData.absoluteTemperature) {
-          <tr>
-            <th>Absolute temperature</th>
-            <td>{{ _computationData.absoluteTemperature | number: '1.1-1' }} °C</td>
-          </tr>
-        }
-      <tr>
-        <th>Interpolated Raw performance</th>
-        <td>{{ _rawPerformanceInMeters  | number: '1.0-0' }} m</td>
-      </tr>
-        @for (factorKey of _factorKeys; track factorKey) {
-          <tr>
-            <th>{{ factorLabelFromType(factorKey) }}</th>
-            <td>{{ _computationData.factorMap.get(factorKey) }}</td>
-          </tr>
-        }
-      <tr>
-        <th>Final performance</th>
-        <td>{{ _securedPerformanceInMeters  | number: '1.0-0' }} m</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+@if (_computationData && _rawPerformance && _securedPerformance && chosenUnit) {
+    <div class="overflow-x-auto table-xs">
+        <table class="table mt-1">
+            <tbody>
+            <tr>
+                <th>Mass</th>
+                <td>{{ _computationData.mass | displayMass: chosenUnit.massUnit }}</td>
+            </tr>
+            <tr>
+                <th>Pressure Altitude</th>
+                <td>{{ _computationData.pressureAltitudeInFeet }} ft</td>
+            </tr>
+                @if (_computationData.differenceWithISATemperature) {
+                    <tr>
+                        <th>Difference with ISA temperature</th>
+                        <td>
+                            {{ _computationData.differenceWithISATemperature | displayTemperature: chosenUnit.temperatureUnit }}
+                        </td>
+                    </tr>
+                }
+                @if (_computationData.absoluteTemperature) {
+                    <tr>
+                        <th>Absolute temperature</th>
+                        <td>{{ _computationData.absoluteTemperature | displayTemperature: chosenUnit.temperatureUnit }}
+                        </td>
+                    </tr>
+                }
+            <tr>
+                <th>Interpolated Raw performance</th>
+                <td>{{ _rawPerformance  | displayDistance: chosenUnit.horizontalDistanceUnit }}</td>
+            </tr>
+                @for (factorKey of _factorKeys; track factorKey) {
+                    <tr>
+                        <th>{{ factorLabelFromType(factorKey) }}</th>
+                        <td>{{ _computationData.factorMap.get(factorKey) }}</td>
+                    </tr>
+                }
+            <tr>
+                <th>Final performance</th>
+                <td>{{ _securedPerformance | displayDistance: chosenUnit.horizontalDistanceUnit }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 } @else {
-  <span class="text-muted">Computation did not complete</span>
+    <span class="text-muted">Computation did not complete</span>
 }
 
