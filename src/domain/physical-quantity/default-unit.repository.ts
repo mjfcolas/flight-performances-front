@@ -1,14 +1,7 @@
-import {MassUnit} from "./mass";
-import {DistanceUnit} from "./distance";
-import {AtmosphericPressureUnit} from "./atmospheric-pressure";
-import {TemperatureUnit} from "./temperature";
+import {ChosenUnit} from "./chosen-unit";
 
 export abstract class DefaultUnitRepository {
-  abstract getMassUnit(): MassUnit;
+  abstract getChosenUnit(): Promise<ChosenUnit>;
 
-  abstract getHorizontalDistanceUnit(): DistanceUnit;
-
-  abstract getAtmosphericPressureUnit(): AtmosphericPressureUnit;
-
-  abstract getTemperatureUnit(): TemperatureUnit;
+  abstract persistChosenUnit(chosenUnit: ChosenUnit): void;
 }

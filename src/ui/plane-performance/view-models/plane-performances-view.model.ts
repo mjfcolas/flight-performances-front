@@ -9,7 +9,7 @@ import {PerformanceDataPoint} from "../../../domain/performance-data-point";
 import {Distance} from "../../../domain/physical-quantity/distance";
 import {Mass} from "../../../domain/physical-quantity/mass";
 import {Temperature, TemperatureDifference} from "../../../domain/physical-quantity/temperature";
-import {ChosenUnit} from "../../units/chosen-unit";
+import {ChosenUnit} from "../../../domain/physical-quantity/chosen-unit";
 
 
 type PlanePerformancesViewModelConstructorParameterType = {

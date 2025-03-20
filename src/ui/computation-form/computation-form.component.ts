@@ -4,7 +4,7 @@ import {ComputationFormOutput} from "./output/computation-form.output";
 import {Mass} from "../../domain/physical-quantity/mass";
 import {Temperature} from "../../domain/physical-quantity/temperature";
 import {AtmosphericPressure} from "../../domain/physical-quantity/atmospheric-pressure";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
 import {DisplayMassUnitPipe} from "../units/display-mass-unit.pipe";
 import {DisplayDistanceUnitPipe} from "../units/display-distance-unit.pipe";
 import {DisplayAtmosphericPressureUnitPipe} from "../units/display-atmospheric-pressure-unit.pipe";

@@ -1,26 +1,49 @@
 import {DefaultUnitRepository} from "../../domain/physical-quantity/default-unit.repository";
-import {MassUnit} from "../../domain/physical-quantity/mass";
-import {DistanceUnit} from "../../domain/physical-quantity/distance";
-import {AtmosphericPressureUnit} from "../../domain/physical-quantity/atmospheric-pressure";
-import {TemperatureUnit} from "../../domain/physical-quantity/temperature";
+import {UserRepository} from "../../domain/user/user.repository";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
+import {firstValueFrom} from "rxjs";
+import {LoginRepository} from "../../domain/user/login.repository";
+
+const defaultChosenUnit: ChosenUnit = {
+  massUnit: 'KILOGRAMS',
+  horizontalDistanceUnit: 'METERS',
+  atmosphericPressureUnit: 'HPA',
+  temperatureUnit: 'CELSIUS'
+}
 
 export class LocalStorageDefaultUnitRepository implements DefaultUnitRepository {
 
   private readonly localStorage: Storage = window.localStorage;
 
-  getMassUnit(): MassUnit {
-    return this.localStorage.getItem('massUnit') as MassUnit || 'KILOGRAMS';
+  constructor(
+    private readonly loginRepository: LoginRepository,
+    private readonly userRepository: UserRepository) {
   }
 
-  getHorizontalDistanceUnit(): DistanceUnit {
-    return this.localStorage.getItem('horizontalDistanceUnit') as DistanceUnit || 'METERS';
+  async getChosenUnit(): Promise<ChosenUnit> {
+    const key: string = await this.getLocalStorageKey();
+    const storedValue = this.localStorage.getItem(key);
+    if (storedValue) {
+      return JSON.parse(storedValue) as ChosenUnit;
+    }
+    return defaultChosenUnit;
   }
 
-  getAtmosphericPressureUnit(): AtmosphericPressureUnit {
-    return this.localStorage.getItem('atmosphericPressureUnit') as AtmosphericPressureUnit || 'HPA';
+  persistChosenUnit(chosenUnit: ChosenUnit): void {
+    const serializedChosenUnit = JSON.stringify(chosenUnit);
+
+    this.getLocalStorageKey().then(key => {
+      this.localStorage.setItem(key, serializedChosenUnit);
+
+    })
   }
 
-  getTemperatureUnit(): TemperatureUnit {
-    return this.localStorage.getItem('temperatureUnit') as TemperatureUnit || 'CELSIUS';
+  private async getLocalStorageKey(): Promise<string> {
+    if (!this.loginRepository.isLoggedIn()) {
+      return "local_chosenUnit"
+    }
+
+    const user = await firstValueFrom(this.userRepository.getUser());
+    return `user_${user.nickname}_chosenUnit`
   }
 }

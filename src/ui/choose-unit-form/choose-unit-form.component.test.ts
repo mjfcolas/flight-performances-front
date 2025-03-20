@@ -4,35 +4,27 @@ import {
   LocalStorageDefaultUnitRepository
 } from "../../infrastructure/physical-quantity/local-storage-default-unit.repository";
 import {DefaultUnitRepository} from "../../domain/physical-quantity/default-unit.repository";
+import {MockedLoginRepository} from "../../domain/user/__mock__/mocked-login.repository";
+import {MockedUserRepository} from "../../domain/user/__mock__/mocked-user.repository";
+
+const mockedLoginRepository = new MockedLoginRepository()
+const mockedUserRepository = new MockedUserRepository()
 
 describe(`ChooseUnitFormComponent`, () => {
-  test(`When displaying the form for chosing units,
-   then the form is displayed and a first set of unit is emitted`, async () => {
-    const outputSpy = jest.fn()
-
+  test(`When displaying the form for choosing units,
+   then the form is displayed`, async () => {
     await render(ChooseUnitFormComponent, {
       componentProviders: [
         {
           provide: DefaultUnitRepository,
-          useValue: new LocalStorageDefaultUnitRepository()
+          useValue: new LocalStorageDefaultUnitRepository(mockedLoginRepository, mockedUserRepository)
         }
       ],
-      on: {
-        output: outputSpy
-      }
     })
-    expect(screen.getByLabelText('Mass unit')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Mass unit')).toBeInTheDocument()
     expect(screen.getByText('Horizontal distance unit')).toBeInTheDocument()
     expect(screen.getByText('Atmospheric pressure unit')).toBeInTheDocument()
     expect(screen.getByText('Temperature unit')).toBeInTheDocument()
-
-    expect(outputSpy).toHaveBeenCalledTimes(1)
-    expect(outputSpy).toHaveBeenCalledWith({
-      massUnit: 'KILOGRAMS',
-      horizontalDistanceUnit: 'METERS',
-      atmosphericPressureUnit: 'HPA',
-      temperatureUnit: 'CELSIUS'
-    })
   })
 
   test(`Given a displayed form,
@@ -43,7 +35,7 @@ describe(`ChooseUnitFormComponent`, () => {
       componentProviders: [
         {
           provide: DefaultUnitRepository,
-          useValue: new LocalStorageDefaultUnitRepository()
+          useValue: new LocalStorageDefaultUnitRepository(mockedLoginRepository, mockedUserRepository)
         }
       ],
       on: {
@@ -51,10 +43,10 @@ describe(`ChooseUnitFormComponent`, () => {
       }
     })
 
-    const massUnitToggle = screen.getByLabelText('Mass unit')
+    const massUnitToggle = await screen.findByLabelText('Mass unit')
     massUnitToggle.click();
 
-    expect(outputSpy).toHaveBeenCalledTimes(2)
+    expect(outputSpy).toHaveBeenCalledTimes(1)
     expect(outputSpy).toHaveBeenCalledWith({
       massUnit: 'POUNDS',
       horizontalDistanceUnit: 'METERS',

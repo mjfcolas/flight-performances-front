@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {ComputationData, FactorType, PerformanceComputeResponse} from "../../domain/performance-compute-response";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
 import {DisplayMassPipe} from "../units/display-mass.pipe";
 import {DisplayTemperaturePipe} from "../units/display-temperature.pipe";
 import {Distance} from "../../domain/physical-quantity/distance";

@@ -73,7 +73,7 @@ describe(`Performance computer component`, () => {
   when clicking on the button to configure units,
   then the unit panel is displayed`, async () => {
     await userEvent.click(screen.getByText("kg ⇄ lb"))
-    expect(screen.getByText("Mass unit")).toBeInTheDocument()
+    expect(await screen.findByText("Mass unit")).toBeInTheDocument()
   })
 
   test(`Given a rendered component,

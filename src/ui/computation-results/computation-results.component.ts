@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {faCircleExclamation, faPlaneArrival, faPlaneDeparture, IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {PerformanceComputeResponse} from "../../domain/performance-compute-response";
-import {ChosenUnit} from "../units/chosen-unit";
+import {ChosenUnit} from "../../domain/physical-quantity/chosen-unit";
 import {DisplayDistancePipe} from "../units/display-distance.pipe";
 
 
