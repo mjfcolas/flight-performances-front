@@ -15,35 +15,6 @@
                  (ngModelChange)="changeTemperatureMode($event)"/>
       </label>
     </div>
-
-    <div class="flex flex-col w-1/2">
-      <h4 class="m-1">Horizontal Distance Unit</h4>
-      <label class="label cursor-pointer flex flex-row">
-        <span class="label-text mx-1 w-2/5 text-right">Meters</span>
-        <input type="radio" name="horizonal-distance-unit" class="radio"
-               [ngModel]="this.performances.horizontalDistanceUnit"
-               [value]="'METERS'"
-               (ngModelChange)="changeHorizontalDistanceUnit($event)"/>
-        <span class="label-text mx-1 w-2/5 text-right">Feet</span>
-        <input type="radio" name="horizonal-distance-unit" class="radio"
-               [ngModel]="this.performances.horizontalDistanceUnit"
-               [value]="'ABSOLUTE'"
-               (ngModelChange)="changeHorizontalDistanceUnit($event)"/>
-      </label>
-    </div>
-    <div class="flex flex-col w-1/2">
-      <h4 class="m-1">Mass Unit</h4>
-      <label class="label cursor-pointer flex flex-row">
-        <span class="label-text mx-1 w-2/5 text-right">Kilograms</span>
-        <input type="radio" name="mass-unit" class="radio" [ngModel]="this.performances.massUnit"
-               [value]="'KILOGRAMS'"
-               (ngModelChange)="changeMassUnit($event)"/>
-        <span class="label-text mx-1 w-2/5 text-right">Pounds</span>
-        <input type="radio" name="mass-unit" class="radio" [ngModel]="this.performances.massUnit"
-               [value]="'POUNDS'"
-               (ngModelChange)="changeMassUnit($event)"/>
-      </label>
-    </div>
   }
 
   <div class="flex flex-wrap gap-2">
@@ -51,8 +22,7 @@
       <h4 class="m-1">Take off</h4>
       <performance-table
         [temperatureMode]="this.performances.temperatureMode"
-        [horizontalDistanceUnit]="this.performances.horizontalDistanceUnit"
-        [massUnit]="this.performances.massUnit"
+        [chosenUnit]="this.chosenUnit"
         [mode]="mode"
         [dataPoints]="performances.takeOffDataPoints"
         (emittedDataPoints)="newTakeOffDataPoints($event)"
@@ -62,8 +32,7 @@
       <h4 class="m-1">Landing</h4>
       <performance-table
         [temperatureMode]="this.performances.temperatureMode"
-        [horizontalDistanceUnit]="this.performances.horizontalDistanceUnit"
-        [massUnit]="this.performances.massUnit"
+        [chosenUnit]="this.chosenUnit"
         [mode]="mode"
         [dataPoints]="performances.landingDataPoints"
         (emittedDataPoints)="newLandingDataPoints($event)"

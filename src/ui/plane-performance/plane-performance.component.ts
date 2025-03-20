@@ -9,8 +9,7 @@ import {
 import {UiMode} from "../ui-mode";
 import {StepCoefficient, TemperatureMode} from "../../domain/plane";
 import {FormsModule} from "@angular/forms";
-import {DistanceUnit} from "../../domain/distance";
-import {MassUnit} from "../../domain/mass";
+import {ChosenUnit} from "../units/chosen-unit";
 
 @Component({
   selector: 'plane-performance',
@@ -40,6 +39,9 @@ export class PlanePerformanceComponent {
   get performances() {
     return this._performances;
   }
+
+  @Input()
+  chosenUnit: ChosenUnit | undefined
 
   @Output()
   emittedPerformances: EventEmitter<PlanePerformancesViewModel> = new EventEmitter<PlanePerformancesViewModel>();
@@ -77,16 +79,6 @@ export class PlanePerformanceComponent {
 
   changeTemperatureMode(temperatureMode: TemperatureMode) {
     this.performances = this.performances.changeTemperatureMode(temperatureMode);
-    this.emittedPerformances.emit(this.performances);
-  }
-
-  changeHorizontalDistanceUnit(distanceUnit: DistanceUnit) {
-    this.performances = this.performances.changeHorizontalDistanceUnit(distanceUnit);
-    this.emittedPerformances.emit(this.performances);
-  }
-
-  changeMassUnit(massUnit: MassUnit) {
-    this.performances = this.performances.changeMassUnit(massUnit);
     this.emittedPerformances.emit(this.performances);
   }
 }

@@ -1,7 +1,7 @@
 import {render, screen} from "@testing-library/angular";
-import {ComputationData, PerformanceComputeResponse} from "../../domain/performance-compute-response";
-import {Mass} from "../../domain/mass";
 import {ComputationDetailsComponent} from "./computation-details.component";
+import {testChosenUnit} from "../units/__test__/test-chose-unit";
+import {testPerformanceComputeResponse} from "../../domain/__test__/test-performance-compute-response";
 
 describe(`Computation Details Component`, () => {
 
@@ -9,27 +9,11 @@ describe(`Computation Details Component`, () => {
   when displaying the computation details,
   then expected details are displayed`, async () => {
     // Given
-    const performanceComputeResponse: PerformanceComputeResponse = new PerformanceComputeResponse(
-      100,
-      130,
-      false,
-      new ComputationData(
-        new Map([
-          ["DRY_HARD", 1.2],
-          ["SECURITY", 1.4],
-          ["WIND", 1.5],
-        ]),
-        2000,
-        5,
-        undefined,
-        Mass.forValueAndUnit(850, 'KILOGRAMS')
-      )
-    )
-
     // When
     await render(ComputationDetailsComponent, {
       componentInputs: {
-        performanceComputeResponse: performanceComputeResponse
+        performanceComputeResponse: testPerformanceComputeResponse,
+        chosenUnit: testChosenUnit
       }
     })
 

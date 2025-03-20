@@ -12,6 +12,8 @@ import {NotLoggedInComponent} from "../not-logged-in/not-logged-in.component";
 import {UserRepository} from "../../domain/user/user.repository";
 import {map, Observable} from "rxjs";
 import {AsyncPipe} from "@angular/common";
+import {ChooseUnitFormComponent} from "../choose-unit-form/choose-unit-form.component";
+import {ChosenUnit} from "../units/chosen-unit";
 
 @Component({
   selector: 'plane-creator',
@@ -22,7 +24,8 @@ import {AsyncPipe} from "@angular/common";
     RouterLink,
     FormsModule,
     NotLoggedInComponent,
-    AsyncPipe
+    AsyncPipe,
+    ChooseUnitFormComponent
   ]
 })
 export class PlaneCreatorComponent {
@@ -36,6 +39,14 @@ export class PlaneCreatorComponent {
   name: string = this.plane?.name ?? "";
   isSaved: boolean = false;
   inError: boolean = false;
+
+  unitPanel: boolean = false;
+  chosenUnit: ChosenUnit = {
+    massUnit: 'KILOGRAMS',
+    horizontalDistanceUnit: 'METERS',
+    atmosphericPressureUnit: 'HPA',
+    temperatureUnit: 'CELSIUS'
+  }
 
   constructor(private readonly planeRepository: PlaneRepository, private readonly loginRepository: LoginRepository, private readonly userRepository: UserRepository) {
     this.isNicknameDefined = this.userRepository.getUser().pipe(map(user => !!user.nickname));
@@ -73,5 +84,13 @@ export class PlaneCreatorComponent {
 
   isLoggedIn() {
     return this.loginRepository.isLoggedIn();
+  }
+
+  toggleUnitPanel() {
+    this.unitPanel = !this.unitPanel;
+  }
+
+  newChosenUnit(chosenUnit: ChosenUnit) {
+    this.chosenUnit = chosenUnit;
   }
 }

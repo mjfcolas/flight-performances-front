@@ -12,7 +12,6 @@ import {pushAtSortPosition} from "array-push-at-sort-position";
   standalone: true,
   templateUrl: './computation-factors.component.html',
   imports: [
-    DecimalPipe,
     FormsModule
   ],
   providers: [],

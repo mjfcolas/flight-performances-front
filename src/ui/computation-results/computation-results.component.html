@@ -1,23 +1,21 @@
-@if (performanceComputeResponse && _icon && _title) {
-  <div class="stats shadow w-full">
-    <div class="stat">
-      <div class="stat-title flex">
-        <div>{{ _title }}</div>
-        <div class="ml-2">
-          <fa-icon [icon]="_icon"></fa-icon>
+@if (performanceComputeResponse && _icon && _title && chosenUnit) {
+    <div class="stats shadow w-full">
+        <div class="stat">
+            <div class="stat-title flex">
+                <div>{{ _title }}</div>
+                <div class="ml-2">
+                    <fa-icon [icon]="_icon"></fa-icon>
+                </div>
+            </div>
+            @if (!performanceComputeResponse.outOfBoundComputationError && performanceComputeResponse.securedPerformance && performanceComputeResponse.rawPerformance) {
+                <div class="stat-value">{{ performanceComputeResponse.securedPerformance | displayDistance: chosenUnit.horizontalDistanceUnit }}</div>
+                <div class="stat-desc">{{ performanceComputeResponse.rawPerformance | displayDistance: chosenUnit.horizontalDistanceUnit }}</div>
+            } @else {
+                <div class="stat-desc">
+                    <fa-icon [icon]="faCircleExclamation"></fa-icon>
+                    Out of bound
+                </div>
+            }
         </div>
-      </div>
-      @if (!performanceComputeResponse.outOfBoundComputationError) {
-        <div class="stat-value">{{ performanceComputeResponse.securedPerformanceInMeters | number: '1.0-0' }}m
-        </div>
-        <div class="stat-desc">{{ performanceComputeResponse.rawPerformanceInMeters | number: '1.0-0' }}m
-        </div>
-      } @else {
-        <div class="stat-desc">
-          <fa-icon [icon]="faCircleExclamation"></fa-icon>
-          Out of bound
-        </div>
-      }
     </div>
-  </div>
 }

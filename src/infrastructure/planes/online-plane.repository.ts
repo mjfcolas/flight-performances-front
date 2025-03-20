@@ -15,8 +15,9 @@ import {LoginRepository} from "../../domain/user/login.repository";
 import {User} from "../../domain/user/user";
 import {WebClient} from "../web-client";
 import {PerformanceDataPoint} from "../../domain/performance-data-point";
-import {Distance} from "../../domain/distance";
-import {Mass} from "../../domain/mass";
+import {Distance} from "../../domain/physical-quantity/distance";
+import {Mass} from "../../domain/physical-quantity/mass";
+import {Temperature, TemperatureDifference} from "../../domain/physical-quantity/temperature";
 
 const LOCALLY_LAST_USED_PLANES_KEY = 'flight-perfs-last-used-planes-unauthenticated';
 const LAST_USED_PLANES_MAX_SIZE = 5;
@@ -146,8 +147,8 @@ export class OnlinePlaneRepository implements PlaneRepository {
       pressureAltitudeInFeet: dataPoint.pressureAltitudeInFeet,
       massInKg: dataPoint.mass.valueIn('KILOGRAMS'),
       distanceInMeters: dataPoint.distance.valueIn('METERS'),
-      absoluteTemperatureInCelsius: temperatureMode === 'ABSOLUTE' ? dataPoint.absoluteTemperatureInCelsius : undefined,
-      diffWithIsaTemperatureInCelsius: temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperatureInCelsius : undefined
+      absoluteTemperatureInCelsius: temperatureMode === 'ABSOLUTE' ? dataPoint.absoluteTemperature.valueIn('CELSIUS') : undefined,
+      diffWithIsaTemperatureInCelsius: temperatureMode === 'ISA' ? dataPoint.diffWithIsaTemperature.valueIn('CELSIUS') : undefined
     });
 
     const planePerformanceDto: PerformanceDto = {
@@ -313,16 +314,16 @@ export class OnlinePlaneRepository implements PlaneRepository {
 
       const performanceDataPointDtoToPerformanceDataPoint = (performanceDataPointDto: PerformanceDataPointDto) => {
         if (performanceDataPointDto.absoluteTemperatureInCelsius !== null && performanceDataPointDto.absoluteTemperatureInCelsius !== undefined) {
-          return PerformanceDataPoint.fromAbsoluteTemperatureInCelsius({
+          return PerformanceDataPoint.fromAbsoluteTemperature({
             pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
-            absoluteTemperatureInCelsius: performanceDataPointDto.absoluteTemperatureInCelsius,
+            absoluteTemperature: Temperature.forValueAndUnit(performanceDataPointDto.absoluteTemperatureInCelsius, 'CELSIUS'),
             mass: Mass.forValueAndUnit(performanceDataPointDto.massInKg, 'KILOGRAMS'),
             distance: Distance.forValueAndUnit(performanceDataPointDto.distanceInMeters, "METERS")
           });
         } else {
-          return PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+          return PerformanceDataPoint.fromDiffWithIsaTemperature({
             pressureAltitudeInFeet: performanceDataPointDto.pressureAltitudeInFeet,
-            diffWithIsaTemperatureInCelsius: performanceDataPointDto.diffWithIsaTemperatureInCelsius as number,
+            diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(performanceDataPointDto.diffWithIsaTemperatureInCelsius as number, 'CELSIUS'),
             mass: Mass.forValueAndUnit(performanceDataPointDto.massInKg, 'KILOGRAMS'),
             distance: Distance.forValueAndUnit(performanceDataPointDto.distanceInMeters, "METERS")
           })

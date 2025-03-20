@@ -16,6 +16,10 @@ import {OnlinePlaneRepository} from "../infrastructure/planes/online-plane.repos
 import {DefaultWebClient, WebClient} from "../infrastructure/web-client";
 import {UserRepository} from "../domain/user/user.repository";
 import {OnlineUserRepository} from "../infrastructure/user/online-user.repository";
+import {DefaultUnitRepository} from "../domain/physical-quantity/default-unit.repository";
+import {
+  LocalStorageDefaultUnitRepository
+} from "../infrastructure/physical-quantity/local-storage-default-unit.repository";
 
 const environment = new ConfigJsonEnvironment();
 
@@ -63,6 +67,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: UserRepository,
       useFactory: () => new OnlineUserRepository(inject(WebClient), inject(Environment))
+    },
+    {
+      provide: DefaultUnitRepository,
+      useFactory: () => new LocalStorageDefaultUnitRepository()
     }
   ]
 };

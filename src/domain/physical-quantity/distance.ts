@@ -1,4 +1,5 @@
 export type DistanceUnit = 'METERS' | 'FEET';
+export const isDistanceUnit = (value: string): value is DistanceUnit => value === 'METERS' || value === 'FEET';
 
 const FEET_IN_METERS = 0.3048;
 

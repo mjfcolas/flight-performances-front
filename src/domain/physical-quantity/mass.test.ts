@@ -14,4 +14,17 @@ describe(`Mass`, () => {
     expect(mass.valueIn('KILOGRAMS')).toBe(value);
     expect(mass.valueIn('POUNDS')).toBeCloseTo(4.409);
   });
+
+  test(`Given a value in pounds,
+  when instantiating a mass,
+  then mass can be retrieved either in kilograms or pounds`, () => {
+    // Given
+    const value = 4.409;
+    const unit = 'POUNDS';
+    // When
+    const mass = Mass.forValueAndUnit(value, unit);
+    // Then
+    expect(mass.valueIn('KILOGRAMS')).toBeCloseTo(2, 1);
+    expect(mass.valueIn('POUNDS')).toBe(value);
+  });
 });

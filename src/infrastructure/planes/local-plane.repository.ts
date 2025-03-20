@@ -11,8 +11,9 @@ import {User} from "../../domain/user/user";
 import {map, Observable, of} from "rxjs";
 import {OperationResult} from "../../domain/operation-result";
 import {PerformanceDataPoint} from "../../domain/performance-data-point";
-import {Distance} from "../../domain/distance";
-import {Mass} from "../../domain/mass";
+import {Distance} from "../../domain/physical-quantity/distance";
+import {Mass} from "../../domain/physical-quantity/mass";
+import {Temperature, TemperatureDifference} from "../../domain/physical-quantity/temperature";
 
 let idSequence = 1
 const stubbedUser: User = new User('mjfcolas');
@@ -30,9 +31,10 @@ const dr400120TakeOfPerformance = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 900, distanceInMeters: 720},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 700, distanceInMeters: 460},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 900, distanceInMeters: 800}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
   mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
 }));
 
@@ -49,9 +51,10 @@ const dr400120LandingPerformance = [
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 900, distanceInMeters: 505},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 700, distanceInMeters: 440},
   {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 900, distanceInMeters: 535}
-].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
   ...dto,
   distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+  diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
   mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
 }));
 
@@ -100,7 +103,7 @@ const fgkrd = new Plane(
   stubbedUser
 );
 
-const fgnna = new Plane(
+export const fgnna = new Plane(
   (idSequence++).toString(),
   "DR400-120",
   "F-GNNA",
@@ -142,9 +145,10 @@ const fgnnl = new Plane(
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1000, distanceInMeters: 645},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 800, distanceInMeters: 465},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1000, distanceInMeters: 870}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
     [
@@ -160,9 +164,10 @@ const fgnnl = new Plane(
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1000, distanceInMeters: 587},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 800, distanceInMeters: 523},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1000, distanceInMeters: 630}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
     dr400TakeOffRunwayFactors,
@@ -206,9 +211,10 @@ const fgmxo = new Plane(
       {pressureAltitudeInFeet: 5000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1100, distanceInMeters: 795},
       {pressureAltitudeInFeet: 5000, diffWithIsaTemperatureInCelsius: 20, massInKg: 900, distanceInMeters: 520},
       {pressureAltitudeInFeet: 5000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1100, distanceInMeters: 925}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
     [
@@ -224,9 +230,10 @@ const fgmxo = new Plane(
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1045, distanceInMeters: 585},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 845, distanceInMeters: 520},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1045, distanceInMeters: 620}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
     dr400TakeOffRunwayFactors,
@@ -264,9 +271,10 @@ const fhgsm = new Plane(
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 800},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 550},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 890}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
 
@@ -283,9 +291,10 @@ const fhgsm = new Plane(
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 0, massInKg: 1050, distanceInMeters: 600},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 850, distanceInMeters: 535},
       {pressureAltitudeInFeet: 4000, diffWithIsaTemperatureInCelsius: 20, massInKg: 1050, distanceInMeters: 635}
-    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperatureInCelsius({
+    ].map((dto) => PerformanceDataPoint.fromDiffWithIsaTemperature({
       ...dto,
       distance: Distance.forValueAndUnit(dto.distanceInMeters, 'METERS'),
+      diffWithIsaTemperature: TemperatureDifference.forValueAndUnit(dto.diffWithIsaTemperatureInCelsius, 'CELSIUS'),
       mass: Mass.forValueAndUnit(dto.massInKg, 'KILOGRAMS')
     })),
 
