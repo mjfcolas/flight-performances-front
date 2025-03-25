@@ -20,6 +20,8 @@ import {DefaultUnitRepository} from "../domain/physical-quantity/default-unit.re
 import {
   LocalStorageDefaultUnitRepository
 } from "../infrastructure/physical-quantity/local-storage-default-unit.repository";
+import {AnalyticsService} from "../ui/analytics/analytics.service";
+import {DOCUMENT} from "@angular/common";
 
 const environment = new ConfigJsonEnvironment();
 
@@ -51,6 +53,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: WebClient,
       useFactory: () => new DefaultWebClient(inject(LoginRepository))
+    },
+    {
+      provide: AnalyticsService,
+      useFactory: () => new AnalyticsService(inject(DOCUMENT), inject(Environment))
     },
     {
       provide: InterpolationProvider,

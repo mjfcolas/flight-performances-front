@@ -1,11 +1,24 @@
 import {from, map, mergeMap, Observable} from "rxjs";
 
+export interface MatomoConfiguration {
+  siteId: string
+  url: string
+}
+
 export abstract class Environment {
   public abstract get backendUrl(): string
+
   public abstract get oAuth2Issuer(): string
+
   public abstract get oAuth2ClientId(): string
+
   public abstract get oAuth2LogoutUrl(): string
+
   public abstract get contactAddress(): string
+
+  public abstract get enableAnalytics(): boolean
+
+  public abstract get matomoConfiguration(): MatomoConfiguration | undefined
 }
 
 export class ConfigJsonEnvironment implements Environment {
@@ -14,6 +27,11 @@ export class ConfigJsonEnvironment implements Environment {
   private _oAuth2ClientId: string = ""
   private _oAuth2LogoutUrl: string = ""
   private _contactAddress: string = ""
+  private _enableAnalytics: boolean = false
+  private _matomoConfiguration: MatomoConfiguration = {
+    siteId: "",
+    url: "",
+  }
 
   constructor() {
   }
@@ -28,6 +46,8 @@ export class ConfigJsonEnvironment implements Environment {
           this._oAuth2ClientId = config.oAuth2ClientId
           this._oAuth2LogoutUrl = config.oAuth2LogoutUrl
           this._contactAddress = config.contactAddress
+          this._enableAnalytics = config.enableAnalytics
+          this._matomoConfiguration = config.matomoConfiguration
         }));
   }
 
@@ -49,5 +69,13 @@ export class ConfigJsonEnvironment implements Environment {
 
   public get contactAddress(): string {
     return this._contactAddress
+  }
+
+  public get enableAnalytics(): boolean {
+    return this._enableAnalytics
+  }
+
+  public get matomoConfiguration(): MatomoConfiguration {
+    return this._matomoConfiguration
   }
 }

@@ -6,4 +6,6 @@ export class MockedEnvironment implements Environment {
   oAuth2ClientId = "clientId"
   oAuth2LogoutUrl = "http://issuer/logout"
   contactAddress = "contact@backend"
+  enableAnalytics = false
+  matomoConfiguration = undefined
 }
