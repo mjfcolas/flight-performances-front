@@ -3,5 +3,10 @@
   "oAuth2Issuer": "",
   "oAuth2LogoutUrl": "",
   "oAuth2ClientId": "",
-  "contactAddress": "foo@bar.com"
+  "contactAddress": "foo@bar.com",
+  "enableAnalytics": false,
+  "matomoConfiguration": {
+    "siteId": "1",
+    "url": "an-url.com"
+  }
 }
