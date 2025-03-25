@@ -1,66 +1,71 @@
-<div class="flex flex-col w-full max-w-96">
-  <div class="m-1 flex">
-    <label for="mass" class="input input-sm flex items-center gap-2"><span class="min-w-44">Mass</span><input
-      class="w-16" type="number"
-      id="mass"
-      [(ngModel)]="mass"></label>
-    <span class="m-1">{{ chosenUnit?.massUnit | displayMassUnit }}</span>
-  </div>
+@if (chosenUnit) {
+  <div class="flex flex-col w-full max-w-96">
+    <div class="m-1 flex">
+      <label for="mass" class="input input-sm flex items-center gap-2"><span class="min-w-44">Mass</span><input
+        class="w-16" type="number"
+        id="mass"
+        [ngModel]="roundMass(mass, chosenUnit.massUnit)"
+        (ngModelChange)="setNewMass($event)"></label>
+      <span class="m-1">{{ chosenUnit.massUnit | displayMassUnit }}</span>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="temperature" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">Temperature</span>
-      <input class="w-16"
-             type="number"
-             id="temperature"
-             [(ngModel)]="temperature"></label>
-    <span class="m-1">{{ chosenUnit?.temperatureUnit | displayTemperatureUnit }}</span>
-  </div>
+    <div class="m-1 flex">
+      <label for="temperature" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Temperature</span>
+        <input class="w-16"
+               type="number"
+               id="temperature"
+               [ngModel]="roundTemperature(temperature, chosenUnit.temperatureUnit)"
+               (ngModelChange)="setNewTemperature($event)"></label>
+      <span class="m-1">{{ chosenUnit.temperatureUnit | displayTemperatureUnit }}</span>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="qnh" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">QNH</span>
-      <input
-        class="w-16" type="number" id="qnh"
-        [(ngModel)]="qnh"></label>
-    <span class="m-1">{{ chosenUnit?.atmosphericPressureUnit | displayAtmosphericPressureUnit }}</span>
-  </div>
+    <div class="m-1 flex">
+      <label for="qnh" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">QNH</span>
+        <input
+          class="w-16" type="number" id="qnh"
+          [ngModel]="roundAtmosphericPressure(qnh, chosenUnit.atmosphericPressureUnit)"
+          (ngModelChange)="setNewQnh($event)"></label>
+      <span class="m-1">{{ chosenUnit.atmosphericPressureUnit | displayAtmosphericPressureUnit }}</span>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="altitude" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">Terrain altitude</span>
-      <input class="w-16"
-             type="number"
-             id="altitude"
-             [(ngModel)]="altitude"></label>
-    <span class="m-1">ft</span>
-  </div>
+    <div class="m-1 flex">
+      <label for="altitude" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Terrain altitude</span>
+        <input class="w-16"
+               type="number"
+               id="altitude"
+               [(ngModel)]="altitude"></label>
+      <span class="m-1">ft</span>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="headwind" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">Headwind</span>
-      <input class="w-16"
-             type="number"
-             id="headwind"
-             [(ngModel)]="headwindInKnots"></label>
-    <span class="m-1">kt</span>
-  </div>
+    <div class="m-1 flex">
+      <label for="headwind" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Headwind</span>
+        <input class="w-16"
+               type="number"
+               id="headwind"
+               [(ngModel)]="headwindInKnots"></label>
+      <span class="m-1">kt</span>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="grass-runway" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">Grass runway ?</span>
-    </label>
-    <input id="grass-runway" type="checkbox" class="toggle toggle-success toggle-md" checked="checked"
-           [(ngModel)]="isGrassRunway"/>
-  </div>
+    <div class="m-1 flex">
+      <label for="grass-runway" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Grass runway ?</span>
+      </label>
+      <input id="grass-runway" type="checkbox" class="toggle toggle-success toggle-md" checked="checked"
+             [(ngModel)]="isGrassRunway"/>
+    </div>
 
-  <div class="m-1 flex">
-    <label for="wet-runway" class="input input-sm flex items-center gap-2">
-      <span class="min-w-44">Wet runway ?</span>
-    </label>
-    <input id="wet-runway" type="checkbox" class="toggle toggle-info toggle-md" checked="checked"
-           [(ngModel)]="isWetRunway"/>
-  </div>
+    <div class="m-1 flex">
+      <label for="wet-runway" class="input input-sm flex items-center gap-2">
+        <span class="min-w-44">Wet runway ?</span>
+      </label>
+      <input id="wet-runway" type="checkbox" class="toggle toggle-info toggle-md" checked="checked"
+             [(ngModel)]="isWetRunway"/>
+    </div>
 
-  <button (click)="compute()" class="btn">Calculate</button>
-</div>
+    <button (click)="compute()" class="btn">Calculate</button>
+  </div>
+}
