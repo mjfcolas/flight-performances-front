@@ -59,6 +59,29 @@ describe(`Computation Form`, () => {
   })
 
   test(`Given a rendered form,
+  when changing chosen units,
+  then the form is displayed with the values in the new units`, async () => {
+    const {fixture} = await render(ComputationFormComponent, {
+      componentInputs: {
+        chosenUnit: testChosenUnit
+      },
+    })
+
+    fixture.componentInstance.chosenUnit = {
+      massUnit: 'POUNDS',
+      horizontalDistanceUnit: 'FEET',
+      atmosphericPressureUnit: 'INHG',
+      temperatureUnit: 'FAHRENHEIT'
+    }
+    fixture.detectChanges()
+
+    expect(await screen.findByDisplayValue('1764')).toBeInTheDocument()
+    expect(await screen.findByDisplayValue('59')).toBeInTheDocument()
+    expect(await screen.findByDisplayValue('29.91')).toBeInTheDocument()
+
+  })
+
+  test(`Given a rendered form,
   when editing a value and then calculating,
   then the output is emitted`, async () => {
     const outputSpy = jest.fn()

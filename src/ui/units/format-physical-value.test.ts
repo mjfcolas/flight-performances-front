@@ -1,7 +1,15 @@
 import {Distance} from "../../domain/physical-quantity/distance";
-import {formatDistance, formatMass, formatTemperature} from "./format-physical-value";
+import {
+  formatDistance,
+  formatMass,
+  formatTemperature,
+  roundAtmosphericPressure,
+  roundMass,
+  roundTemperature
+} from "./format-physical-value";
 import {Temperature, TemperatureDifference} from "../../domain/physical-quantity/temperature";
 import {Mass} from "../../domain/physical-quantity/mass";
+import {AtmosphericPressure} from "../../domain/physical-quantity/atmospheric-pressure";
 
 describe('FormatPhysicalValue', () => {
   const locale = 'en-US';
@@ -63,6 +71,55 @@ describe('FormatPhysicalValue', () => {
       const mass = Mass.forValueAndUnit(74.3, "KILOGRAMS");
       const result = formatMass(mass, "KILOGRAMS", locale);
       expect(result).toBe('74 kg');
+    });
+  });
+
+
+  describe('roundTemperature', () => {
+    test('rounds temperature to 1 decimal place in Celsius', () => {
+      const temperature = Temperature.forValueAndUnit(25.56, "CELSIUS");
+      const result = roundTemperature(temperature, "CELSIUS");
+      expect(result).toBe(25.6);
+    });
+
+    test('rounds temperature to 1 decimal place in Fahrenheit', () => {
+      const temperature = Temperature.forValueAndUnit(98.43, "FAHRENHEIT");
+      const result = roundTemperature(temperature, "FAHRENHEIT");
+      expect(result).toBe(98.4);
+    });
+
+    test('rounds temperature difference to 1 decimal place', () => {
+      const tempDiff = TemperatureDifference.forValueAndUnit(15.25, "CELSIUS");
+      const result = roundTemperature(tempDiff, "CELSIUS");
+      expect(result).toBe(15.3);
+    });
+  });
+
+  describe('roundMass', () => {
+    test('rounds mass to integer in kilograms', () => {
+      const mass = Mass.forValueAndUnit(74.3, "KILOGRAMS");
+      const result = roundMass(mass, "KILOGRAMS");
+      expect(result).toBe(74);
+    });
+
+    test('rounds mass to integer in pounds', () => {
+      const mass = Mass.forValueAndUnit(165.7, "POUNDS");
+      const result = roundMass(mass, "POUNDS");
+      expect(result).toBe(166);
+    });
+  });
+
+  describe('roundAtmosphericPressure', () => {
+    test('rounds pressure to 2 decimal places in hPa', () => {
+      const pressure = AtmosphericPressure.forValueAndUnit(1013.456, "HPA");
+      const result = roundAtmosphericPressure(pressure, "HPA");
+      expect(result).toBe(1013.46);
+    });
+
+    test('rounds pressure to 2 decimal places in inHg', () => {
+      const pressure = AtmosphericPressure.forValueAndUnit(29.9234, "INHG");
+      const result = roundAtmosphericPressure(pressure, "INHG");
+      expect(result).toBe(29.92);
     });
   });
 });
