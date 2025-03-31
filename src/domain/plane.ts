@@ -24,6 +24,12 @@ export class PlanePerformances {
     public readonly takeOffCoefficientsComputationData: WindCoefficientComputationData,
     public readonly landingCoefficientsComputationData: WindCoefficientComputationData
   ) {
+    if(this.takeOffCoefficientsComputationData.get().length === 0){
+      throw new Error("TAKE_OFF_WIND_COEFFICIENTS_EMPTY");
+    }
+    if(this.landingCoefficientsComputationData.get().length === 0){
+      throw new Error("LANDING_WIND_COEFFICIENTS_EMPTY");
+    }
   }
 
 }

@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {DecimalPipe} from "@angular/common";
 import {RunwayFactorsViewModel} from "../view-models/plane-performances-view.model";
 import {StepCoefficient} from "../../../domain/plane";
 import {UiMode} from "../../ui-mode";
@@ -124,10 +123,12 @@ export class ComputationFactorsComponent {
 
   removeLandingWindAtIndex(index: number) {
     this.landingWindCoefficients.splice(index, 1);
+    this.emittedLandingWindCoefficients.emit(this.landingWindCoefficients)
   }
 
   removeTakeOffWindAtIndex(index: number) {
     this.takeOffWindCoefficients.splice(index, 1);
+    this.emittedTakeOffWindCoefficients.emit(this.takeOffWindCoefficients)
   }
 
   updateTakeOffRunwayFactorHardWet(value: number) {

@@ -9,7 +9,6 @@ import {PerformanceDataPoint} from "../../../domain/performance-data-point";
 import {Distance} from "../../../domain/physical-quantity/distance";
 import {Mass} from "../../../domain/physical-quantity/mass";
 import {Temperature, TemperatureDifference} from "../../../domain/physical-quantity/temperature";
-import {ChosenUnit} from "../../../domain/physical-quantity/chosen-unit";
 
 
 type PlanePerformancesViewModelConstructorParameterType = {
@@ -84,13 +83,6 @@ export class PlanePerformancesViewModel {
     return new PlanePerformancesViewModel({
       ...this,
       temperatureMode: temperatureMode
-    });
-  }
-
-  changeChosenUnit(chosenUnit: ChosenUnit): PlanePerformancesViewModel {
-    return new PlanePerformancesViewModel({
-      ...this,
-      chosenUnit: chosenUnit
     });
   }
 
