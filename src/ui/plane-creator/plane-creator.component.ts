@@ -43,6 +43,8 @@ export class PlaneCreatorComponent {
   unitPanel: boolean = false;
   chosenUnit: ChosenUnit | undefined
 
+  currentErrorCode?: string = undefined
+
   constructor(
     private readonly planeRepository: PlaneRepository,
     private readonly loginRepository: LoginRepository,
@@ -64,22 +66,21 @@ export class PlaneCreatorComponent {
     });
   }
 
-  saveButtonDisabled() {
+  private generateCommand(): PlaneCreateOrUpdateCommand {
     try {
-      this.generateCommand();
-      return false;
+      const toSave = this.performances.toPlanePerformances();
+      this.currentErrorCode = undefined;
+      return new PlaneCreateOrUpdateCommand(this.plane?.id, this.name, this.registration, toSave);
     } catch (e) {
-      return true;
+      if (e instanceof Error) {
+        this.currentErrorCode = e.message;
+      }
+      throw e;
     }
   }
 
-  private generateCommand(): PlaneCreateOrUpdateCommand {
-    const toSave = this.performances.toPlanePerformances();
-    return new PlaneCreateOrUpdateCommand(this.plane?.id, this.name, this.registration, toSave);
-  }
-
   setPerformances(performancesViewModel: PlanePerformancesViewModel) {
-    this.isSaved = false;
+    this.onFormChange()
     this.performances = performancesViewModel;
   }
 
@@ -93,5 +94,9 @@ export class PlaneCreatorComponent {
 
   newChosenUnit(chosenUnit: ChosenUnit) {
     this.chosenUnit = chosenUnit;
+  }
+
+  onFormChange() {
+    this.isSaved = false
   }
 }
